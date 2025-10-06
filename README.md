@@ -2,7 +2,7 @@
 <img src="asserts/cd_rethink_logo.png" width="180px">
 </div> 
 <h2 align="center">
-<a href="https://arxiv.org/abs/2504.10020">[Code for Paper] The Mirage of Performance Gains: Why Contrastive Decoding Fails to Mitigate Object Hallucinations in MLLMs?
+<a href="https://arxiv.org/abs/2504.10020">[NeurIPS 2025] The Mirage of Performance Gains: Why Contrastive Decoding Fails to Mitigate Object Hallucinations in MLLMs?
 </a></h2>
     
 <h5 align="center"> If you find our project useful, we’d appreciate your support with a star ⭐ on GitHub to receive the latest updates.</h5>
@@ -16,6 +16,7 @@
 
 ## 📣 News
 
+- **[2025/10/06]**  🎉 We are thrilled to share that our paper has been accepted to NeurIPS 2025. Looking forward to seeing you in San Diego!
 - **[2025/06/05]**  🚀 The source code is now available! We are committed to continuously enhancing and optimizing the codebase. Contributions and feedback are welcome.
 
 ## 🎯 Overview 
