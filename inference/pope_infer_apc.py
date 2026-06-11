@@ -47,7 +47,8 @@ def eval_model(args):
     answers_file = os.path.expanduser(args.answers_file)
     os.makedirs(os.path.dirname(answers_file), exist_ok=True)
     ans_file = open(answers_file, "w")
-    for line in tqdm(questions):
+    pbar = tqdm(questions, desc=os.path.basename(answers_file), dynamic_ncols=True)
+    for line in pbar:
         idx = line["question_id"]
         image_file = line["image"]
         qs = line["text"]
@@ -105,6 +106,10 @@ def eval_model(args):
                                    "model_id": model_name,
                                    "metadata": {}}) + "\n")
         ans_file.flush()
+
+        # show the model's latest answer on the progress bar and log it
+        pbar.set_postfix_str(f"A: {outputs[:50]}")
+        tqdm.write(f"[{idx}] Q: {cur_prompt}  ->  A: {outputs}")
     ans_file.close()
 
 if __name__ == "__main__":
