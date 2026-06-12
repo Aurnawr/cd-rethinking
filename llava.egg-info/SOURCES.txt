@@ -1,3 +1,4 @@
+README.md
 pyproject.toml
 eval/pope_eval_base.py
 eval/pope_eval_transfer.py

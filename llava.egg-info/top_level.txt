@@ -3,3 +3,4 @@ eval
 inference
 llava
 outputs
+pretrained_models

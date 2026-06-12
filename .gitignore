@@ -1,2 +1,6 @@
 data
 pretrained_models
+*.pyc
+__pycache__/
+*.log
+wget-log*

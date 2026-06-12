@@ -1,3 +1,5 @@
+#!/bin/sh
+
 datasets=(coco aokvqa gqa)
 types=(random popular adversarial)
 

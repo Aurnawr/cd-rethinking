@@ -1,0 +1,4 @@
+Category,Method,Model,Accuracy,Yes(%),n_datasets,datasets
+Random,sample† (APC),LLaVA-v1.5-7B,86.8,44.0,3,coco+aokvqa+gqa
+Popular,sample† (APC),LLaVA-v1.5-7B,83.1,47.6,3,coco+aokvqa+gqa
+Adversarial,sample† (APC),LLaVA-v1.5-7B,79.0,51.5,3,coco+aokvqa+gqa
