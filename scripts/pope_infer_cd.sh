@@ -6,7 +6,7 @@ for dataset in ${datasets[@]}; do
     for type in ${types[@]}; do
 
         python ./inference/pope_infer_cd.py \
-            --model-path /code/pretrained_models/llava-v1.5-7b \
+            --model-path ./pretrained_models/llava-v1.5-7b \
             --question-file ./data/pope/${dataset}/${dataset}_pope_${type}.json \
             --image-folder ./data/pope/${dataset}/images \
             --answers-file ./outputs/pope/vcd/llava-7b-${dataset}-${type}-greedy.jsonl \
@@ -20,7 +20,7 @@ for dataset in ${datasets[@]}; do
     for type in ${types[@]}; do
 
         python ./inference/pope_infer_cd.py \
-            --model-path /code/pretrained_models/llava-v1.5-7b \
+            --model-path ./pretrained_models/llava-v1.5-7b \
             --question-file ./data/pope/${dataset}/${dataset}_pope_${type}.json \
             --image-folder ./data/pope/${dataset}/images \
             --answers-file ./outputs/pope/vcd/llava-7b-${dataset}-${type}-sample.jsonl \
@@ -36,7 +36,7 @@ for dataset in ${datasets[@]}; do
     for type in ${types[@]}; do
 
         python ./inference/pope_infer_cd.py \
-            --model-path /code/pretrained_models/llava-v1.5-7b \
+            --model-path ./pretrained_models/llava-v1.5-7b \
             --question-file ./data/pope/${dataset}/${dataset}_pope_${type}.json \
             --image-folder ./data/pope/${dataset}/images \
             --answers-file ./outputs/pope/icd/llava-7b-${dataset}-${type}-greedy.jsonl \
@@ -50,7 +50,7 @@ for dataset in ${datasets[@]}; do
     for type in ${types[@]}; do
 
         python ./inference/pope_infer_cd.py \
-            --model-path /code/pretrained_models/llava-v1.5-7b \
+            --model-path ./pretrained_models/llava-v1.5-7b \
             --question-file ./data/pope/${dataset}/${dataset}_pope_${type}.json \
             --image-folder ./data/pope/${dataset}/images \
             --answers-file ./outputs/pope/icd/llava-7b-${dataset}-${type}-sample.jsonl \
@@ -67,7 +67,7 @@ for dataset in ${datasets[@]}; do
     for type in ${types[@]}; do
 
         python ./inference/pope_infer_cd.py \
-            --model-path /code/pretrained_models/llava-v1.5-7b \
+            --model-path ./pretrained_models/llava-v1.5-7b \
             --question-file ./data/pope/${dataset}/${dataset}_pope_${type}.json \
             --image-folder ./data/pope/${dataset}/images \
             --answers-file ./outputs/pope/sid/llava-7b-${dataset}-${type}-greedy.jsonl \
@@ -81,7 +81,7 @@ for dataset in ${datasets[@]}; do
     for type in ${types[@]}; do
 
         python ./inference/pope_infer_cd.py \
-            --model-path /code/pretrained_models/llava-v1.5-7b \
+            --model-path ./pretrained_models/llava-v1.5-7b \
             --question-file ./data/pope/${dataset}/${dataset}_pope_${type}.json \
             --image-folder ./data/pope/${dataset}/images \
             --answers-file ./outputs/pope/sid/llava-7b-${dataset}-${type}-sample.jsonl \

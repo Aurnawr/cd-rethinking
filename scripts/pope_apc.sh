@@ -1,12 +1,6 @@
 datasets=(coco aokvqa gqa)
 types=(random popular adversarial)
 
-declare -A image_subdirs=(
-    [coco]=val2014
-    [aokvqa]=val2014
-    [gqa]=images
-)
-
 # directory to keep continuous logs of each run
 log_dir=./outputs/pope/apc/logs
 mkdir -p "$log_dir"
@@ -29,9 +23,9 @@ for dataset in ${datasets[@]}; do
         # stdbuf -oL keeps tqdm/print output line-buffered so it shows live,
         # tee writes it to the screen AND to the log file continuously.
         stdbuf -oL python ./inference/pope_infer_apc.py \
-            --model-path ./llava-v1.5-7b \
+            --model-path ./pretrained_models/llava-v1.5-7b \
             --question-file ./data/pope/${dataset}/${dataset}_pope_${type}.json \
-            --image-folder ./data/pope/${dataset}/images/${image_subdirs[$dataset]} \
+            --image-folder ./data/pope/${dataset}/images \
             --answers-file ./outputs/pope/apc/llava-7b-${dataset}-${type}-sample.jsonl \
             --temperature 1 \
             --conv-mode vicuna_v1 \
