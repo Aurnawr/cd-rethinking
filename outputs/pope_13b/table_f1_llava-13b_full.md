@@ -1,0 +1,19 @@
+# Accuracy / F1 / Yes(%) - llava-13b (avg over coco/aokvqa/gqa)
+
+| Category | Method | Accuracy | F1-Score | Yes (%) |
+|---|---|---|---|---|
+| Random | sample | 84.9 | 83.4 | 40.8 |
+| Random | VCD | 87.2 | 86.1 | 42.0 |
+| Random | ICD | 86.1 | 84.6 | 40.4 |
+| Random | SID | 86.0 | 84.5 | 40.2 |
+| Random | sample† | 85.8 | 84.2 | 40.0 |
+| Popular | sample | 81.7 | 80.3 | 42.9 |
+| Popular | VCD | 85.0 | 84.2 | 44.5 |
+| Popular | ICD | 83.3 | 82.1 | 42.7 |
+| Popular | SID | 83.4 | 82.3 | 43.6 |
+| Popular | sample† | 82.9 | 81.5 | 42.3 |
+| Adversarial | sample | 78.6 | 77.8 | 46.5 |
+| Adversarial | VCD | 81.3 | 81.0 | 48.0 |
+| Adversarial | ICD | 80.3 | 79.6 | 46.5 |
+| Adversarial | SID | 80.0 | 79.4 | 46.5 |
+| Adversarial | sample† | 80.0 | 79.2 | 46.2 |

@@ -1,0 +1,19 @@
+# Accuracy / F1 / Yes(%) - llava-13b, dataset = gqa
+
+| Category | Method | Accuracy | F1-Score | Yes (%) |
+|---|---|---|---|---|
+| Random | sample | 84.3 | 83.0 | 42.4 |
+| Random | VCD | 87.4 | 86.4 | 43.0 |
+| Random | ICD | 86.0 | 84.7 | 41.6 |
+| Random | SID | 86.1 | 84.8 | 41.4 |
+| Random | sample† | 85.7 | 84.3 | 41.1 |
+| Popular | sample | 78.9 | 78.1 | 46.4 |
+| Popular | VCD | 83.0 | 82.6 | 47.8 |
+| Popular | ICD | 79.9 | 79.1 | 46.2 |
+| Popular | SID | 80.5 | 79.9 | 47.0 |
+| Popular | sample† | 80.4 | 79.4 | 45.0 |
+| Adversarial | sample | 77.0 | 76.8 | 49.2 |
+| Adversarial | VCD | 79.4 | 79.4 | 50.1 |
+| Adversarial | ICD | 78.7 | 78.4 | 48.9 |
+| Adversarial | SID | 78.9 | 78.8 | 49.4 |
+| Adversarial | sample† | 78.0 | 77.5 | 47.8 |

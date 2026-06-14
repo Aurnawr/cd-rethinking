@@ -1,0 +1,182 @@
+{"question_id": 1, "prompt": "Is there a snowboard in the image?", "text": "yes", "answer_id": "HbUvawQxS3jLX4iuFxXZMa", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 2, "prompt": "Is there a car in the image?", "text": "no", "answer_id": "gShcPwWP8DWFStSuqaXCKe", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 3, "prompt": "Is there a person in the image?", "text": "yes", "answer_id": "nqHxXXHmiWtmpdTfDGgizJ", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 4, "prompt": "Is there a sandwich in the image?", "text": "no", "answer_id": "bouZhm39zbJxmdhciBxkHt", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 5, "prompt": "Is there a skis in the image?", "text": "yes", "answer_id": "2JPxXsidThVpryTeJXUJUs", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 6, "prompt": "Is there a couch in the image?", "text": "no", "answer_id": "P8Q5VDeK8hfSNYaXi4biG3", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 7, "prompt": "Is there a truck in the image?", "text": "yes", "answer_id": "DHNWzp3bpy5Bu8t54jm32V", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 8, "prompt": "Is there a pizza in the image?", "text": "no", "answer_id": "GkdiYKiDy3Qb8UfQgnhkJU", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 9, "prompt": "Is there a person in the image?", "text": "yes", "answer_id": "DWKsvNNzAK3p5JtYLAVsM4", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 10, "prompt": "Is there a sink in the image?", "text": "no", "answer_id": "L3d6ufrSEyn3qxHgAxt3qs", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 11, "prompt": "Is there an umbrella in the image?", "text": "yes", "answer_id": "baagN3agU87TLDSY22VAP6", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 12, "prompt": "Is there a cell phone in the image?", "text": "no", "answer_id": "TmpkDmLGJh3PGoofDEsWeA", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 13, "prompt": "Is there a person in the image?", "text": "yes", "answer_id": "bPFY65sFMhAFXwDpiTcpqK", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 14, "prompt": "Is there a sheep in the image?", "text": "no", "answer_id": "fPCRxBHznRxrZDuxED9uKA", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 15, "prompt": "Is there a bicycle in the image?", "text": "yes", "answer_id": "eqPfDihnNtwW5CqquuqGKo", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 16, "prompt": "Is there a broccoli in the image?", "text": "no", "answer_id": "UxmM5wRwjJTLhmBcc2665h", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 17, "prompt": "Is there a car in the image?", "text": "no", "answer_id": "jX7GT4rmN6wGDAfY7VkyeE", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 18, "prompt": "Is there a tennis racket in the image?", "text": "no", "answer_id": "QLYMrL46dJExmLscyrjksc", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 19, "prompt": "Is there a person in the image?", "text": "yes", "answer_id": "Ykju4ChjRXCimnGsnAGT5s", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 20, "prompt": "Is there a teddy bear in the image?", "text": "no", "answer_id": "NcjJKvCsVHc6Nw9dYbfE5N", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 21, "prompt": "Is there a potted plant in the image?", "text": "no", "answer_id": "aDpfJyed42DsCLDNjdAf5j", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 22, "prompt": "Is there a broccoli in the image?", "text": "no", "answer_id": "5nvAD3JVDrEzfg4wNNqkjX", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 23, "prompt": "Is there a car in the image?", "text": "no", "answer_id": "Cv64Xd5x4cSMLV2vmjxM76", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 24, "prompt": "Is there an orange in the image?", "text": "no", "answer_id": "m6MHnvcgLpPPy3METFQiRN", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 25, "prompt": "Is there a traffic light in the image?", "text": "yes", "answer_id": "gx8uoYFrxoZAHe3xknYymS", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 26, "prompt": "Is there a train in the image?", "text": "no", "answer_id": "Q6bmLLx7PYrEFa3s4JiRkH", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 27, "prompt": "Is there a person in the image?", "text": "yes", "answer_id": "TNf6r5tWp6kZ2DsgsbzTYD", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 28, "prompt": "Is there a surfboard in the image?", "text": "no", "answer_id": "NABJs3LaMGM4QCcvPz4CQR", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 29, "prompt": "Is there a car in the image?", "text": "yes", "answer_id": "eFnhtLNXDXqsghEXp3Yhar", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 30, "prompt": "Is there a kite in the image?", "text": "no", "answer_id": "DBxPMt3xqqiaEW3JPyyZED", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 31, "prompt": "Is there a dog in the image?", "text": "yes", "answer_id": "oQ7Ko5eR8hj9aPNzLQZ9Zp", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 32, "prompt": "Is there a toaster in the image?", "text": "no", "answer_id": "QKCe9HshjKGTGYh6VZfhJi", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 33, "prompt": "Is there a dining table in the image?", "text": "yes", "answer_id": "E4eEwef7ugBhdfVqiPfzQ4", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 34, "prompt": "Is there a sports ball in the image?", "text": "no", "answer_id": "MvtNFTtdLXqtt6cBrh3xu9", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 35, "prompt": "Is there a bed in the image?", "text": "no", "answer_id": "9FzeJ4qTEwr2NhK7nyMDUk", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 36, "prompt": "Is there a book in the image?", "text": "yes", "answer_id": "GNnASmgV6SzPtqsYjXHGv2", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 37, "prompt": "Is there a person in the image?", "text": "yes", "answer_id": "FGScVYHjQk9V92vgAyT6vu", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 38, "prompt": "Is there a traffic light in the image?", "text": "no", "answer_id": "gwoTUH6akpdrmZsUnAaKVv", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 39, "prompt": "Is there a spoon in the image?", "text": "no", "answer_id": "ZZ955fiyNwwCjR2Yzy9pbb", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 40, "prompt": "Is there a bird in the image?", "text": "no", "answer_id": "hH5Etf8xjxZD28Jp7ckXnz", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 41, "prompt": "Is there a fork in the image?", "text": "yes", "answer_id": "gNXEuCovH8aMYakLTfSxR3", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 42, "prompt": "Is there a truck in the image?", "text": "no", "answer_id": "8dX8YesK9xHWguBeB3ee8f", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 43, "prompt": "Is there a tv in the image?", "text": "no", "answer_id": "JFXnzCkeKceytVMrRtLmdo", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 44, "prompt": "Is there a bowl in the image?", "text": "no", "answer_id": "3s6C84DQpHbog9LBhGCxYr", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 45, "prompt": "Is there a toaster in the image?", "text": "yes", "answer_id": "RFwCShWi6snhCWFnaiWnbY", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 46, "prompt": "Is there a cow in the image?", "text": "no", "answer_id": "LFHsbkZxgWnucNKFUCRStt", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 47, "prompt": "Is there a microwave in the image?", "text": "yes", "answer_id": "R5PgLVZMQmCgP8ofTuD3qQ", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 48, "prompt": "Is there a laptop in the image?", "text": "no", "answer_id": "5H32L32rXZphD6UCJYj32d", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 49, "prompt": "Is there a backpack in the image?", "text": "yes", "answer_id": "KmmeqfjTRyfTjyXc5zUQTW", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 50, "prompt": "Is there a cell phone in the image?", "text": "no", "answer_id": "kuy7VYfU9oaJhzeHctLrYa", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 51, "prompt": "Is there a person in the image?", "text": "yes", "answer_id": "5soNrFk4UgsMMovHqC4iQx", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 52, "prompt": "Is there a couch in the image?", "text": "no", "answer_id": "8QbrPkjmgB6RtEsYFWwgow", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 53, "prompt": "Is there a skis in the image?", "text": "yes", "answer_id": "Ypu4AaHksCMrqvm6ajyyfc", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 54, "prompt": "Is there a tennis racket in the image?", "text": "no", "answer_id": "PSnfu4kDbz9QpvhdunbWyg", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 55, "prompt": "Is there a bird in the image?", "text": "yes", "answer_id": "YwFex3fyAPDQRPrc6yX5Lq", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 56, "prompt": "Is there a fire hydrant in the image?", "text": "no", "answer_id": "TwV2a8hXHZhGW59pCTgnLM", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 57, "prompt": "Is there a person in the image?", "text": "yes", "answer_id": "78ZyAF9P3bw7zsu5ru36LY", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 58, "prompt": "Is there a bed in the image?", "text": "no", "answer_id": "hdt589VubxEKUfkjirmtGz", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 59, "prompt": "Is there a boat in the image?", "text": "yes", "answer_id": "NsV83nWKAUGbAmH7xXkLPP", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 60, "prompt": "Is there a bench in the image?", "text": "no", "answer_id": "AHG5MMDmFDtLLGV3UfnQEY", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 61, "prompt": "Is there a person in the image?", "text": "yes", "answer_id": "kPGAqVqK5KXxtfCL3z3iKa", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 62, "prompt": "Is there a bear in the image?", "text": "no", "answer_id": "JHWM3FxtsfvajqEw2eTQYD", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 63, "prompt": "Is there an orange in the image?", "text": "yes", "answer_id": "3UuiyZwVGZsWpqEzxUPrMv", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 64, "prompt": "Is there a cow in the image?", "text": "no", "answer_id": "n5TkZtiZjcM6hkpuKk3sby", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 65, "prompt": "Is there a bottle in the image?", "text": "yes", "answer_id": "EXccRDa7yWBCQ9gbfzpf6b", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 66, "prompt": "Is there a bed in the image?", "text": "no", "answer_id": "7X2EGWuwUPfVzYQ57bjn5w", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 67, "prompt": "Is there a backpack in the image?", "text": "yes", "answer_id": "4zGEU3j32sNtLDHQxPNM3a", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 68, "prompt": "Is there a potted plant in the image?", "text": "no", "answer_id": "LGBuRBki3nVAgd7cRuYnTC", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 69, "prompt": "Is there a person in the image?", "text": "yes", "answer_id": "fcNGripqRp9atahZ9JcfQm", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 70, "prompt": "Is there a wine glass in the image?", "text": "no", "answer_id": "iKvjqVhCZUE8zLoParc42R", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 71, "prompt": "Is there a bus in the image?", "text": "yes", "answer_id": "ZuzVMVVCgfvEA2Re55Hj23", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 72, "prompt": "Is there a suitcase in the image?", "text": "no", "answer_id": "QMhcJAyLSpPGwpQmx6xz3R", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 73, "prompt": "Is there a person in the image?", "text": "yes", "answer_id": "2cmgW8paqb3dYp9pmrxdog", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 74, "prompt": "Is there an airplane in the image?", "text": "no", "answer_id": "gGhmDbEocUtdvGWPiEfy2Y", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 75, "prompt": "Is there a dining table in the image?", "text": "yes", "answer_id": "54hmP7VPBrrzno4gjWsTbs", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 76, "prompt": "Is there a clock in the image?", "text": "no", "answer_id": "UiRJX2SdgPKkTcuyxTgygH", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 77, "prompt": "Is there a chair in the image?", "text": "yes", "answer_id": "o6W4uoRsyRJFdPXfrEDeqe", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 78, "prompt": "Is there a horse in the image?", "text": "no", "answer_id": "8EMNctSNnpJW5oNjgLu9tL", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 79, "prompt": "Is there a person in the image?", "text": "yes", "answer_id": "Jyjt55d5RMTdtT93LA5ayZ", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 80, "prompt": "Is there a zebra in the image?", "text": "no", "answer_id": "AHNPif2NA7qP2Fs5JyuFYi", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 81, "prompt": "Is there a sandwich in the image?", "text": "yes", "answer_id": "3xKvB8HSpwczw5nduGCeaE", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 82, "prompt": "Is there a tie in the image?", "text": "no", "answer_id": "JUDEEvcfxDFjZrSaxGB5RZ", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 83, "prompt": "Is there a hot dog in the image?", "text": "no", "answer_id": "2wwZZ3UciswtivJC5HRSpk", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 84, "prompt": "Is there a car in the image?", "text": "no", "answer_id": "AXqfCkxEeNfwfgxeQL3Hng", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 85, "prompt": "Is there a person in the image?", "text": "yes", "answer_id": "8XKNzTdh7v2vAHomvyDtb5", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 86, "prompt": "Is there a carrot in the image?", "text": "yes", "answer_id": "8vn22wsUFxgkAQ4Sgn77PS", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 87, "prompt": "Is there a car in the image?", "text": "yes", "answer_id": "YqbeF3Zk25mrVePvB9TesP", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 88, "prompt": "Is there a potted plant in the image?", "text": "no", "answer_id": "AsLV4CNyKKJQ9vyQ4JveLc", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 89, "prompt": "Is there a frisbee in the image?", "text": "yes", "answer_id": "KX5TD3C4PyA5XvnSGs2viZ", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 90, "prompt": "Is there a chair in the image?", "text": "no", "answer_id": "MvpWWwHu399XjmdhhufFSz", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 91, "prompt": "Is there a knife in the image?", "text": "yes", "answer_id": "5NmxqGn6GTmqBS2nPvMTnF", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 92, "prompt": "Is there a teddy bear in the image?", "text": "no", "answer_id": "EyATHshQcjbA9SW9e478m7", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 93, "prompt": "Is there a person in the image?", "text": "yes", "answer_id": "jkSXTV9dDjPE8xQPhujBHj", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 94, "prompt": "Is there a hot dog in the image?", "text": "no", "answer_id": "ZDDJeiFXNzWLYDooTmcWJk", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 95, "prompt": "Is there a cake in the image?", "text": "yes", "answer_id": "hfHk7bftTnR3zRSKMm5zRQ", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 96, "prompt": "Is there a tie in the image?", "text": "yes", "answer_id": "g5SZms8sHAGdo9vVxAVwHq", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 97, "prompt": "Is there a person in the image?", "text": "yes", "answer_id": "c9WWKbJNotKv2XyyvEjsQk", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 98, "prompt": "Is there a keyboard in the image?", "text": "no", "answer_id": "jE4xn87noeNohDuCngJBgU", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 99, "prompt": "Is there a remote in the image?", "text": "no", "answer_id": "b8YURVsC3DfK8h9NVxx7KA", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 100, "prompt": "Is there a frisbee in the image?", "text": "no", "answer_id": "mRdetsJngNQgWNtJ5WTWG6", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 101, "prompt": "Is there a handbag in the image?", "text": "no", "answer_id": "VveXHCtRzEYMGs2bmqgJzb", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 102, "prompt": "Is there an elephant in the image?", "text": "no", "answer_id": "fSUZijo9BC84eSfPs2fbtZ", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 103, "prompt": "Is there a baseball glove in the image?", "text": "yes", "answer_id": "QZmigtwqPfwguyPadc4EfF", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 104, "prompt": "Is there a suitcase in the image?", "text": "no", "answer_id": "LTbyQerrkQF2oJmnmSX3Q8", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 105, "prompt": "Is there a person in the image?", "text": "yes", "answer_id": "gZaVnqY8M6jeJFNJsDXUK2", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 106, "prompt": "Is there a sheep in the image?", "text": "no", "answer_id": "Gi2qbeZoz99iWeXsTmF2gd", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 107, "prompt": "Is there a baseball bat in the image?", "text": "yes", "answer_id": "BB25eo5kGqK7JdUgsf2RHf", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 108, "prompt": "Is there a dining table in the image?", "text": "no", "answer_id": "QzsFsezyZLzZ5EcwhjWvTH", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 109, "prompt": "Is there a sink in the image?", "text": "yes", "answer_id": "A3tNWL7u5kRvFN4twfUiav", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 110, "prompt": "Is there a cow in the image?", "text": "no", "answer_id": "FzGWHehYaSWt3tsDRb8L3s", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 111, "prompt": "Is there a bench in the image?", "text": "yes", "answer_id": "6jb5wb2VSDUvvF2CxVNF6N", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 112, "prompt": "Is there a scissors in the image?", "text": "no", "answer_id": "GygHpvcjXxawzDpNJxUyrv", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 113, "prompt": "Is there a toilet in the image?", "text": "yes", "answer_id": "55dGiTC6gQcLuAdnkSe3T7", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 114, "prompt": "Is there a bear in the image?", "text": "no", "answer_id": "Q7ktEW64Y9R5y5itK2YvUo", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 115, "prompt": "Is there a person in the image?", "text": "yes", "answer_id": "4Xh9RSg9Q7uEJJvoNvL2VC", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 116, "prompt": "Is there a carrot in the image?", "text": "no", "answer_id": "3cc2BnfH5U7jQkT7Lehe5c", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 117, "prompt": "Is there a teddy bear in the image?", "text": "yes", "answer_id": "T2aH2H483fc8Ts2Xb5jMUv", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 118, "prompt": "Is there a bird in the image?", "text": "no", "answer_id": "VVosDSjy7zZ38yZZYeibkp", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 119, "prompt": "Is there a bear in the image?", "text": "yes", "answer_id": "gbmGD9sYreSeHvZLGo5Zfq", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 120, "prompt": "Is there a mouse in the image?", "text": "yes", "answer_id": "c7FwzCBDHwz8BoQVVeAS9C", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 121, "prompt": "Is there a bowl in the image?", "text": "no", "answer_id": "8Zy6tEvrUPxF6bQzUGiLVg", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 122, "prompt": "Is there a skis in the image?", "text": "no", "answer_id": "h2zsNkzdv2SqTczBt9TTAa", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 123, "prompt": "Is there a spoon in the image?", "text": "no", "answer_id": "c8XedKMqTT4nvaYFz9StbG", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 124, "prompt": "Is there a dog in the image?", "text": "no", "answer_id": "RRAXikuc62nu5GWxCjuEGw", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 125, "prompt": "Is there a sandwich in the image?", "text": "yes", "answer_id": "CXS3vGK5rCcBLt9YSiPfYc", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 126, "prompt": "Is there a car in the image?", "text": "no", "answer_id": "WBhPtWz4W8KLZgR3BfE7gj", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 127, "prompt": "Is there a bed in the image?", "text": "yes", "answer_id": "FXGLUw3j6fUvUyyCPPH5Lu", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 128, "prompt": "Is there a scissors in the image?", "text": "no", "answer_id": "2887uUqZaJK24vqnAMT9Ls", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 129, "prompt": "Is there a cat in the image?", "text": "yes", "answer_id": "hXmrppWrEoLo5t5u3pq6Mh", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 130, "prompt": "Is there a clock in the image?", "text": "no", "answer_id": "LdseLzyfG9n2j6hhjSrmST", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 131, "prompt": "Is there a book in the image?", "text": "yes", "answer_id": "o6Z4dZdqertMsUbQbYsYHL", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 132, "prompt": "Is there an elephant in the image?", "text": "no", "answer_id": "BUJ7oYt8qJzGDtthGhKTVx", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 133, "prompt": "Is there a tv in the image?", "text": "yes", "answer_id": "PXR7EcFT5JEHTy2hR3k6xh", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 134, "prompt": "Is there a bed in the image?", "text": "no", "answer_id": "TuJZw4H36XrkDaiVLa4DLp", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 135, "prompt": "Is there a mouse in the image?", "text": "yes", "answer_id": "bZug7ud9QeFvTzMmXDFhD5", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 136, "prompt": "Is there a bench in the image?", "text": "no", "answer_id": "6UqwtGwKVxf8sSv9vuuYmu", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 137, "prompt": "Is there a laptop in the image?", "text": "yes", "answer_id": "ABNE54CnnkBPDMfj3o82Yw", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 138, "prompt": "Is there a skateboard in the image?", "text": "no", "answer_id": "8cTfwnT4FHjJRezNYmDVEZ", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 139, "prompt": "Is there a sink in the image?", "text": "yes", "answer_id": "S64GDX6N98JQjBRM7EntQb", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 140, "prompt": "Is there a giraffe in the image?", "text": "no", "answer_id": "YAKr4axKnuZwW6wDSioczZ", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 141, "prompt": "Is there a toothbrush in the image?", "text": "no", "answer_id": "WjMjdEEHdyzrCbDQQwy3Aq", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 142, "prompt": "Is there a person in the image?", "text": "no", "answer_id": "6zxHLatPTPWQECk9Q6P7fv", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 143, "prompt": "Is there a bottle in the image?", "text": "yes", "answer_id": "AbDBk8iF6ors8wYNUDSWud", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 144, "prompt": "Is there an umbrella in the image?", "text": "no", "answer_id": "EcZWazDGiCzgaeP8zBcaTQ", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 145, "prompt": "Is there a truck in the image?", "text": "no", "answer_id": "PrkDpugtALT228L79wf6Xt", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 146, "prompt": "Is there an elephant in the image?", "text": "no", "answer_id": "7GuB5nv9oJ9K7ac5YB9kr6", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 147, "prompt": "Is there an airplane in the image?", "text": "yes", "answer_id": "Rk7BQLUhxCuduJB4UuKgXU", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 148, "prompt": "Is there a potted plant in the image?", "text": "no", "answer_id": "9v6awFJMkKtp9oPRaRL9xF", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 149, "prompt": "Is there a car in the image?", "text": "no", "answer_id": "iZc6soDByzrEj6Evv3FzWi", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 150, "prompt": "Is there a microwave in the image?", "text": "no", "answer_id": "b3MAHcL7sy7bcVmN3RThwE", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 151, "prompt": "Is there a backpack in the image?", "text": "yes", "answer_id": "eYaVQA5Zho23f3zoF2hKkV", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 152, "prompt": "Is there a bear in the image?", "text": "no", "answer_id": "TFyLBjjBFvEwcpnchKYw3m", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 153, "prompt": "Is there a person in the image?", "text": "yes", "answer_id": "82DXwoCh2JPuJysVAPc6W8", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 154, "prompt": "Is there a cup in the image?", "text": "no", "answer_id": "hiJfeovodFh828ViUffkjC", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 155, "prompt": "Is there a skis in the image?", "text": "yes", "answer_id": "5eampXBNt4oxh8yJyh7vUc", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 156, "prompt": "Is there a sink in the image?", "text": "no", "answer_id": "WqzbDPAHkSmMgtuf8YnMbH", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 157, "prompt": "Is there a tv in the image?", "text": "yes", "answer_id": "oJCprYoMJ53YgWfwgsuvo5", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 158, "prompt": "Is there a cat in the image?", "text": "no", "answer_id": "Gx4Y3SC3mi6exs3CD4HhAZ", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 159, "prompt": "Is there a person in the image?", "text": "yes", "answer_id": "ayAuyMteyLqbdETj7jCAGr", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 160, "prompt": "Is there a donut in the image?", "text": "no", "answer_id": "8pzboKWVrYUEQZAGZ4vgba", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 161, "prompt": "Is there a couch in the image?", "text": "yes", "answer_id": "6MfNm7eJmPY7eXttVYoYQo", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 162, "prompt": "Is there a teddy bear in the image?", "text": "no", "answer_id": "JCTGbUwkbyBbHdm75gV2H8", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 163, "prompt": "Is there a truck in the image?", "text": "no", "answer_id": "3YBWzrxrbVNDHQZatvKZMX", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 164, "prompt": "Is there a carrot in the image?", "text": "no", "answer_id": "YeHHhAZUXbUqox6QecvBj7", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 165, "prompt": "Is there a person in the image?", "text": "yes", "answer_id": "g5LVvxVRixnFP2Q8obQSCk", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 166, "prompt": "Is there a tv in the image?", "text": "no", "answer_id": "e6VKfdyKyoT8evkjjdWwgh", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 167, "prompt": "Is there a cow in the image?", "text": "no", "answer_id": "PFEpETgGYDDXahrMYLKZxb", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 168, "prompt": "Is there a potted plant in the image?", "text": "no", "answer_id": "dHB8BPWPd4FGJx2cTWhSoD", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 169, "prompt": "Is there a dog in the image?", "text": "yes", "answer_id": "ePrD7mjMskG3jz9tsm9XfU", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 170, "prompt": "Is there an elephant in the image?", "text": "no", "answer_id": "dUDj4manVSai7gRwt6XU8u", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 171, "prompt": "Is there a truck in the image?", "text": "yes", "answer_id": "dfNSEW42EJqWpJsEHWoe39", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 172, "prompt": "Is there a stop sign in the image?", "text": "no", "answer_id": "fvmC4mcNZ3CLtDCpNcV9Nx", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 173, "prompt": "Is there a person in the image?", "text": "yes", "answer_id": "7VGxkmkZ4NKzLDXuihtSCy", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 174, "prompt": "Is there a skis in the image?", "text": "no", "answer_id": "V4QDWb886WS4cLjn3iwbUU", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 175, "prompt": "Is there a sink in the image?", "text": "yes", "answer_id": "h5e8jAGLCKhCNZxgma7c2f", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 176, "prompt": "Is there a sheep in the image?", "text": "no", "answer_id": "RTaNhD2wquK4wxGBC59LUq", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 177, "prompt": "Is there a toothbrush in the image?", "text": "no", "answer_id": "kYWYb42b4MqxzmyZn33AsY", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 178, "prompt": "Is there a backpack in the image?", "text": "no", "answer_id": "dYo8W43jowDnbzCkjkDf6a", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 179, "prompt": "Is there a bottle in the image?", "text": "no", "answer_id": "iTR8ZPJ6UsTBHCLHPPVGpF", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 180, "prompt": "Is there a horse in the image?", "text": "no", "answer_id": "e5MVkfDXD3c3QrAHvLVQKW", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 181, "prompt": "Is there a person in the image?", "text": "yes", "answer_id": "UCGLSnAhCiPJv5SrCD6gXK", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
+{"question_id": 182, "prompt": "Is there a toilet in the image?", "text": "no", "answer_id": "QSSJfkDwnCXN9Jwf36D3DG", "model_id": "Qwen2.5-VL-7B-Instruct", "metadata": {}}
