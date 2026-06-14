@@ -1,0 +1,18 @@
+# Table 5 - llava-13b, dataset = gqa (sample strategy)
+| Category | Method | Accuracy | ΔAcc | Yes (%) | ΔYes |
+|---|---|---|---|---|---|
+| Random | sample | 84.3 |  | 42.4 |  |
+| Random | VCD | 87.4 | +3.1 | 43.0 | +0.6 |
+| Random | ICD | 86.0 | +1.8 | 41.6 | -0.8 |
+| Random | SID | 86.1 | +1.9 | 41.4 | -1.0 |
+| Random | sample† | 85.7 | +1.5 | 41.1 | -1.3 |
+| Popular | sample | 78.9 |  | 46.4 |  |
+| Popular | VCD | 83.0 | +4.1 | 47.8 | +1.3 |
+| Popular | ICD | 79.9 | +1.0 | 46.2 | -0.3 |
+| Popular | SID | 80.5 | +1.6 | 47.0 | +0.5 |
+| Popular | sample† | 80.4 | +1.5 | 45.0 | -1.4 |
+| Adversarial | sample | 77.0 |  | 49.2 |  |
+| Adversarial | VCD | 79.4 | +2.4 | 50.1 | +0.9 |
+| Adversarial | ICD | 78.7 | +1.7 | 48.9 | -0.3 |
+| Adversarial | SID | 78.9 | +1.9 | 49.4 | +0.2 |
+| Adversarial | sample† | 78.0 | +1.0 | 47.8 | -1.4 |

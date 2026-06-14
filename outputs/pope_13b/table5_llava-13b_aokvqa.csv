@@ -1,0 +1,16 @@
+Category,Method,Accuracy,dAccuracy,Yes(%),dYes(%)
+Random,sample,85.5,,42.7,
+Random,VCD,87.4,+2.0,44.0,+1.3
+Random,ICD,86.7,+1.2,41.8,-0.8
+Random,SID,86.0,+0.5,41.9,-0.8
+Random,sample†,86.3,+0.8,41.6,-1.1
+Popular,sample,82.6,,43.8,
+Popular,VCD,85.9,+3.3,45.8,+2.0
+Popular,ICD,85.0,+2.4,43.4,-0.5
+Popular,SID,84.9,+2.3,45.1,+1.3
+Popular,sample†,83.9,+1.2,43.7,-0.1
+Adversarial,sample,77.4,,49.7,
+Adversarial,VCD,79.9,+2.5,51.6,+1.9
+Adversarial,ICD,78.4,+1.0,50.9,+1.3
+Adversarial,SID,78.1,+0.7,50.4,+0.7
+Adversarial,sample†,78.8,+1.4,51.0,+1.4
