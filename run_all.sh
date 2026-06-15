@@ -2,8 +2,8 @@
 # Exit immediately if any script fails
 set -e 
 
-# echo "Starting Baseline..."
-# bash ./repro_scripts/inference_baseline.sh
+echo "Starting Baseline..."
+bash ./repro_scripts/inference_baseline.sh
 
 echo "Starting VCD and SID..."
 bash ./repro_scripts/inference_cd.sh 

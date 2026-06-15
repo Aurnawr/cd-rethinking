@@ -17,7 +17,7 @@ for split in "${splits[@]}"; do
         
         # Define paths
         ref_file="./data/${datasets[0]}/${datasets[0]}_pope_${split}.json"
-        res_file="./repro_outputs/pope/${method}/llava-7b-${datasets[0]}-${split}-greedy.jsonl"
+        res_file="./repro_outputs/coco/llava-v1.5-7b/${method}/llava-7b-${datasets[0]}-${split}-greedy.jsonl"
         
         # Format the method name for the CSV
         display_method="${method}"
