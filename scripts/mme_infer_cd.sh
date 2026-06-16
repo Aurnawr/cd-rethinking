@@ -9,7 +9,7 @@
 # Override the model with: MODEL_PATH=/path/to/llava bash scripts/mme_infer_cd.sh
 set -euo pipefail
 
-MODEL_PATH=${MODEL_PATH:-/code/pretrained_models/llava-v1.5-7b}
+MODEL_PATH=${MODEL_PATH:-/teamspace/studios/this_studio/models/llava-v1.5-7b}
 CONV_MODE=${CONV_MODE:-vicuna_v1}
 QUESTION_FILE=${QUESTION_FILE:-./data/mme/mme_questions.jsonl}
 IMAGE_FOLDER=${IMAGE_FOLDER:-./data/mme/images}

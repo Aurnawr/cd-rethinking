@@ -1,8 +1,10 @@
 pyproject.toml
 eval/mme_constants.py
 eval/mme_eval.py
+eval/mme_prepare.py
 eval/pope_eval_base.py
 eval/pope_eval_transfer.py
+eval/test_mme_prepare.py
 inference/mme_infer_apc.py
 inference/mme_infer_base.py
 inference/mme_infer_cd.py
