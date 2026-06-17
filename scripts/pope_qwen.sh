@@ -5,7 +5,7 @@
 set -u
 
 types=(random popular adversarial)
-GPUS=(2 3 4 5)
+GPUS=(2 4)
 N=${#GPUS[@]}
 EXPECTED_LINES=3000
 
