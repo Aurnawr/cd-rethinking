@@ -1,0 +1,19 @@
+# Accuracy / F1 / Yes(%) - qwen-7b (avg over coco/aokvqa/gqa)
+
+| Category | Method | Accuracy | F1-Score | Yes (%) |
+|---|---|---|---|---|
+| Random | sample | 89.2 | 88.3 | 42.9 |
+| Random | VCD | 90.3 | 89.6 | 43.6 |
+| Random | ICD | 89.3 | 88.4 | 42.6 |
+| Random | SID | 90.0 | 89.6 | 45.9 |
+| Random | sample† | 89.8 | 89.0 | 43.0 |
+| Popular | sample | 86.9 | 86.3 | 45.2 |
+| Popular | VCD | 87.8 | 87.3 | 46.3 |
+| Popular | ICD | 87.3 | 86.6 | 45.0 |
+| Popular | SID | 87.0 | 86.9 | 49.0 |
+| Popular | sample† | 87.7 | 87.0 | 45.1 |
+| Adversarial | sample | 83.1 | 82.9 | 48.7 |
+| Adversarial | VCD | 84.1 | 84.1 | 49.4 |
+| Adversarial | ICD | 83.4 | 83.2 | 48.5 |
+| Adversarial | SID | 83.7 | 84.1 | 52.1 |
+| Adversarial | sample† | 84.4 | 84.2 | 48.5 |

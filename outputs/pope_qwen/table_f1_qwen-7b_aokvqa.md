@@ -1,0 +1,19 @@
+# Accuracy / F1 / Yes(%) - qwen-7b, dataset = aokvqa
+
+| Category | Method | Accuracy | F1-Score | Yes (%) |
+|---|---|---|---|---|
+| Random | sample | 90.1 | 89.5 | 44.9 |
+| Random | VCD | 91.4 | 91.0 | 45.7 |
+| Random | ICD | 90.2 | 89.6 | 44.6 |
+| Random | SID | 91.1 | 90.9 | 47.8 |
+| Random | sample† | 90.9 | 90.5 | 45.2 |
+| Popular | sample | 88.5 | 88.2 | 47.3 |
+| Popular | VCD | 88.9 | 88.7 | 48.4 |
+| Popular | ICD | 88.3 | 87.9 | 46.3 |
+| Popular | SID | 88.6 | 88.7 | 50.8 |
+| Popular | sample† | 89.2 | 88.8 | 46.9 |
+| Adversarial | sample | 81.6 | 82.2 | 53.4 |
+| Adversarial | VCD | 82.3 | 82.9 | 53.5 |
+| Adversarial | ICD | 82.1 | 82.6 | 52.5 |
+| Adversarial | SID | 82.2 | 83.2 | 56.0 |
+| Adversarial | sample† | 83.4 | 83.8 | 52.8 |

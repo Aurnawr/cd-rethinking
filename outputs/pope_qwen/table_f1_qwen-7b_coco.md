@@ -1,0 +1,19 @@
+# Accuracy / F1 / Yes(%) - qwen-7b, dataset = coco
+
+| Category | Method | Accuracy | F1-Score | Yes (%) |
+|---|---|---|---|---|
+| Random | sample | 88.3 | 86.9 | 39.5 |
+| Random | VCD | 89.3 | 88.2 | 40.1 |
+| Random | ICD | 87.7 | 86.2 | 38.8 |
+| Random | SID | 89.2 | 88.3 | 42.5 |
+| Random | sample† | 88.0 | 86.5 | 38.9 |
+| Popular | sample | 86.5 | 85.1 | 40.3 |
+| Popular | VCD | 88.0 | 86.9 | 41.4 |
+| Popular | ICD | 87.0 | 85.6 | 40.5 |
+| Popular | SID | 88.4 | 87.7 | 43.9 |
+| Popular | sample† | 87.3 | 86.0 | 40.8 |
+| Adversarial | sample | 84.7 | 83.4 | 42.2 |
+| Adversarial | VCD | 86.2 | 85.1 | 42.9 |
+| Adversarial | ICD | 85.7 | 84.4 | 41.6 |
+| Adversarial | SID | 86.8 | 86.2 | 45.7 |
+| Adversarial | sample† | 86.6 | 85.4 | 41.7 |

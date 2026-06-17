@@ -68,21 +68,23 @@ echo ""
 echo "===== Inference complete at $(date) ====="
 echo ""
 
-# ── Step 2 + 3: GPT-4 review + summarise (requires OPENAI_API_KEY) ───────────
-# Uncomment and set OPENAI_API_KEY before running these steps.
+# ── Step 2 + 3: Gemini review + summarise (requires GEMINI_API_KEY) ──────────
+# Free key from aistudio.google.com  →  export GEMINI_API_KEY="AIza..."
+# Uncomment this block once inference is done and GEMINI_API_KEY is set.
 #
-# if [ -z "${OPENAI_API_KEY}" ]; then
-#     echo "OPENAI_API_KEY not set; skipping GPT-4 review."
+# if [ -z "${GEMINI_API_KEY}" ]; then
+#     echo "GEMINI_API_KEY not set; skipping Gemini review."
 # else
 #     for METHOD in greedy vcd sid; do
-#         echo "----- GPT-4 review: ${METHOD} -----"
-#         python eval/llava_bench_gpt_review.py \
-#             --question    "${BENCH_QS}" \
-#             --context     ./data/llava_bench/context.jsonl \
-#             --rule        ./data/llava_bench/rule.json \
-#             --answer-ref  ./data/llava_bench/answers_gpt4.jsonl \
+#         echo "----- Gemini review: ${METHOD} -----"
+#         python eval/llava_bench_gemini_review.py \
+#             --question     "${BENCH_QS}" \
+#             --context      ./data/llava_bench/context.jsonl \
+#             --rule         ./data/llava_bench/rule.json \
+#             --answer-ref   ./data/llava_bench/answers_gpt4.jsonl \
 #             --answer-model "${OUT}/answers_${METHOD}.jsonl" \
-#             --output      "${OUT}/review_${METHOD}.jsonl"
+#             --output       "${OUT}/review_${METHOD}.jsonl" \
+#             --gemini-model gemini-1.5-flash
 #
 #         echo "----- Scores: ${METHOD} -----"
 #         python eval/llava_bench_summarize.py --review "${OUT}/review_${METHOD}.jsonl"
