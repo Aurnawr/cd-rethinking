@@ -1,0 +1,64 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{multirow}
+
+\begin{document}
+
+\setcounter{table}{8}
+
+\begin{table}[ht]
+\centering
+\caption{POPE evaluation results on Qwen2.5-VL-7B across Random, Popular, and Adversarial splits on GQA dataset.}
+\label{tab:pope_results_13b}
+
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.1}
+
+\begin{tabular}{l|l|ccccc}
+\toprule
+\multirow{2}{*}{\textbf{Category}} &
+\multirow{2}{*}{\textbf{Decoding}}
+& \multicolumn{5}{c}{\textbf{Qwen2.5-VL-7B}} \\
+\cmidrule(lr){3-7}
+&
+& \textbf{Precision}
+& \textbf{Recall}
+& \textbf{F1-Score}
+& \textbf{Accuracy}
+& \textbf{Yes (\%)} \\
+\midrule
+
+\multirow{6}{*}{Random}
+& Greedy & 96.10 & 85.53 & 90.51 & 91.03 & 44.50 \\
+& VCD    & 95.54 & 85.73 & 90.37 & 90.87 & 44.87 \\
+& ICD    & 95.66 & 85.20 & 90.13 & 90.67 & 44.53 \\
+& SID    & 95.04 & 86.87 & 90.77 & 91.17 & 45.70 \\
+& PBA    & 95.99 & 86.13 & 90.79 & 91.27 & 44.87 \\
+& OLM    & 93.64 & 90.27 & 91.92 & 92.07 & 48.20 \\
+\midrule
+
+\multirow{6}{*}{Popular}
+& Greedy & 88.38 & 85.73 & 87.04 & 87.23 & 48.50 \\
+& VCD    & 86.92 & 85.53 & 86.22 & 86.33 & 49.20 \\
+& ICD    & 87.78 & 84.73 & 86.23 & 86.47 & 48.27 \\
+& SID    & 86.46 & 86.87 & 86.66 & 86.63 & 50.23 \\
+& PBA    & 88.01 & 86.13 & 87.06 & 87.20 & 48.93 \\
+& OLM    & 84.73 & 90.27 & 87.41 & 87.00 & 53.27 \\
+\midrule
+
+\multirow{6}{*}{Adversarial}
+& Greedy & 83.45 & 85.73 & 84.58 & 84.37 & 51.37 \\
+& VCD    & 82.76 & 85.47 & 84.09 & 83.83 & 51.63 \\
+& ICD    & 83.07 & 85.07 & 84.06 & 83.87 & 51.20 \\
+& SID    & 82.26 & 86.87 & 84.50 & 84.07 & 52.80 \\
+& PBA    & 83.14 & 86.13 & 84.61 & 84.33 & 51.80 \\
+& OLM    & 80.55 & 90.27 & 85.13 & 84.23 & 56.03 \\
+\bottomrule
+
+\end{tabular}
+
+\end{table}
+
+\end{document}

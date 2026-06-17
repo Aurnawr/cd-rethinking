@@ -1,0 +1,64 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{multirow}
+
+\begin{document}
+
+\setcounter{table}{8}
+
+\begin{table}[ht]
+\centering
+\caption{POPE evaluation results on LLaVA-v1.5-7B across Random, Popular, and Adversarial splits on GQA dataset.}
+\label{tab:pope_results_13b}
+
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.1}
+
+\begin{tabular}{l|l|ccccc}
+\toprule
+\multirow{2}{*}{\textbf{Category}} &
+\multirow{2}{*}{\textbf{Decoding}}
+& \multicolumn{5}{c}{\textbf{LLaVA-v1.5-7B}} \\
+\cmidrule(lr){3-7}
+&
+& \textbf{Precision}
+& \textbf{Recall}
+& \textbf{F1-Score}
+& \textbf{Accuracy}
+& \textbf{Yes (\%)} \\
+\midrule
+
+\multirow{6}{*}{Random}
+& Greedy & 93.19 & 85.73 & 89.31 & 89.73 & 46.00 \\
+& VCD    & 86.40 & 90.20 & 88.26 & 88.00 & 52.20 \\
+& ICD    & 94.15 & 83.73 & 88.64 & 89.27 & 44.47 \\
+& SID    & 88.96 & 89.13 & 89.04 & 89.03 & 50.10 \\
+& PBA    & 90.67 & 88.80 & 89.73 & 89.83 & 48.97 \\
+& OLM    & 85.83 & 93.27 & 89.39 & 88.93 & 54.33 \\
+\midrule
+
+\multirow{6}{*}{Popular}
+& Greedy & 83.07 & 85.73 & 84.38 & 84.13 & 51.60 \\
+& VCD    & 77.35 & 90.40 & 83.37 & 81.97 & 58.43 \\
+& ICD    & 84.48 & 83.80 & 84.14 & 84.20 & 49.60 \\
+& SID    & 80.53 & 89.07 & 84.58 & 83.77 & 55.30 \\
+& PBA    & 79.95 & 88.80 & 84.14 & 83.27 & 55.53 \\
+& OLM    & 72.64 & 93.27 & 81.67 & 79.07 & 64.20 \\
+\midrule
+
+\multirow{6}{*}{Adversarial}
+& Greedy & 78.13 & 85.73 & 81.75 & 80.87 & 54.87 \\
+& VCD    & 72.84 & 90.67 & 80.78 & 78.43 & 62.23 \\
+& ICD    & 79.49 & 83.73 & 81.56 & 81.07 & 52.67 \\
+& SID    & 75.17 & 88.80 & 81.42 & 79.73 & 59.07 \\
+& PBA    & 76.16 & 88.80 & 81.99 & 80.50 & 58.30 \\
+& OLM    & 68.38 & 93.27 & 78.91 & 75.07 & 68.20 \\
+\bottomrule
+
+\end{tabular}
+
+\end{table}
+
+\end{document}
