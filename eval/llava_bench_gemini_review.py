@@ -29,11 +29,12 @@ from google.genai import types
 SYSTEM_PROMPT = (
     "You are a helpful and precise assistant for checking the quality of the answer."
 )
-NUM_SECONDS_TO_SLEEP = 1.0   # rate-limit buffer for free tier (15 rpm)
+NUM_SECONDS_TO_SLEEP = 5.0   # base wait; actual wait uses API-suggested delay
 
 
 def get_eval(client: genai.Client, content: str, model: str, max_tokens: int) -> str:
-    for attempt in range(10):
+    import re
+    for attempt in range(20):
         try:
             response = client.models.generate_content(
                 model=model,
@@ -46,10 +47,15 @@ def get_eval(client: genai.Client, content: str, model: str, max_tokens: int) ->
             )
             return response.text
         except Exception as e:
-            wait = NUM_SECONDS_TO_SLEEP * (2 ** attempt)
-            print(f"[retry {attempt+1}] {type(e).__name__}: {e} — waiting {wait:.1f}s")
+            err_str = str(e)
+            # Honour the retry-delay the API tells us (e.g. "retryDelay": "44s")
+            m = re.search(r'"retryDelay":\s*"([0-9.]+)s"', err_str)
+            suggested = float(m.group(1)) + 2.0 if m else None
+            wait = suggested if suggested else NUM_SECONDS_TO_SLEEP * (2 ** attempt)
+            print(f"[retry {attempt+1}] {type(e).__name__}: "
+                  f"{err_str[:120]}... — waiting {wait:.1f}s")
             time.sleep(wait)
-    raise RuntimeError("Gemini call failed after 10 retries")
+    raise RuntimeError("Gemini call failed after 20 retries")
 
 
 def parse_score(review: str):
