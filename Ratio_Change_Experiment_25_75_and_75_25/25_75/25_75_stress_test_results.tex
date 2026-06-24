@@ -1,0 +1,322 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{caption}
+
+\begin{document}
+
+\begin{center}
+{\Large \textbf{25/75 YES/NO Stress Test Results on POPE Benchmark}}\\[4pt]
+{\large Ground truth label ratio: 25\% YES / 75\% NO}\\[2pt]
+{\normalsize Baseline is the reference point for FN$\to$TP and TN$\to$FP columns.}
+\end{center}
+
+\vspace{6pt}
+\noindent\textbf{Column definitions:}
+\begin{itemize}
+  \item \textbf{FN$\to$TP}: Change in correctly answered YES questions relative to baseline (positive = more correct YES answers recovered).
+  \item \textbf{TN$\to$FP}: Change in incorrectly answered YES questions relative to baseline (positive = more wrong YES answers introduced).
+  \item \textbf{Yes\%}: Proportion of questions answered ``yes'' by the model.
+  \item \textbf{Acc\%}: Overall accuracy on the 25/75 filtered benchmark.
+\end{itemize}
+\noindent\textbf{Note:} Each image retains 1 YES and 3 NO questions (2000 total per split).
+The same YES question ordinals are deleted consistently across all POPE variants
+(Random, Popular, Adversarial) and all decoding methods for each image (seed = 42).
+\textbf{CD methods:} VCD, SID, ICD. \textbf{Spurious baselines:} PBA (prompt: ``Answer yes whenever possible.''), OLM (output label manipulation).
+
+\vspace{10pt}
+
+%%─────────────────────────────────────────────────────────────────
+%%  TABLE 1: LLaVA-v1.5-7B on GQA
+%%─────────────────────────────────────────────────────────────────
+
+\begin{table}[ht]
+\centering
+\caption{25/75 POPE stress test -- \textbf{LLaVA-v1.5-7B} on \textbf{GQA}.}
+\label{tab:25_75_llava_gqa}
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{l|l|rr|rr}
+\toprule
+\multirow{2}{*}{\textbf{Split}} &
+\multirow{2}{*}{\textbf{Method}} &
+\multicolumn{2}{c|}{\textbf{YES Response Change}} &
+\multicolumn{2}{c}{\textbf{Performance}} \\
+\cmidrule(lr){3-4} \cmidrule(lr){5-6}
+& & \textbf{FN$\to$TP} & \textbf{TN$\to$FP} & \textbf{Yes\%} & \textbf{Acc\%} \\
+\midrule
+
+\multirow{6}{*}{Random}
+& Baseline & ref   & ref   & 26.2 & 91.85 \\
+& VCD      & +23   & +119  & 33.4 & 87.05 \\
+& SID      & +19   & +72   & 30.8 & 89.20 \\
+& ICD      & $-$9  & $-$16 & 25.0 & 92.20 \\
+& PBA      & +16   & +43   & 29.2 & 90.50 \\
+& OLM      & +34   & +137  & 34.8 & 86.70 \\
+\midrule
+
+\multirow{6}{*}{Popular}
+& Baseline & ref   & ref   & 34.6 & 83.45 \\
+& VCD      & +26   & +135  & 42.7 & 78.00 \\
+& SID      & +17   & +61   & 38.6 & 81.25 \\
+& ICD      & $-$8  & $-$31 & 32.7 & 84.60 \\
+& PBA      & +16   & +72   & 39.1 & 80.65 \\
+& OLM      & +34   & +265  & 49.6 & 71.90 \\
+\midrule
+
+\multirow{6}{*}{Adversarial}
+& Baseline & ref   & ref   & 39.6 & 78.55 \\
+& VCD      & +21   & +147  & 47.9 & 72.25 \\
+& SID      & +17   & +80   & 44.4 & 75.40 \\
+& ICD      & $-$8  & $-$36 & 37.4 & 79.95 \\
+& PBA      & +16   & +57   & 43.2 & 76.50 \\
+& OLM      & +34   & +287  & 55.6 & 65.90 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%%─────────────────────────────────────────────────────────────────
+%%  TABLE 2: LLaVA-v1.5-7B on COCO
+%%─────────────────────────────────────────────────────────────────
+
+\begin{table}[ht]
+\centering
+\caption{25/75 POPE stress test -- \textbf{LLaVA-v1.5-7B} on \textbf{COCO}. ICD outputs not available.}
+\label{tab:25_75_llava_coco}
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{l|l|rr|rr}
+\toprule
+\multirow{2}{*}{\textbf{Split}} &
+\multirow{2}{*}{\textbf{Method}} &
+\multicolumn{2}{c|}{\textbf{YES Response Change}} &
+\multicolumn{2}{c}{\textbf{Performance}} \\
+\cmidrule(lr){3-4} \cmidrule(lr){5-6}
+& & \textbf{FN$\to$TP} & \textbf{TN$\to$FP} & \textbf{Yes\%} & \textbf{Acc\%} \\
+\midrule
+
+\multirow{5}{*}{Random}
+& Baseline & ref  & ref  & 20.6 & 91.60 \\
+& VCD      & +41  & +60  & 25.7 & 90.65 \\
+& SID      & +21  & +31  & 23.2 & 91.10 \\
+& PBA      & +13  & +3   & 21.4 & 92.10 \\
+& OLM      & +48  & +53  & 25.7 & 91.35 \\
+\midrule
+
+\multirow{5}{*}{Popular}
+& Baseline & ref  & ref  & 22.2 & 89.95 \\
+& VCD      & +45  & +90  & 29.0 & 87.70 \\
+& SID      & +24  & +66  & 26.8 & 87.85 \\
+& PBA      & +13  & +22  & 24.0 & 89.50 \\
+& OLM      & +48  & +89  & 29.1 & 87.90 \\
+\midrule
+
+\multirow{5}{*}{Adversarial}
+& Baseline & ref  & ref  & 26.0 & 86.20 \\
+& VCD      & +41  & +134 & 34.8 & 81.55 \\
+& SID      & +27  & +95  & 32.1 & 82.80 \\
+& PBA      & +13  & +26  & 28.0 & 85.55 \\
+& OLM      & +47  & +142 & 35.4 & 81.45 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%%─────────────────────────────────────────────────────────────────
+%%  TABLE 3: LLaVA-v1.5-7B on AOKVQA
+%%─────────────────────────────────────────────────────────────────
+
+\begin{table}[ht]
+\centering
+\caption{25/75 POPE stress test -- \textbf{LLaVA-v1.5-7B} on \textbf{AOKVQA}.}
+\label{tab:25_75_llava_aokvqa}
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{l|l|rr|rr}
+\toprule
+\multirow{2}{*}{\textbf{Split}} &
+\multirow{2}{*}{\textbf{Method}} &
+\multicolumn{2}{c|}{\textbf{YES Response Change}} &
+\multicolumn{2}{c}{\textbf{Performance}} \\
+\cmidrule(lr){3-4} \cmidrule(lr){5-6}
+& & \textbf{FN$\to$TP} & \textbf{TN$\to$FP} & \textbf{Yes\%} & \textbf{Acc\%} \\
+\midrule
+
+\multirow{6}{*}{Random}
+& Baseline & ref   & ref  & 26.5 & 91.45 \\
+& VCD      & +18   & +107 & 32.7 & 87.00 \\
+& SID      & +3    & +68  & 30.0 & 88.20 \\
+& ICD      & $-$9  & $-$8 & 25.6 & 91.40 \\
+& PBA      & +12   & +24  & 28.2 & 90.85 \\
+& OLM      & +30   & +116 & 33.8 & 87.15 \\
+\midrule
+
+\multirow{6}{*}{Popular}
+& Baseline & ref   & ref   & 31.7 & 86.20 \\
+& VCD      & +15   & +139  & 39.4 & 80.00 \\
+& SID      & +4    & +81   & 35.9 & 82.35 \\
+& ICD      & $-$8  & $-$24 & 30.1 & 87.00 \\
+& PBA      & +12   & +52   & 34.9 & 84.20 \\
+& OLM      & +30   & +204  & 43.4 & 77.50 \\
+\midrule
+
+\multirow{6}{*}{Adversarial}
+& Baseline & ref   & ref   & 41.3 & 76.60 \\
+& VCD      & +17   & +146  & 49.5 & 70.15 \\
+& SID      & +3    & +81   & 45.5 & 72.70 \\
+& ICD      & $-$10 & $-$39 & 38.9 & 78.05 \\
+& PBA      & +12   & +66   & 45.2 & 73.90 \\
+& OLM      & +30   & +255  & 55.5 & 65.35 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%%─────────────────────────────────────────────────────────────────
+%%  TABLE 4: Qwen2.5-VL-7B on GQA
+%%─────────────────────────────────────────────────────────────────
+
+\begin{table}[ht]
+\centering
+\caption{25/75 POPE stress test -- \textbf{Qwen2.5-VL-7B} on \textbf{GQA}.}
+\label{tab:25_75_qwen_gqa}
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{l|l|rr|rr}
+\toprule
+\multirow{2}{*}{\textbf{Split}} &
+\multirow{2}{*}{\textbf{Method}} &
+\multicolumn{2}{c|}{\textbf{YES Response Change}} &
+\multicolumn{2}{c}{\textbf{Performance}} \\
+\cmidrule(lr){3-4} \cmidrule(lr){5-6}
+& & \textbf{FN$\to$TP} & \textbf{TN$\to$FP} & \textbf{Yes\%} & \textbf{Acc\%} \\
+\midrule
+
+\multirow{6}{*}{Random}
+& Baseline & ref   & ref  & 24.3 & 94.15 \\
+& VCD      & 0     & +8   & 24.8 & 93.75 \\
+& SID      & +4    & +16  & 25.4 & 93.55 \\
+& ICD      & +2    & +6   & 24.8 & 93.95 \\
+& PBA      & +2    & +2   & 24.6 & 94.15 \\
+& OLM      & +24   & +40  & 27.6 & 93.35 \\
+\midrule
+
+\multirow{6}{*}{Popular}
+& Baseline & ref   & ref  & 30.2 & 88.35 \\
+& VCD      & $-$3  & +24  & 31.3 & 87.00 \\
+& SID      & +3    & +35  & 32.1 & 86.75 \\
+& ICD      & 0     & +8   & 30.6 & 87.95 \\
+& PBA      & +1    & +7   & 30.6 & 88.05 \\
+& OLM      & +23   & +75  & 35.1 & 85.75 \\
+\midrule
+
+\multirow{6}{*}{Adversarial}
+& Baseline & ref   & ref  & 34.5 & 84.05 \\
+& VCD      & $-$2  & +12  & 35.0 & 83.35 \\
+& SID      & +3    & +26  & 36.0 & 82.90 \\
+& ICD      & 0     & +5   & 34.8 & 83.80 \\
+& PBA      & +1    & +7   & 34.9 & 83.75 \\
+& OLM      & +23   & +72  & 39.3 & 81.60 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%%─────────────────────────────────────────────────────────────────
+%%  TABLE 5: Qwen2.5-VL-7B on COCO
+%%─────────────────────────────────────────────────────────────────
+
+\begin{table}[ht]
+\centering
+\caption{25/75 POPE stress test -- \textbf{Qwen2.5-VL-7B} on \textbf{COCO}.}
+\label{tab:25_75_qwen_coco}
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{l|l|rr|rr}
+\toprule
+\multirow{2}{*}{\textbf{Split}} &
+\multirow{2}{*}{\textbf{Method}} &
+\multicolumn{2}{c|}{\textbf{YES Response Change}} &
+\multicolumn{2}{c}{\textbf{Performance}} \\
+\cmidrule(lr){3-4} \cmidrule(lr){5-6}
+& & \textbf{FN$\to$TP} & \textbf{TN$\to$FP} & \textbf{Yes\%} & \textbf{Acc\%} \\
+\midrule
+
+\multirow{6}{*}{Random}
+& Baseline & ref   & ref  & 20.1 & 93.55 \\
+& VCD      & +10   & +2   & 20.6 & 93.95 \\
+& SID      & +9    & +5   & 20.8 & 93.75 \\
+& ICD      & $-$2  & $-$1 & 19.9 & 93.50 \\
+& PBA      & +5    & 0    & 20.3 & 93.80 \\
+& OLM      & +29   & +10  & 22.0 & 94.50 \\
+\midrule
+
+\multirow{6}{*}{Popular}
+& Baseline & ref   & ref  & 21.6 & 92.05 \\
+& VCD      & +8    & +9   & 22.4 & 92.00 \\
+& SID      & +9    & +13  & 22.7 & 91.85 \\
+& ICD      & $-$1  & +4   & 21.7 & 91.80 \\
+& PBA      & +5    & 0    & 21.8 & 92.30 \\
+& OLM      & +29   & +19  & 23.9 & 92.55 \\
+\midrule
+
+\multirow{6}{*}{Adversarial}
+& Baseline & ref   & ref  & 23.0 & 90.60 \\
+& VCD      & +7    & +11  & 23.9 & 90.40 \\
+& SID      & +9    & +27  & 24.8 & 89.70 \\
+& ICD      & $-$2  & +3   & 23.1 & 90.35 \\
+& PBA      & +5    & +4   & 23.4 & 90.65 \\
+& OLM      & +29   & +44  & 26.7 & 89.85 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%%─────────────────────────────────────────────────────────────────
+%%  TABLE 6: Qwen2.5-VL-7B on AOKVQA
+%%─────────────────────────────────────────────────────────────────
+
+\begin{table}[ht]
+\centering
+\caption{25/75 POPE stress test -- \textbf{Qwen2.5-VL-7B} on \textbf{AOKVQA}.}
+\label{tab:25_75_qwen_aokvqa}
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{l|l|rr|rr}
+\toprule
+\multirow{2}{*}{\textbf{Split}} &
+\multirow{2}{*}{\textbf{Method}} &
+\multicolumn{2}{c|}{\textbf{YES Response Change}} &
+\multicolumn{2}{c}{\textbf{Performance}} \\
+\cmidrule(lr){3-4} \cmidrule(lr){5-6}
+& & \textbf{FN$\to$TP} & \textbf{TN$\to$FP} & \textbf{Yes\%} & \textbf{Acc\%} \\
+\midrule
+
+\multirow{6}{*}{Random}
+& Baseline & ref   & ref  & 24.9 & 94.25 \\
+& VCD      & +2    & +10  & 25.6 & 93.85 \\
+& SID      & +4    & +15  & 25.9 & 93.70 \\
+& ICD      & $-$13 & +3   & 24.4 & 93.45 \\
+& PBA      & 0     & +2   & 25.1 & 94.15 \\
+& OLM      & +21   & +31  & 27.6 & 93.75 \\
+\midrule
+
+\multirow{6}{*}{Popular}
+& Baseline & ref   & ref  & 28.1 & 91.15 \\
+& VCD      & +1    & +15  & 28.8 & 90.45 \\
+& SID      & +4    & +21  & 29.3 & 90.30 \\
+& ICD      & $-$12 & +2   & 27.6 & 90.45 \\
+& PBA      & 0     & +9   & 28.5 & 90.70 \\
+& OLM      & +21   & +42  & 31.2 & 90.10 \\
+\midrule
+
+\multirow{6}{*}{Adversarial}
+& Baseline & ref   & ref  & 37.1 & 82.10 \\
+& VCD      & 0     & $-$4 & 36.9 & 82.30 \\
+& SID      & +4    & +11  & 37.9 & 81.75 \\
+& ICD      & $-$10 & 0    & 36.6 & 81.60 \\
+& PBA      & 0     & +9   & 37.5 & 81.65 \\
+& OLM      & +21   & +57  & 41.0 & 80.30 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}
