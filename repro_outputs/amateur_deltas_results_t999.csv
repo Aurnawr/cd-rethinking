@@ -1,0 +1,4 @@
+Dataset,Split,Method,MeanDelta
+coco,Popular,vcd,0.3605
+gqa,Popular,vcd,0.3136
+aokvqa,Popular,vcd,0.3040

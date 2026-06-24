@@ -1,3 +1,4 @@
+amateur_logits
 build
 data
 eval
@@ -6,3 +7,4 @@ llava
 outputs
 repro_outputs
 repro_scripts
+t_999
