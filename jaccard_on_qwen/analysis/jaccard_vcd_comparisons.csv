@@ -1,0 +1,4 @@
+comparison,mean_jaccard,n_questions
+VCD vs Greedy,0.430492,42
+VCD vs APC_beta0.1,0.397405,42
+VCD vs Direct Sampling,0.358716,42

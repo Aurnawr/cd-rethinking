@@ -1,0 +1,128 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+
+\begin{document}
+
+% ─────────────────────────────────────────────────────────────────
+% Table 1: APC vs Greedy (full beta sweep)
+% ─────────────────────────────────────────────────────────────────
+\begin{table}[ht]
+\centering
+\caption{BPE-token Jaccard similarity between APC (direct sampling + Adaptive Plausibility
+Constraint) and Greedy Search on LLaVA-Bench (In-the-Wild), evaluated on Qwen2.5-VL-7B.
+Jaccard scores are computed over sets of unique BPE token IDs using the Qwen2 tiktoken
+tokenizer (vocabulary size 151{,}643) and averaged across all 60 questions. Text is
+normalised before tokenisation to remove markdown artefacts (\texttt{**bold**}, headers,
+bullets) introduced by the model despite a no-formatting system prompt. Higher values
+indicate greater overlap with greedy search.}
+\label{tab:qwen_jaccard_apc_greedy}
+
+\setlength{\tabcolsep}{10pt}
+\renewcommand{\arraystretch}{1.2}
+
+\begin{tabular}{cc}
+\toprule
+\textbf{APC $\beta$} & \textbf{Mean Jaccard (BPE, Qwen2 tiktoken)} \\
+\midrule
+0.000 & 0.3713 \\
+0.025 & 0.3710 \\
+0.050 & 0.4327 \\
+0.075 & 0.4388 \\
+0.100 & 0.4474 \\
+0.200 & 0.4763 \\
+0.300 & 0.4850 \\
+0.400 & 0.4943 \\
+0.500 & 0.5219 \\
+0.600 & 0.5506 \\
+0.700 & 0.5757 \\
+0.800 & 0.6192 \\
+0.900 & 0.7308 \\
+1.000 & 0.7785 \\
+\bottomrule
+\end{tabular}
+
+\end{table}
+
+\bigskip
+
+% ─────────────────────────────────────────────────────────────────
+% Table 2: APC vs Greedy AND APC vs Sampling (side-by-side)
+% ─────────────────────────────────────────────────────────────────
+\begin{table}[ht]
+\centering
+\caption{BPE-token Jaccard similarity of APC outputs against Greedy Search and Direct
+Sampling at four representative $\beta$ values, evaluated on Qwen2.5-VL-7B across 60
+LLaVA-Bench (In-the-Wild) questions. Tokenisation uses the Qwen2 tiktoken tokenizer
+(vocabulary size 151{,}643). In every case, APC outputs are more similar to Greedy Search
+than to Direct Sampling, showing that even at low $\beta$, APC pulls the output distribution
+towards greedy rather than preserving the diversity of direct sampling.}
+\label{tab:qwen_jaccard_apc_greedy_vs_sample}
+
+\setlength{\tabcolsep}{12pt}
+\renewcommand{\arraystretch}{1.2}
+
+\begin{tabular}{ccc}
+\toprule
+\textbf{APC $\beta$}
+  & \textbf{Jaccard vs.\ Greedy}
+  & \textbf{Jaccard vs.\ Direct Sampling} \\
+\midrule
+0.075 & \textbf{0.4388} & 0.3427 \\
+0.100 & \textbf{0.4474} & 0.3445 \\
+0.200 & \textbf{0.4763} & 0.3702 \\
+0.300 & \textbf{0.4850} & 0.3661 \\
+\bottomrule
+\end{tabular}
+
+\medskip
+\noindent
+\textbf{Claim:} When direct sampling is combined with the Adaptive Plausibility Constraint
+(APC), the outputs become more similar to greedy search than to direct sampling itself,
+even at small values of $\beta$. This shows that APC does not preserve the diversity of
+direct sampling --- instead, it systematically shifts the output distribution towards the
+deterministic greedy solution.
+
+\end{table}
+
+\bigskip
+
+% ─────────────────────────────────────────────────────────────────
+% Table 3: VCD comparisons
+% ─────────────────────────────────────────────────────────────────
+\begin{table}[ht]
+\centering
+\caption{BPE-token Jaccard similarity between VCD (Visual Contrastive Decoding) outputs and
+three reference conditions --- Greedy Search, APC at its default $\beta{=}0.1$, and Direct
+Sampling --- evaluated on Qwen2.5-VL-7B across 42 LLaVA-Bench (In-the-Wild) questions
+(42 of 60 completed). Tokenisation uses the Qwen2 tiktoken tokenizer (vocabulary size
+151{,}643).}
+\label{tab:qwen_jaccard_vcd}
+
+\setlength{\tabcolsep}{14pt}
+\renewcommand{\arraystretch}{1.2}
+
+\begin{tabular}{lc}
+\toprule
+\textbf{Comparison} & \textbf{Mean Jaccard (BPE, Qwen2 tiktoken)} \\
+\midrule
+VCD vs.\ Greedy Search      & \textbf{0.4305} \\
+VCD vs.\ APC ($\beta=0.1$)  & 0.3974 \\
+VCD vs.\ Direct Sampling    & 0.3587 \\
+\bottomrule
+\end{tabular}
+
+\medskip
+\noindent
+\textbf{Explanation:} VCD outputs are most similar to Greedy Search (Jaccard $= 0.4305$) and
+least similar to Direct Sampling (Jaccard $= 0.3587$), even though VCD is built on top of
+direct sampling. This happens because VCD internally applies APC at $\beta{=}0.1$ to filter
+the output distribution at every decoding step. As shown in Table~\ref{tab:qwen_jaccard_apc_greedy_vs_sample},
+APC shifts direct sampling towards greedy search even at small $\beta$ values. Since VCD
+inherits this APC step, its outputs end up closer to greedy search than to the direct
+sampling distribution it was intended to improve upon.
+
+\end{table}
+
+\end{document}
