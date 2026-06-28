@@ -1,9 +1,9 @@
 amateur_logits
 build
-data
 eval
 inference
 llava
+llava_amateur_logits
 outputs
 repro_outputs
 repro_scripts

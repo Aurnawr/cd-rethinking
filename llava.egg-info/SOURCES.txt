@@ -1,8 +1,10 @@
 README.md
 pyproject.toml
 eval/eval_amateur_deltas.py
+eval/llava_eval_amateur_deltas.py
 eval/pope_eval_base.py
 eval/pope_eval_transfer.py
+inference/kld_experiment.py
 inference/llava_amateur_logits.py
 inference/pope_infer_apc.py
 inference/pope_infer_base.py
