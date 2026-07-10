@@ -1,0 +1,10 @@
+Dataset,Split,Flipped Samples (N),Mean Fraction Expert,Mean Fraction CD,Percentage Increase (%)
+COCO,coco-popular,15,0.111401,0.117562,5.53
+COCO,coco-adversarial,16,0.110118,0.114882,4.33
+COCO,coco-random,18,0.107736,0.112146,4.09
+GQA,gqa-adversarial,52,0.103763,0.104794,0.99
+GQA,gqa-popular,68,0.103874,0.1045,0.6
+GQA,gqa-random,25,0.105705,0.108288,2.44
+AOKVQA,aokvqa-adversarial,44,0.103908,0.105677,1.7
+AOKVQA,aokvqa-popular,38,0.102692,0.10382,1.1
+AOKVQA,aokvqa-random,19,0.105842,0.108709,2.71

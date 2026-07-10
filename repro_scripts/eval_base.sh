@@ -6,7 +6,7 @@ datasets=(coco)
 splits=(random popular adversarial)
 
 # Create the CSV file and write the header row with Split first
-output_file="./repro_outputs/qwen_results.csv"
+output_file="./repro_outputs/table3_results.csv"
 echo "Split,Method,Accuracy,Precision,Recall,F1-Score,Yes Ratio" > "$output_file"
 
 echo "Evaluating methods and writing to $output_file..."
@@ -17,7 +17,7 @@ for split in "${splits[@]}"; do
         
         # Define paths
         ref_file="./data/${datasets[0]}/${datasets[0]}_pope_${split}.json"
-        res_file="./repro_outputs/coco/qwen2.5-vl-7b/${method}/qwen-7b-${datasets[0]}-${split}-greedy.jsonl"
+        res_file="./repro_outputs/coco/llava-v1.5-7b/${method}/llava-7b-${datasets[0]}-${split}-greedy.jsonl"
         
         # Format the method name for the CSV
         display_method="${method}"
