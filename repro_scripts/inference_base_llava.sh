@@ -6,13 +6,13 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/config.sh"
 cd "${REPO_ROOT}"
 
-datasets=(coco)
+datasets=(${POPE_DATASET})
 types=(random popular adversarial)
 
 for dataset in "${datasets[@]}"; do
     for type in "${types[@]}"; do
         echo "[baseline] dataset=${dataset} type=${type}"
-        python ./inference/pope_infer_base.py \
+        "${PY_BIN}" ./inference/pope_infer_base.py \
             --model-path "${MODEL_13B}" \
             --question-file "${DATA_DIR}/${dataset}/${dataset}_pope_${type}.json" \
             --image-folder "$(image_folder_for "${dataset}")" \

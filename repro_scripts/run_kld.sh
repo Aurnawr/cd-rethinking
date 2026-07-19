@@ -12,7 +12,7 @@ OUTPUT_DIR="${OUT_ROOT}/kld_experiment/visit-bench"
 mkdir -p "${OUTPUT_DIR}"
 
 ## vcd (noise-step drives the diffusion corruption of the amateur view)
-python ./inference/kld_experiment.py \
+"${PY_BIN}" ./inference/kld_experiment.py \
     --model-path "${MODEL_13B}" \
     --conv-mode  "${CONV_MODE}" \
     --method     vcd \
@@ -22,7 +22,7 @@ python ./inference/kld_experiment.py \
     --max-new-tokens 128
 
 ## icd
-python ./inference/kld_experiment.py \
+"${PY_BIN}" ./inference/kld_experiment.py \
     --model-path "${MODEL_13B}" \
     --conv-mode  "${CONV_MODE}" \
     --method     icd \
@@ -31,7 +31,7 @@ python ./inference/kld_experiment.py \
     --max-new-tokens 128
 
 ## sid
-python ./inference/kld_experiment.py \
+"${PY_BIN}" ./inference/kld_experiment.py \
     --model-path "${MODEL_13B}" \
     --conv-mode  "${CONV_MODE}" \
     --method     sid \

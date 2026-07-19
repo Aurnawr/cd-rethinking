@@ -62,11 +62,22 @@ fetch() {  # fetch <url> <dest>
 
 UPSTREAM_RAW="https://raw.githubusercontent.com/ustc-hyin/cd_rethink/main"
 
+# Datasets actually in play = union of the sweep list and the POPE-table dataset.
+NEEDED_DATASETS="$(printf '%s\n' ${DATASETS} ${POPE_DATASET} | sort -u | tr '\n' ' ')"
+NEED_COCO=0; NEED_GQA=0
+for d in ${NEEDED_DATASETS}; do
+    case "$d" in
+        coco|aokvqa) NEED_COCO=1 ;;   # AOKVQA reuses COCO val2014 images
+        gqa)         NEED_GQA=1 ;;
+    esac
+done
+
 # ---------------------------------------------------------------------------
 log "Resolved configuration"
 cat <<EOF
   REPO_ROOT   = ${REPO_ROOT}
   MODEL_13B   = ${MODEL_13B}   (from ${HF_MODEL_ID})
+  DATASETS    = ${NEEDED_DATASETS} (need COCO imgs=${NEED_COCO}, GQA imgs=${NEED_GQA})
   COCO_IMAGES = ${COCO_IMAGES}
   GQA_IMAGES  = ${GQA_IMAGES}
   DATA_DIR    = ${DATA_DIR}
@@ -74,23 +85,95 @@ cat <<EOF
 EOF
 
 # ---------------------------------------------------------------------------
-# 1. Python dependencies
+# 1. Python environment + dependencies
+#
+# The reproduction stack pins transformers==4.31.0 (REQUIRED: the VCD/ICD/SID
+# utils monkey-patch transformers.generation.utils internals that exist ONLY in
+# that release). transformers 4.31 needs tokenizers<0.14, which -- like the
+# paper's torch==2.0.1 -- has no wheels for Python >=3.12. So if the current
+# Python is too new we build an isolated Python 3.10 env (conda > uv > venv) and
+# run everything through it. We do NOT pin torch to 2.0.1; instead we install a
+# modern CUDA-capable torch that still works with transformers 4.31.
 # ---------------------------------------------------------------------------
+ENVFILE="${REPO_ROOT}/repro_scripts/.py_env"
+
+py_ok() {  # py_ok <python> -> true if version is 3.8..3.11
+    "$1" -c 'import sys; raise SystemExit(0 if (3,8) <= sys.version_info[:2] <= (3,11) else 1)' 2>/dev/null
+}
+
+ensure_python_env() {
+    # Reuse a previously recorded interpreter if it still works.
+    if [ -f "$ENVFILE" ] && py_ok "$(cat "$ENVFILE")"; then
+        PY_BIN="$(cat "$ENVFILE")"; export PY_BIN
+        ok "reusing repro Python: ${PY_BIN}"
+        return 0
+    fi
+    # If the current python is already 3.8-3.11, just use it.
+    if have python && py_ok python; then
+        PY_BIN="$(command -v python)"; echo "$PY_BIN" > "$ENVFILE"; export PY_BIN
+        ok "using current Python: ${PY_BIN} ($($PY_BIN -V 2>&1))"
+        return 0
+    fi
+    warn "current Python is unavailable or >=3.12; building a Python 3.10 env for the pinned stack"
+    if have conda; then
+        conda create -y -n "${REPRO_ENV_NAME}" python=3.10 || die "conda env create failed"
+        PY_BIN="$(conda run -n "${REPRO_ENV_NAME}" python -c 'import sys; print(sys.executable)')" \
+            || die "conda run failed"
+    elif have uv; then
+        uv venv --python 3.10 "${REPO_ROOT}/.venv-cdr" || die "uv venv failed"
+        PY_BIN="${REPO_ROOT}/.venv-cdr/bin/python"
+    elif have python3.10; then
+        python3.10 -m venv "${REPO_ROOT}/.venv-cdr" || die "python3.10 venv failed"
+        PY_BIN="${REPO_ROOT}/.venv-cdr/bin/python"
+    else
+        die "need conda, uv, or python3.10 to build a Python<=3.11 env (none found). Install one, or export PY_BIN to a compatible interpreter."
+    fi
+    py_ok "$PY_BIN" || die "created interpreter ${PY_BIN} is not Python 3.8-3.11"
+    echo "$PY_BIN" > "$ENVFILE"; export PY_BIN
+    ok "created repro Python: ${PY_BIN} ($($PY_BIN -V 2>&1))"
+}
+
 if [ "$SKIP_DEPS" -eq 0 ]; then
-    log "Installing Python dependencies"
-    have python || die "python not found on PATH"
-    PIP="python -m pip"
-    $PIP install --upgrade pip >/dev/null 2>&1 || warn "pip self-upgrade failed (continuing)"
-    # The package pins transformers==4.31.0 -- REQUIRED: the VCD/ICD/SID utils
-    # monkey-patch transformers.generation.utils internals that only exist in
-    # that release. Do not bump transformers.
-    $PIP install -e "${REPO_ROOT}" || die "pip install -e . failed"
-    # `datasets` is imported by kld_experiment.py but is not a declared dep.
-    $PIP install "datasets>=2.14,<3" "huggingface_hub[cli]>=0.20" || die "extra deps failed"
+    log "Preparing Python environment"
+    ensure_python_env
+    PIP="${PY_BIN} -m pip"
+
+    log "Installing dependencies into ${PY_BIN}"
+    $PIP install --upgrade pip setuptools wheel >/dev/null 2>&1 || warn "pip self-upgrade failed (continuing)"
+
+    # Modern CUDA-capable torch (default PyPI wheel supports Ampere/Ada/Hopper).
+    # Override with TORCH_SPEC / TORCH_INDEX_URL for a specific CUDA build, e.g.
+    #   export TORCH_SPEC="torch==2.2.2 torchvision==0.17.2"
+    #   export TORCH_INDEX_URL="https://download.pytorch.org/whl/cu118"
+    TORCH_SPEC="${TORCH_SPEC:-torch==2.2.2 torchvision==0.17.2}"
+    if [ -n "${TORCH_INDEX_URL:-}" ]; then
+        $PIP install ${TORCH_SPEC} --index-url "${TORCH_INDEX_URL}" || die "torch install failed"
+    else
+        $PIP install ${TORCH_SPEC} || die "torch install failed"
+    fi
+
+    # transformers is pinned; the rest are the runtime deps the inference/eval
+    # code actually imports. Installed with explicit versions known to co-exist
+    # with transformers 4.31 on Python 3.10.
+    $PIP install \
+        "transformers==4.31.0" "tokenizers>=0.13,<0.14" "sentencepiece==0.1.99" \
+        "accelerate==0.21.0" "huggingface_hub[cli]>=0.16,<0.25" \
+        "numpy<2" "scikit-learn" "shortuuid" "protobuf" \
+        "einops==0.6.1" "einops-exts==0.0.4" "timm==0.6.13" \
+        "pillow" "requests" "tqdm" "datasets>=2.14,<3" \
+        || die "dependency install failed"
+
+    # Register the local `llava` package WITHOUT its stale pinned deps
+    # (pyproject pins torch==2.0.1 etc., which we deliberately override above).
+    $PIP install -e "${REPO_ROOT}" --no-deps || die "editable install of llava failed"
     ok "dependencies installed"
 else
     warn "skipping dependency install (--skip-deps)"
+    [ -f "$ENVFILE" ] && { PY_BIN="$(cat "$ENVFILE")"; export PY_BIN; }
 fi
+# Make sure PY_BIN is defined for the download/check steps below even when deps
+# were skipped (falls back to config's resolution / plain python).
+PY_BIN="${PY_BIN:-python}"
 
 # ---------------------------------------------------------------------------
 # 2. LLaVA-v1.5-13B checkpoint
@@ -101,7 +184,7 @@ if [ "$SKIP_MODEL" -eq 0 ]; then
     else
         log "Downloading ${HF_MODEL_ID} -> ${MODEL_13B} (~26 GB, one-time)"
         mkdir -p "${MODEL_13B}"
-        HF_MODEL_ID="${HF_MODEL_ID}" MODEL_13B="${MODEL_13B}" python - <<'PY' || die "model download failed"
+        HF_MODEL_ID="${HF_MODEL_ID}" MODEL_13B="${MODEL_13B}" "${PY_BIN}" - <<'PY' || die "model download failed"
 import os
 from huggingface_hub import snapshot_download
 repo = os.environ["HF_MODEL_ID"]
@@ -126,9 +209,9 @@ fi
 # 3. POPE question files  (data/<dataset>/<dataset>_pope_<type>.json)
 # ---------------------------------------------------------------------------
 if [ "$SKIP_DATA" -eq 0 ]; then
-    log "Fetching POPE question files into ${DATA_DIR}"
+    log "Fetching POPE question files into ${DATA_DIR} (datasets: ${NEEDED_DATASETS})"
     missing=0
-    for dataset in coco gqa aokvqa; do
+    for dataset in ${NEEDED_DATASETS}; do
         for type in random popular adversarial; do
             dest="${DATA_DIR}/${dataset}/${dataset}_pope_${type}.json"
             if [ -s "$dest" ]; then
@@ -153,8 +236,10 @@ fi
 dir_has_jpg() { [ -d "$1" ] && [ -n "$(find "$1" -maxdepth 1 -name '*.jpg' -print -quit 2>/dev/null)" ]; }
 
 if [ "$SKIP_IMAGES" -eq 0 ]; then
-    # ---- COCO val2014 ----
-    if dir_has_jpg "${COCO_IMAGES}"; then
+    # ---- COCO val2014 (needed by coco and aokvqa) ----
+    if [ "$NEED_COCO" -eq 0 ]; then
+        ok "COCO images not needed for datasets: ${NEEDED_DATASETS}"
+    elif dir_has_jpg "${COCO_IMAGES}"; then
         ok "COCO images already present at ${COCO_IMAGES}"
     else
         log "Downloading COCO val2014 (~6.5 GB) -> ${COCO_IMAGES}"
@@ -170,7 +255,9 @@ if [ "$SKIP_IMAGES" -eq 0 ]; then
     fi
 
     # ---- GQA images ----
-    if dir_has_jpg "${GQA_IMAGES}"; then
+    if [ "$NEED_GQA" -eq 0 ]; then
+        ok "GQA images not needed for datasets: ${NEEDED_DATASETS}"
+    elif dir_has_jpg "${GQA_IMAGES}"; then
         ok "GQA images already present at ${GQA_IMAGES}"
     else
         log "Downloading GQA images (~20 GB) -> ${GQA_IMAGES}"
@@ -186,8 +273,9 @@ if [ "$SKIP_IMAGES" -eq 0 ]; then
     fi
 else
     warn "skipping image downloads (--skip-images)"
-    dir_has_jpg "${COCO_IMAGES}" || warn "COCO images NOT found at ${COCO_IMAGES}"
-    dir_has_jpg "${GQA_IMAGES}"  || warn "GQA images NOT found at ${GQA_IMAGES}"
+    [ "$NEED_COCO" -eq 1 ] && { dir_has_jpg "${COCO_IMAGES}" || warn "COCO images NOT found at ${COCO_IMAGES}"; }
+    [ "$NEED_GQA" -eq 1 ]  && { dir_has_jpg "${GQA_IMAGES}"  || warn "GQA images NOT found at ${GQA_IMAGES}"; }
+    true
 fi
 
 # ---------------------------------------------------------------------------
@@ -199,7 +287,7 @@ if [ "$WITH_QWEN" -eq 1 ]; then
     else
         log "Downloading Qwen2.5-VL-7B -> ${QWEN_MODEL}"
         mkdir -p "${QWEN_MODEL}"
-        QWEN_MODEL="${QWEN_MODEL}" python - <<'PY' || warn "Qwen download failed (llava track unaffected)"
+        QWEN_MODEL="${QWEN_MODEL}" "${PY_BIN}" - <<'PY' || warn "Qwen download failed (llava track unaffected)"
 import os
 from huggingface_hub import snapshot_download
 dest = os.environ["QWEN_MODEL"]
@@ -222,7 +310,7 @@ else
     warn "nvidia-smi not found -- no CUDA GPU? Inference needs a GPU."
 fi
 
-python - <<'PY' 2>/dev/null || warn "python import check failed -- review dependency install"
+"${PY_BIN}" - <<'PY' 2>/dev/null || warn "python import check failed -- review dependency install"
 import importlib
 mods = ["torch", "transformers", "datasets", "PIL"]
 for m in mods:

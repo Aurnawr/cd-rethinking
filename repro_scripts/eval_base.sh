@@ -6,7 +6,7 @@ cd "${REPO_ROOT}"
 
 # Define your parameters
 methods=(baseline vcd icd sid pba olm)
-datasets=(coco)
+datasets=(${POPE_DATASET})
 splits=(random popular adversarial)
 
 # Create the CSV file and write the header row with Split first
@@ -36,7 +36,7 @@ for split in "${splits[@]}"; do
         fi
         
         # Run the original python script
-        output=$(python ./eval/pope_eval_base.py --ref-files "$ref_file" --res-files "$res_file" 2>/dev/null)
+        output=$("${PY_BIN}" ./eval/pope_eval_base.py --ref-files "$ref_file" --res-files "$res_file" 2>/dev/null)
         
         # The ultimate forgiving parser
         metrics=$(echo "$output" | python3 -c "

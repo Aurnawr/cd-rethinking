@@ -6,7 +6,7 @@ cd "${REPO_ROOT}"
 
 # Define your parameters
 methods=(vcd icd)
-datasets=(coco gqa aokvqa)
+datasets=(${DATASETS})
 splits=(random popular adversarial)
 
 # Create the CSV file and write the header row with Dataset first, then Split
@@ -31,7 +31,7 @@ for dataset in "${datasets[@]}"; do
             fi
 
             # Run the backend python script
-            output=$(python ./eval/llava_eval_amateur_deltas.py \
+            output=$("${PY_BIN}" ./eval/llava_eval_amateur_deltas.py \
                 --res-file "$res_file" \
                 --ref-file "$ref_file" \
                 2>/dev/null)

@@ -18,6 +18,24 @@
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)"
 export REPO_ROOT
 
+# --- Python interpreter -----------------------------------------------------
+# The pinned stack (transformers==4.31.0 + tokenizers<0.14) only has wheels for
+# Python <=3.11. setup.sh provisions a Python 3.10 env and records its
+# interpreter path in repro_scripts/.py_env; everything runs through PY_BIN so
+# it works regardless of the studio's default Python. Override by exporting
+# PY_BIN yourself.
+: "${PY_BIN:=}"
+if [ -z "${PY_BIN}" ]; then
+    if [ -f "${REPO_ROOT}/repro_scripts/.py_env" ]; then
+        PY_BIN="$(cat "${REPO_ROOT}/repro_scripts/.py_env")"
+    else
+        PY_BIN="python"
+    fi
+fi
+export PY_BIN
+REPRO_ENV_NAME="${REPRO_ENV_NAME:-cd_rethink}"
+export REPRO_ENV_NAME
+
 # `:=` assigns the default only when the variable is unset/empty, so any value
 # you export beforehand wins.
 : "${STORAGE_ROOT:=/teamspace/lightning_storage}"
@@ -27,6 +45,16 @@ export REPO_ROOT
 : "${MODEL_13B:=${STORAGE_ROOT}/models/llava-v1.5-13b}"  # local checkpoint dir
 : "${MODEL_BASE:=None}"                          # base model (only for LoRA)
 : "${CONV_MODE:=vicuna_v1}"                      # 13B uses the same conv as 7B
+
+# --- Dataset selection ------------------------------------------------------
+# Which POPE datasets to run. Default is AOKVQA only. Override to run more, e.g.
+#   export DATASETS="coco gqa aokvqa"
+#   export POPE_DATASET="coco"
+# DATASETS drives the multi-dataset sweeps (amateur-logits, attention).
+# POPE_DATASET is the single dataset used for the POPE Table-3 pipeline
+# (baseline / vcd / icd / sid / pba / olm + eval).
+: "${DATASETS:=aokvqa}"
+: "${POPE_DATASET:=aokvqa}"
 
 # --- Image datasets ---------------------------------------------------------
 # COCO val2014 also serves AOKVQA (AOKVQA reuses COCO images).
@@ -46,7 +74,7 @@ export REPO_ROOT
 : "${MODEL_TAG:=llava-v1.5-13b}"
 : "${FILE_TAG:=llava-13b}"
 
-export HF_MODEL_ID MODEL_13B MODEL_BASE CONV_MODE
+export HF_MODEL_ID MODEL_13B MODEL_BASE CONV_MODE DATASETS POPE_DATASET
 export COCO_IMAGES GQA_IMAGES DATA_DIR OUT_ROOT LOG_DIR QWEN_MODEL MODEL_TAG FILE_TAG
 
 # image_folder_for <dataset> -> prints the image directory for that dataset.

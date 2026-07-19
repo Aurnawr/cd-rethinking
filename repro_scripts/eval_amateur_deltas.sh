@@ -26,7 +26,7 @@ for dataset in "${datasets[@]}"; do
             fi
 
             # Run the backend python script
-            output=$(python ./eval/eval_amateur_deltas.py --res-file "$res_file" 2>/dev/null)
+            output=$("${PY_BIN}" ./eval/eval_amateur_deltas.py --res-file "$res_file" 2>/dev/null)
 
             # Same kind of forgiving key:value parser as pope_eval_base.py's wrapper
             metrics=$(echo "$output" | python3 -c "

@@ -7,14 +7,14 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/config.sh"
 cd "${REPO_ROOT}"
 
-datasets=(coco)
+datasets=(${POPE_DATASET})
 types=(random popular adversarial)
 
 ## PBA -- prompt-based, no extra flag
 for dataset in "${datasets[@]}"; do
     for type in "${types[@]}"; do
         echo "[pba] dataset=${dataset} type=${type}"
-        python ./inference/pope_infer_pba.py \
+        "${PY_BIN}" ./inference/pope_infer_pba.py \
             --model-path "${MODEL_13B}" \
             --question-file "${DATA_DIR}/${dataset}/${dataset}_pope_${type}.json" \
             --image-folder "$(image_folder_for "${dataset}")" \
@@ -28,7 +28,7 @@ done
 for dataset in "${datasets[@]}"; do
     for type in "${types[@]}"; do
         echo "[olm] dataset=${dataset} type=${type}"
-        python ./inference/pope_infer_olm.py \
+        "${PY_BIN}" ./inference/pope_infer_olm.py \
             --model-path "${MODEL_13B}" \
             --question-file "${DATA_DIR}/${dataset}/${dataset}_pope_${type}.json" \
             --image-folder "$(image_folder_for "${dataset}")" \

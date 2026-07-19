@@ -85,11 +85,21 @@ if [ "$DO_SETUP" -eq 1 ]; then
     bash "${SCRIPT_DIR}/setup.sh" || { wrn "setup.sh reported problems -- review before continuing"; }
 fi
 
+# Which datasets / images are actually required (mirrors setup.sh).
+NEEDED_DATASETS="$(printf '%s\n' ${DATASETS} ${POPE_DATASET} | sort -u | tr '\n' ' ')"
+need_coco=0; need_gqa=0
+for d in ${NEEDED_DATASETS}; do
+    case "$d" in coco|aokvqa) need_coco=1 ;; gqa) need_gqa=1 ;; esac
+done
+has_jpg() { [ -n "$(find "$1" -maxdepth 1 -name '*.jpg' -print -quit 2>/dev/null)" ]; }
+
 preflight_ok=1
 [ -f "${MODEL_13B}/config.json" ] || { wrn "model missing at ${MODEL_13B} (run with --setup)"; preflight_ok=0; }
-[ -s "${DATA_DIR}/coco/coco_pope_random.json" ] || { wrn "POPE data missing in ${DATA_DIR} (run with --setup)"; preflight_ok=0; }
-if [ -n "$(find "${COCO_IMAGES}" -maxdepth 1 -name '*.jpg' -print -quit 2>/dev/null)" ]; then :; else
-    wrn "COCO images missing at ${COCO_IMAGES}"; preflight_ok=0; fi
+for d in ${NEEDED_DATASETS}; do
+    [ -s "${DATA_DIR}/${d}/${d}_pope_random.json" ] || { wrn "POPE data for '${d}' missing in ${DATA_DIR} (run with --setup)"; preflight_ok=0; }
+done
+[ "$need_coco" -eq 0 ] || has_jpg "${COCO_IMAGES}" || { wrn "COCO images missing at ${COCO_IMAGES}"; preflight_ok=0; }
+[ "$need_gqa" -eq 0 ] || has_jpg "${GQA_IMAGES}"  || { wrn "GQA images missing at ${GQA_IMAGES}"; preflight_ok=0; }
 
 if [ "$SKIP_INF" -eq 0 ] && [ "$preflight_ok" -eq 0 ]; then
     die_msg="Preflight failed and inference is requested. Fix the above (e.g. bash run_master.sh --setup) or pass --skip-inference."
@@ -123,7 +133,7 @@ fi
 # ---------------------------------------------------------------------------
 if want attn && [ "$SKIP_ATTN" -eq 0 ]; then
     [ "$SKIP_INF" -eq 0 ] && run_step "attn_infer" bash "${RS}/inf_attn.sh"
-    run_step "attn_eval" python "${REPO_ROOT}/eval/flipped_attn.py"
+    run_step "attn_eval" "${PY_BIN}" "${REPO_ROOT}/eval/flipped_attn.py"
 elif [ "$SKIP_ATTN" -eq 1 ]; then
     wrn "skipping attention experiment (--skip-attn)"
 fi
