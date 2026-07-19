@@ -75,14 +75,25 @@ done
 # ---------------------------------------------------------------------------
 log "Resolved configuration"
 cat <<EOF
-  REPO_ROOT   = ${REPO_ROOT}
-  MODEL_13B   = ${MODEL_13B}   (from ${HF_MODEL_ID})
-  DATASETS    = ${NEEDED_DATASETS} (need COCO imgs=${NEED_COCO}, GQA imgs=${NEED_GQA})
-  COCO_IMAGES = ${COCO_IMAGES}
-  GQA_IMAGES  = ${GQA_IMAGES}
-  DATA_DIR    = ${DATA_DIR}
-  OUT_ROOT    = ${OUT_ROOT}
+  REPO_ROOT    = ${REPO_ROOT}
+  STORAGE_ROOT = ${STORAGE_ROOT}
+  MODEL_13B    = ${MODEL_13B}   (from ${HF_MODEL_ID})
+  DATASETS     = ${NEEDED_DATASETS} (need COCO imgs=${NEED_COCO}, GQA imgs=${NEED_GQA})
+  COCO_IMAGES  = ${COCO_IMAGES}
+  GQA_IMAGES   = ${GQA_IMAGES}
+  DATA_DIR     = ${DATA_DIR}
+  OUT_ROOT     = ${OUT_ROOT}
 EOF
+
+# Fail fast if the chosen storage root is not writable (common on Lightning,
+# where /teamspace/lightning_storage is a read-only shared mount).
+ensure_writable() {  # ensure_writable <dir>
+    mkdir -p "$1" 2>/dev/null \
+        || die "cannot create '$1' (permission denied). Export STORAGE_ROOT=<writable dir> and re-run, e.g. export STORAGE_ROOT=\"$(dirname "${REPO_ROOT}")\""
+    [ -w "$1" ] \
+        || die "no write permission on '$1'. Export STORAGE_ROOT=<writable dir> and re-run."
+}
+ensure_writable "${STORAGE_ROOT}"
 
 # ---------------------------------------------------------------------------
 # 1. Python environment + dependencies
@@ -218,7 +229,7 @@ if [ "$SKIP_MODEL" -eq 0 ]; then
         ok "model already present at ${MODEL_13B}"
     else
         log "Downloading ${HF_MODEL_ID} -> ${MODEL_13B} (~26 GB, one-time)"
-        mkdir -p "${MODEL_13B}"
+        ensure_writable "${MODEL_13B}"
         HF_MODEL_ID="${HF_MODEL_ID}" MODEL_13B="${MODEL_13B}" "${PY_BIN}" - <<'PY' || die "model download failed"
 import os
 from huggingface_hub import snapshot_download

@@ -36,9 +36,19 @@ export PY_BIN
 REPRO_ENV_NAME="${REPRO_ENV_NAME:-cd_rethink}"
 export REPRO_ENV_NAME
 
-# `:=` assigns the default only when the variable is unset/empty, so any value
-# you export beforehand wins.
-: "${STORAGE_ROOT:=/teamspace/lightning_storage}"
+# Where large artifacts (model, images) live. Must be WRITABLE with room for
+# ~35 GB. Lightning's /teamspace/lightning_storage is often a read-only shared
+# mount, so we only use it when it's actually writable; otherwise we fall back
+# to the persistent studio drive that holds the repo (always writable). Export
+# STORAGE_ROOT yourself to force a specific location.
+if [ -z "${STORAGE_ROOT:-}" ]; then
+    if [ -d /teamspace/lightning_storage ] && [ -w /teamspace/lightning_storage ]; then
+        STORAGE_ROOT=/teamspace/lightning_storage
+    else
+        STORAGE_ROOT="$(dirname "${REPO_ROOT}")"
+    fi
+fi
+export STORAGE_ROOT
 
 # --- Model ------------------------------------------------------------------
 : "${HF_MODEL_ID:=liuhaotian/llava-v1.5-13b}"   # HuggingFace repo id
