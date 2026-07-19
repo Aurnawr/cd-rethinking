@@ -1,4 +1,8 @@
 #!/bin/bash
+set -uo pipefail
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/config.sh"
+cd "${REPO_ROOT}"
 
 # Define your parameters
 methods=(vcd icd)
@@ -6,7 +10,7 @@ datasets=(coco gqa aokvqa)
 splits=(random popular adversarial)
 
 # Create the CSV file and write the header row with Dataset first, then Split
-output_file="./repro_outputs/llava_amateur_deltas_results.csv"
+output_file="${OUT_ROOT}/llava_amateur_deltas_results.csv"
 echo "Dataset,Split,Method,MeanDelta,Accuracy,YesRatio" > "$output_file"
 
 echo "Aggregating amateur deltas and writing to $output_file..."
@@ -16,9 +20,9 @@ for dataset in "${datasets[@]}"; do
     for split in "${splits[@]}"; do
         for method in "${methods[@]}"; do
 
-            # Define path -- matches inference_cd.sh's answers-file convention
-            res_file="./llava_amateur_logits/${dataset}/${method}/${dataset}-${split}-amateur-deltas.jsonl"
-            ref_file="./data/${dataset}/${dataset}_pope_${split}.json"
+            # Define path -- matches inf_amateur_logits.sh's answers-file convention
+            res_file="${REPO_ROOT}/llava_amateur_logits/${dataset}/${method}/${dataset}-${split}-amateur-deltas.jsonl"
+            ref_file="${DATA_DIR}/${dataset}/${dataset}_pope_${split}.json"
 
             # Check if the file actually exists before running
             if [ ! -f "$res_file" ]; then
