@@ -101,9 +101,51 @@ py_ok() {  # py_ok <python> -> true if version is 3.8..3.11
     "$1" -c 'import sys; raise SystemExit(0 if (3,8) <= sys.version_info[:2] <= (3,11) else 1)' 2>/dev/null
 }
 
+# Each _try_* sets PY_BIN and returns 0 on success, non-zero to fall through.
+VENV_DIR="${REPO_ROOT}/.venv-cdr"
+
+_resolve_uv() {  # print a usable uv path, or nothing
+    local u
+    u="$(command -v uv 2>/dev/null)" && { echo "$u"; return 0; }
+    u="$(python -c 'import sysconfig,os;print(os.path.join(sysconfig.get_path("scripts"),"uv"))' 2>/dev/null)"
+    [ -x "$u" ] && { echo "$u"; return 0; }
+    return 1
+}
+
+_try_uv() {
+    # uv self-downloads a standalone CPython 3.10 -- works on Lightning where
+    # `conda create` is blocked and no system python3.10 exists.
+    local UV
+    UV="$(_resolve_uv)" || {
+        log "installing uv (portable Python/venv manager)"
+        python -m pip install --quiet uv >&2 2>/dev/null || pip install --quiet uv >&2 2>/dev/null || return 1
+        UV="$(_resolve_uv)" || return 1
+    }
+    log "creating Python 3.10 venv via uv: ${VENV_DIR}"
+    "$UV" venv --seed --python 3.10 "${VENV_DIR}" >&2 || return 1
+    PY_BIN="${VENV_DIR}/bin/python"
+    py_ok "$PY_BIN"
+}
+
+_try_python310() {
+    have python3.10 || return 1
+    log "creating Python 3.10 venv via python3.10: ${VENV_DIR}"
+    python3.10 -m venv "${VENV_DIR}" >&2 || return 1
+    PY_BIN="${VENV_DIR}/bin/python"
+    py_ok "$PY_BIN"
+}
+
+_try_conda() {
+    have conda || return 1
+    log "creating conda env ${REPRO_ENV_NAME} (python=3.10)"
+    conda create -y -n "${REPRO_ENV_NAME}" python=3.10 >&2 || return 1
+    PY_BIN="$(conda run -n "${REPRO_ENV_NAME}" python -c 'import sys; print(sys.executable)' 2>/dev/null)" || return 1
+    py_ok "$PY_BIN"
+}
+
 ensure_python_env() {
     # Reuse a previously recorded interpreter if it still works.
-    if [ -f "$ENVFILE" ] && py_ok "$(cat "$ENVFILE")"; then
+    if [ -f "$ENVFILE" ] && py_ok "$(cat "$ENVFILE" 2>/dev/null)"; then
         PY_BIN="$(cat "$ENVFILE")"; export PY_BIN
         ok "reusing repro Python: ${PY_BIN}"
         return 0
@@ -114,23 +156,16 @@ ensure_python_env() {
         ok "using current Python: ${PY_BIN} ($($PY_BIN -V 2>&1))"
         return 0
     fi
-    warn "current Python is unavailable or >=3.12; building a Python 3.10 env for the pinned stack"
-    if have conda; then
-        conda create -y -n "${REPRO_ENV_NAME}" python=3.10 || die "conda env create failed"
-        PY_BIN="$(conda run -n "${REPRO_ENV_NAME}" python -c 'import sys; print(sys.executable)')" \
-            || die "conda run failed"
-    elif have uv; then
-        uv venv --python 3.10 "${REPO_ROOT}/.venv-cdr" || die "uv venv failed"
-        PY_BIN="${REPO_ROOT}/.venv-cdr/bin/python"
-    elif have python3.10; then
-        python3.10 -m venv "${REPO_ROOT}/.venv-cdr" || die "python3.10 venv failed"
-        PY_BIN="${REPO_ROOT}/.venv-cdr/bin/python"
-    else
-        die "need conda, uv, or python3.10 to build a Python<=3.11 env (none found). Install one, or export PY_BIN to a compatible interpreter."
+    warn "current Python is >=3.12; building a Python 3.10 env (uv > python3.10 > conda)"
+    # Order matters: uv is the most portable (and the only one that works on a
+    # Lightning studio, where conda create is disallowed). Fall through on
+    # failure instead of dying, so a blocked/broken method doesn't abort setup.
+    if _try_uv || _try_python310 || _try_conda; then
+        echo "$PY_BIN" > "$ENVFILE"; export PY_BIN
+        ok "created repro Python: ${PY_BIN} ($($PY_BIN -V 2>&1))"
+        return 0
     fi
-    py_ok "$PY_BIN" || die "created interpreter ${PY_BIN} is not Python 3.8-3.11"
-    echo "$PY_BIN" > "$ENVFILE"; export PY_BIN
-    ok "created repro Python: ${PY_BIN} ($($PY_BIN -V 2>&1))"
+    die "could not build a Python<=3.11 env (tried uv, python3.10, conda). Run 'pip install uv' then re-run, or export PY_BIN to a compatible interpreter."
 }
 
 if [ "$SKIP_DEPS" -eq 0 ]; then
