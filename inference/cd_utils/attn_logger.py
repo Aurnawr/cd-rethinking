@@ -29,3 +29,21 @@ def get_expanded_image_span(input_ids_1d, image_token_index, num_patches):
         return None, None
     pos = positions[0].item()
     return pos, pos + num_patches
+
+
+def get_expanded_image_span_dynamic(input_ids_1d, image_token_index, total_seq_len):
+    """AnyRes-aware image-token span.
+
+    LLaVA-1.6 expands the single <image> placeholder into a dynamic number of
+    tokens (base thumbnail + spatially-unpadded hi-res crops + newline tokens),
+    so the count cannot be read from a static num_patches. It is recovered from
+    the post-forward sequence length: each placeholder is replaced by N image
+    tokens, hence total_seq_len = (len(input_ids) - num_placeholders) + N_total.
+    """
+    positions = (input_ids_1d == image_token_index).nonzero(as_tuple=True)[0]
+    if len(positions) == 0:
+        return None, None
+    pos = positions[0].item()
+    num_placeholders = len(positions)
+    num_image_tokens = total_seq_len - (input_ids_1d.shape[0] - num_placeholders)
+    return pos, pos + num_image_tokens

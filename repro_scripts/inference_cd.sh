@@ -1,6 +1,6 @@
 #!/bin/bash
 # LLaVA-v1.5-13B contrastive-decoding inference on POPE-COCO: VCD, ICD, SID.
-# Outputs: repro_outputs/coco/llava-v1.5-13b/{vcd,icd,sid}/llava-13b-coco-<type>-greedy.jsonl
+# Outputs: repro_outputs/<dataset>/llava-v1.6-vicuna-13b/{vcd,icd,sid}/llava-16-13b-<dataset>-<type>-greedy.jsonl
 set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/config.sh"

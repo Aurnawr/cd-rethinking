@@ -51,10 +51,10 @@ fi
 export STORAGE_ROOT
 
 # --- Model ------------------------------------------------------------------
-: "${HF_MODEL_ID:=liuhaotian/llava-v1.5-13b}"   # HuggingFace repo id
-: "${MODEL_13B:=${STORAGE_ROOT}/models/llava-v1.5-13b}"  # local checkpoint dir
+: "${HF_MODEL_ID:=liuhaotian/llava-v1.6-vicuna-13b}"   # HuggingFace repo id (LLaVA-1.6 / NeXT, AnyRes)
+: "${MODEL_13B:=${STORAGE_ROOT}/models/llava-v1.6-vicuna-13b}"  # local checkpoint dir
 : "${MODEL_BASE:=None}"                          # base model (only for LoRA)
-: "${CONV_MODE:=vicuna_v1}"                      # 13B uses the same conv as 7B
+: "${CONV_MODE:=vicuna_v1}"                      # 1.6-vicuna-13b uses the same conv as 1.5
 
 # --- Dataset selection ------------------------------------------------------
 # Which POPE datasets to run. Default is AOKVQA only. Override to run more, e.g.
@@ -81,8 +81,8 @@ export STORAGE_ROOT
 
 # Model label used in output directory / file names (keeps 13B results separate
 # from any committed 7B results).
-: "${MODEL_TAG:=llava-v1.5-13b}"
-: "${FILE_TAG:=llava-13b}"
+: "${MODEL_TAG:=llava-v1.6-vicuna-13b}"
+: "${FILE_TAG:=llava-16-13b}"
 
 export HF_MODEL_ID MODEL_13B MODEL_BASE CONV_MODE DATASETS POPE_DATASET
 export COCO_IMAGES GQA_IMAGES DATA_DIR OUT_ROOT LOG_DIR QWEN_MODEL MODEL_TAG FILE_TAG

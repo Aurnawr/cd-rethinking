@@ -12,7 +12,7 @@ from llava.constants import IMAGE_TOKEN_INDEX, DEFAULT_IMAGE_TOKEN, DEFAULT_IM_S
 from llava.conversation import conv_templates, SeparatorStyle
 from llava.model.builder import load_pretrained_model
 from llava.utils import disable_torch_init
-from llava.mm_utils import tokenizer_image_token, get_model_name_from_path, KeywordsStoppingCriteria
+from llava.mm_utils import tokenizer_image_token, get_model_name_from_path, KeywordsStoppingCriteria, process_images
 
 from PIL import Image
 import io
@@ -126,6 +126,7 @@ def run_cd_kld_loop(
     input_ids,          # (1, seq_len)  — expert prompt tokens
     image_tensor,       # (C, H, W)     — clean image
     method,             # "vcd" | "icd" | "sid"
+    image_sizes=None,   # AnyRes: [(W, H)] original size for spatial unpad
     # method-specific extras
     image_tensor_cd=None,   # VCD: noisy image tensor
     input_ids_cd=None,      # ICD: perturbed prompt token ids (1, seq_len_cd)
@@ -155,6 +156,7 @@ def run_cd_kld_loop(
     # ---- initialise model kwargs for expert ----
     model_kwargs = {
         "images": image_tensor.unsqueeze(0).half().to(device),
+        "image_sizes": image_sizes,
         "attention_mask": torch.ones(input_ids.shape, dtype=torch.long, device=device),
         "use_cache": True,
     }
@@ -164,6 +166,7 @@ def run_cd_kld_loop(
         assert image_tensor_cd is not None
         model_kwargs_cd = {
             "images_cd": image_tensor_cd.unsqueeze(0).half().to(device),
+            "image_sizes_cd": image_sizes,
             "attention_mask": torch.ones(input_ids.shape, dtype=torch.long, device=device),
             "use_cache": True,
         }
@@ -172,6 +175,7 @@ def run_cd_kld_loop(
         model_kwargs_cd = {
             "input_ids_cd": input_ids_cd.clone(),
             "images": image_tensor.unsqueeze(0).half().to(device),  # ICD uses same clean image
+            "image_sizes": image_sizes,
             "attention_mask": torch.ones(input_ids_cd.shape, dtype=torch.long, device=device),
             "use_cache": True,
         }
@@ -179,6 +183,7 @@ def run_cd_kld_loop(
         model_kwargs_cd = {
             "use_sid": True,
             "images": image_tensor.unsqueeze(0).half().to(device),
+            "image_sizes": image_sizes,
             "attention_mask": torch.ones(input_ids.shape, dtype=torch.long, device=device),
             "use_cache": True,
         }
@@ -356,7 +361,8 @@ def eval_model(args):
         ).unsqueeze(0).cuda()
 
         # ---- preprocess image ----
-        image_tensor = image_processor.preprocess(pil_image, return_tensors='pt')['pixel_values'][0]
+        image_tensor = process_images([pil_image], image_processor, model.config)[0]
+        image_sizes = [pil_image.size]
 
         stop_str = conv.sep if conv.sep_style != SeparatorStyle.TWO else conv.sep2
 
@@ -387,6 +393,7 @@ def eval_model(args):
             image_processor=image_processor,
             input_ids=input_ids,
             image_tensor=image_tensor.cuda(),
+            image_sizes=image_sizes,
             method=args.method,
             image_tensor_cd=image_tensor_cd.cuda() if image_tensor_cd is not None else None,
             input_ids_cd=input_ids_cd,

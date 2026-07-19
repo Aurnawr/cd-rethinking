@@ -9,7 +9,7 @@ from llava.constants import IMAGE_TOKEN_INDEX, DEFAULT_IMAGE_TOKEN, DEFAULT_IM_S
 from llava.conversation import conv_templates, SeparatorStyle
 from llava.model.builder import load_pretrained_model
 from llava.utils import disable_torch_init
-from llava.mm_utils import tokenizer_image_token, get_model_name_from_path, KeywordsStoppingCriteria
+from llava.mm_utils import tokenizer_image_token, get_model_name_from_path, KeywordsStoppingCriteria, process_images
 
 from PIL import Image
 import math
@@ -17,7 +17,7 @@ import math
 from cd_utils.vcd_utils import add_diffusion_noise, evolve_vcd_greedy_search, evolve_vcd_sampling
 from cd_utils.icd_utils import get_random_icd_prompt, evolve_icd_greedy_search, evolve_icd_sampling
 from cd_utils.sid_utils import evolve_sid_greedy_search, evolve_sid_sampling
-from cd_utils.attn_logger import compute_attention_masses, get_expanded_image_span
+from cd_utils.attn_logger import compute_attention_masses, get_expanded_image_span, get_expanded_image_span_dynamic
 
 from llava.model.language_model.custom_modeling_llama import LlamaAttention as LlavaLlamaAttention
 
@@ -149,7 +149,8 @@ def eval_model(args):
             input_ids_cd = None
 
         image        = Image.open(os.path.join(args.image_folder, image_file))
-        image_tensor = image_processor.preprocess(image, return_tensors='pt')['pixel_values'][0]
+        image_tensor = process_images([image], image_processor, model.config)[0]
+        image_sizes  = [image.size]
 
         if args.use_vcd:
             image_tensor_cd = add_diffusion_noise(image_tensor, args.noise_step)
@@ -161,9 +162,10 @@ def eval_model(args):
         stopping_criteria = KeywordsStoppingCriteria(keywords, tokenizer, input_ids)
         use_sid           = True if args.use_sid else None
 
-        img_start, img_end = get_expanded_image_span(
-            input_ids[0], IMAGE_TOKEN_INDEX, num_image_patches
-        )
+        # AnyRes: the number of image tokens is dynamic (base + hi-res crops +
+        # newlines), so the image-token span is computed after each forward from
+        # the attention key-length rather than the static num_image_patches.
+        img_start, img_end = None, None
 
         # init all values
         exp_visual_mass  = None
@@ -186,6 +188,7 @@ def eval_model(args):
             expert_out = model(
                 input_ids=input_ids,
                 images=image_tensor.unsqueeze(0).half().cuda(),
+                image_sizes=image_sizes,
                 output_attentions=False,
                 return_dict=True,
                 use_cache=False,
@@ -199,6 +202,9 @@ def eval_model(args):
                 warn_f.flush()
             else:
                 actual_seq = expert_attn[0].shape[-1]
+                img_start, img_end = get_expanded_image_span_dynamic(
+                    input_ids[0], IMAGE_TOKEN_INDEX, actual_seq
+                )
                 if img_end is not None and img_end <= actual_seq:
                     exp_visual_mass, exp_total_mass = compute_attention_masses(
                         expert_attn, img_start, img_end,
@@ -236,6 +242,7 @@ def eval_model(args):
                 cd_out = model(
                     input_ids=cd_input_ids,
                     images=cd_images,
+                    image_sizes=image_sizes,
                     output_attentions=False,
                     return_dict=True,
                     use_cache=False,
@@ -250,12 +257,9 @@ def eval_model(args):
                 else:
                     cd_actual_seq = cd_attn[0].shape[-1]
 
-                    cd_img_start = img_start
-                    cd_img_end   = img_end
-                    if args.use_icd:
-                        cd_img_start, cd_img_end = get_expanded_image_span(
-                            cd_input_ids[0], IMAGE_TOKEN_INDEX, num_image_patches
-                        )
+                    cd_img_start, cd_img_end = get_expanded_image_span_dynamic(
+                        cd_input_ids[0], IMAGE_TOKEN_INDEX, cd_actual_seq
+                    )
 
                     if cd_img_end is not None and cd_img_end <= cd_actual_seq:
                         ama_visual_mass, ama_total_mass = compute_attention_masses(
@@ -302,6 +306,7 @@ def eval_model(args):
             output_ids = model.generate(
                 input_ids,
                 images=image_tensor.unsqueeze(0).half().cuda(),
+                image_sizes=image_sizes,
                 do_sample=True if args.temperature > 0 else False,
                 temperature=args.temperature,
                 top_p=args.top_p,
@@ -309,6 +314,7 @@ def eval_model(args):
                 max_new_tokens=1024,
                 use_cache=True,
                 images_cd=(image_tensor_cd.unsqueeze(0).half().cuda() if image_tensor_cd is not None else None),
+                image_sizes_cd=image_sizes,
                 input_ids_cd=input_ids_cd,
                 use_sid=use_sid
             )

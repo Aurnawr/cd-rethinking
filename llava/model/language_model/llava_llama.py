@@ -65,9 +65,11 @@ class LlavaLlamaForCausalLM(LlamaForCausalLM, LlavaMetaForCausalLM):
         output_attentions: Optional[bool] = None,
         output_hidden_states: Optional[bool] = None,
         images: Optional[torch.FloatTensor] = None,
+        image_sizes: Optional[List[Tuple[int, int]]] = None,
         return_dict: Optional[bool] = None,
         # cd parameters
         images_cd: Optional[torch.FloatTensor] = None,
+        image_sizes_cd: Optional[List[Tuple[int, int]]] = None,
         input_ids_cd: Optional[torch.LongTensor] = None,
         cd_beta: Optional[torch.FloatTensor] = None,
         cd_alpha: Optional[torch.FloatTensor] = None,
@@ -81,7 +83,7 @@ class LlavaLlamaForCausalLM(LlamaForCausalLM, LlavaMetaForCausalLM):
         )
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
 
-        input_ids, attention_mask, past_key_values, inputs_embeds, labels = self.prepare_inputs_labels_for_multimodal(input_ids, attention_mask, past_key_values, labels, images)
+        input_ids, attention_mask, past_key_values, inputs_embeds, labels = self.prepare_inputs_labels_for_multimodal(input_ids, attention_mask, past_key_values, labels, images, image_sizes)
 
         # decoder outputs consists of (dec_features, layer_state, dec_hidden, dec_attn)
         outputs = self.model(
@@ -143,6 +145,7 @@ class LlavaLlamaForCausalLM(LlamaForCausalLM, LlavaMetaForCausalLM):
                 "use_cache": kwargs.get("use_cache"),
                 "attention_mask": attention_mask,
                 "images": kwargs.get("images", None),
+                "image_sizes": kwargs.get("image_sizes", None),
                 # change use_sid to false in regular decoding
                 "use_sid": None,
             }
@@ -167,6 +170,7 @@ class LlavaLlamaForCausalLM(LlamaForCausalLM, LlavaMetaForCausalLM):
                 "use_cache": kwargs.get("use_cache"),
                 "attention_mask": attention_mask,
                 "images": kwargs.get("images_cd", None),
+                "image_sizes": kwargs.get("image_sizes_cd", None),
             }
         )
         return model_inputs
@@ -189,6 +193,7 @@ class LlavaLlamaForCausalLM(LlamaForCausalLM, LlavaMetaForCausalLM):
                 "use_cache": kwargs.get("use_cache"),
                 "attention_mask": attention_mask,
                 "images": kwargs.get("images", None),
+                "image_sizes": kwargs.get("image_sizes", None),
                 "use_sid": True,
             }
         )

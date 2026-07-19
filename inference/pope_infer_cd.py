@@ -9,7 +9,7 @@ from llava.constants import IMAGE_TOKEN_INDEX, DEFAULT_IMAGE_TOKEN, DEFAULT_IM_S
 from llava.conversation import conv_templates, SeparatorStyle
 from llava.model.builder import load_pretrained_model
 from llava.utils import disable_torch_init
-from llava.mm_utils import tokenizer_image_token, get_model_name_from_path, KeywordsStoppingCriteria
+from llava.mm_utils import tokenizer_image_token, get_model_name_from_path, KeywordsStoppingCriteria, process_images
 
 from PIL import Image
 import math
@@ -85,7 +85,8 @@ def eval_model(args):
             input_ids_cd = None 
 
         image = Image.open(os.path.join(args.image_folder, image_file))
-        image_tensor = image_processor.preprocess(image, return_tensors='pt')['pixel_values'][0]
+        image_tensor = process_images([image], image_processor, model.config)[0]
+        image_sizes = [image.size]
 
         if args.use_vcd:
             image_tensor_cd = add_diffusion_noise(image_tensor, args.noise_step)
@@ -105,6 +106,7 @@ def eval_model(args):
             output_ids = model.generate(
                 input_ids,
                 images=image_tensor.unsqueeze(0).half().cuda(),
+                image_sizes=image_sizes,
                 do_sample=True if args.temperature > 0 else False,
                 temperature=args.temperature,
                 top_p=args.top_p,
@@ -114,6 +116,7 @@ def eval_model(args):
                 use_cache=True,
                 # cd parameter
                 images_cd=(image_tensor_cd.unsqueeze(0).half().cuda() if image_tensor_cd is not None else None),
+                image_sizes_cd=image_sizes,
                 input_ids_cd=input_ids_cd,
                 use_sid=use_sid
                 )

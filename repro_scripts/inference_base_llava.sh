@@ -1,6 +1,6 @@
 #!/bin/bash
 # LLaVA-v1.5-13B baseline (greedy) inference on POPE-COCO.
-# Outputs: repro_outputs/coco/llava-v1.5-13b/baseline/llava-13b-coco-<type>-greedy.jsonl
+# Outputs: repro_outputs/<dataset>/llava-v1.6-vicuna-13b/baseline/llava-16-13b-<dataset>-<type>-greedy.jsonl
 set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/config.sh"

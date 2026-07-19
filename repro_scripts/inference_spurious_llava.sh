@@ -1,7 +1,7 @@
 #!/bin/bash
 # LLaVA-v1.5-13B "spurious improvement" methods on POPE-COCO:
 #   PBA (Prompt-Based Adjustment) and OLM (Output-Layer Modification).
-# Outputs: repro_outputs/coco/llava-v1.5-13b/{pba,olm}/llava-13b-coco-<type>-greedy.jsonl
+# Outputs: repro_outputs/<dataset>/llava-v1.6-vicuna-13b/{pba,olm}/llava-16-13b-<dataset>-<type>-greedy.jsonl
 set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/config.sh"
