@@ -1,16 +1,12 @@
 #!/bin/bash
-set -uo pipefail
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-source "${SCRIPT_DIR}/config.sh"
-cd "${REPO_ROOT}"
 
 # Define your parameters
 methods=(baseline vcd icd sid pba olm)
-datasets=(${POPE_DATASET})
+datasets=(coco)
 splits=(random popular adversarial)
 
 # Create the CSV file and write the header row with Split first
-output_file="${OUT_ROOT}/table3_results.csv"
+output_file="./repro_outputs/table3_results.csv"
 echo "Split,Method,Accuracy,Precision,Recall,F1-Score,Yes Ratio" > "$output_file"
 
 echo "Evaluating methods and writing to $output_file..."
@@ -20,8 +16,8 @@ for split in "${splits[@]}"; do
     for method in "${methods[@]}"; do
         
         # Define paths
-        ref_file="${DATA_DIR}/${datasets[0]}/${datasets[0]}_pope_${split}.json"
-        res_file="${OUT_ROOT}/${datasets[0]}/${MODEL_TAG}/${method}/${FILE_TAG}-${datasets[0]}-${split}-greedy.jsonl"
+        ref_file="./data/${datasets[0]}/${datasets[0]}_pope_${split}.json"
+        res_file="./repro_outputs/coco/llava-v1.5-7b/${method}/llava-7b-${datasets[0]}-${split}-greedy.jsonl"
         
         # Format the method name for the CSV
         display_method="${method}"
@@ -36,7 +32,7 @@ for split in "${splits[@]}"; do
         fi
         
         # Run the original python script
-        output=$("${PY_BIN}" ./eval/pope_eval_base.py --ref-files "$ref_file" --res-files "$res_file" 2>/dev/null)
+        output=$(python ./eval/pope_eval_base.py --ref-files "$ref_file" --res-files "$res_file" 2>/dev/null)
         
         # The ultimate forgiving parser
         metrics=$(echo "$output" | python3 -c "

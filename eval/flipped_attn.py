@@ -1,21 +1,15 @@
 import json
 import csv
-import os
 from pathlib import Path
 
-# Resolve paths relative to the repository root (eval/ -> repo) so this runs
-# anywhere, not only under /teamspace/studios/this_studio. Override with the
-# ATTN_EVAL_DIR / ATTN_METRICS_OUT environment variables if needed.
-REPO_ROOT = Path(__file__).resolve().parent.parent
-base_dir = Path(os.environ.get("ATTN_EVAL_DIR", REPO_ROOT / "attn" / "eval"))
+# Set the base directory based on your folder structure
+base_dir = Path("/teamspace/studios/this_studio/cd-rethinking/attn/eval")
 
 # The datasets we want to iterate through
 datasets = ["coco", "gqa", "aokvqa"]
 
 # Name of the output file
-output_file = os.environ.get(
-    "ATTN_METRICS_OUT", str(REPO_ROOT / "attn" / "visual_grounding_flipped_metrics.csv")
-)
+output_file = "/teamspace/studios/this_studio/cd-rethinking/attn/visual_grounding_flipped_metrics.csv"
 
 # Initialize a list to hold the rows for our CSV
 csv_data = []

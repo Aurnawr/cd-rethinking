@@ -1,9 +1,3 @@
 data
 *.pyc
 __pycache__/
-
-# reproduction env artifacts (machine-specific)
-.venv-cdr/
-repro_scripts/.py_env
-repro_outputs/logs/
-.DS_Store
