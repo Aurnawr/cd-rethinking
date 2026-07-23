@@ -2,30 +2,28 @@
 # =====================================================================
 # run_all.sh -- multi-seed CHAIR runs for the Gaussian noise-proxy study.
 #
-# For each model (LLaVA-1.5-7B, Qwen2.5-VL-7B) it generates 500-image CHAIR
-# captions under:
-#   greedy  (deterministic baseline, 1 run)
-#   vcd     (real Visual Contrastive Decoding)          x N seeds
-#   sid     (real Self-Introspective Decoding)          x N seeds
-#   proxy   (full-vocabulary Gaussian noise, no amateur) x N seeds
-# then scores every run with CHAIR and reports mean +/- std across seeds.
+# DEFAULT PLAN (fits a ~7 GPU-hour budget on one L4):
+#   For each model (LLaVA-1.5-7B, Qwen2.5-VL-7B):
+#     greedy   (deterministic baseline, 1 run)      -- cheap, optional
+#     proxy    (full-vocabulary Gaussian noise)      x 3 seeds
+#   then scores every run with CHAIR and reports mean/range across seeds.
+#
+# VCD and SID are intentionally NOT run here: they are expensive (Qwen's
+# amateur branch is cache-less, hours per seed) and their single-run CHAIR
+# numbers + image-level bootstrap CIs already exist in the paper. This package
+# only produces the NEW result -- the seeded full-vocabulary proxy.
 #
 # WHY: the proxy result (amateur branch is replaceable by matched noise) was a
-# single unseeded run; multiple seeds give it error bars and protect it from the
-# "n=1" objection. Seeds also test whether Qwen's proxy == greedy is coincidence.
+# single unseeded run; 3 seeds give it reproducibility and kill the "n=1"
+# objection, at only a few GPU-hours because the proxy is greedy-speed.
 #
 # USAGE:
-#   bash run_all.sh              # smoke test (2 imgs) then full 500-img runs
+#   bash run_all.sh              # smoke test (2 imgs) then full proxy runs
 #   bash run_all.sh --smoke      # only the 2-image smoke test
-#   Edit SEEDS / MODELS / METHODS below to control cost.
-#
-# COST WARNING: Qwen vcd/sid recompute the amateur branch cache-less at every
-# step and are SLOW (hours per seed on 500 images). LLaVA is much faster.
-# Start with fewer seeds if GPU time is limited. Runs are resumable: finished
-# images are skipped, and a run whose _chair.json already exists is skipped.
+# TUNING (edit below): SEEDS, MODELS, RUN_GREEDY, PROXY_STATS.
+# If GPU time runs short, set SEEDS=(0 1) or RUN_GREEDY=0.
 # =====================================================================
 set -euo pipefail
-
 cd "$(dirname "$0")"
 HERE="$(pwd)"
 SCRIPTS="$HERE/scripts"
@@ -33,33 +31,29 @@ COCO="$HERE/data/coco/annotations"
 CAPS="$HERE/outputs/caps"
 mkdir -p "$CAPS"
 
-# ---- configuration (edit these) ----
-SEEDS=(0 1 2)                         # add 3 4 for five seeds
-MODELS=(llava qwen)                   # comment out one to skip a model
-SEED_METHODS=(vcd sid proxy)          # methods that vary with seed
-PROXY_STATS=vcd                       # proxy noise matched to vcd's d (or: sid)
+# ---- configuration ----
+SEEDS=(0 1 2)                 # 3 seeds for the proxy; drop to (0 1) if time is short
+MODELS=(llava qwen)           # both models
+RUN_GREEDY=1                  # 1 = also run greedy baseline (cheap); 0 = skip
+PROXY_STATS=vcd               # proxy noise matched to VCD's measured d (or: sid)
 FULL_N=500
 SMOKE_N=2
-PY=${PY:-python}                      # override with:  PY=/path/to/python bash run_all.sh
-# ------------------------------------
+PY=${PY:-python}              # override:  PY=/path/to/python bash run_all.sh
+# -----------------------
 
 gen () {  # gen <model> <method> <seed> <n> <out>
   local model=$1 method=$2 seed=$3 n=$4 out=$5
-  local script="$SCRIPTS/gen_${model}.py"
   local extra=""
   [ "$method" = "proxy" ] && extra="--stats-source $PROXY_STATS"
-  "$PY" "$script" --method "$method" --seed "$seed" --n-images "$n" --out "$out" $extra
+  "$PY" "$SCRIPTS/gen_${model}.py" --method "$method" --seed "$seed" --n-images "$n" --out "$out" $extra
 }
+score () { "$PY" "$SCRIPTS/eval/chair_eval.py" --cap-file "$1" --coco-path "$COCO"; }
 
-score () {  # score <capfile>
-  "$PY" "$SCRIPTS/eval/chair_eval.py" --cap-file "$1" --coco-path "$COCO"
-}
-
-# ---------- smoke test (fast sanity check on 2 images) ----------
+# ---------- smoke test (fast sanity on 2 images: base path + noise path) ----------
 echo "########## SMOKE TEST (${SMOKE_N} images) ##########"
 SMOKE="$HERE/outputs/smoke"; mkdir -p "$SMOKE"
 for model in "${MODELS[@]}"; do
-  for method in greedy "${SEED_METHODS[@]}"; do
+  for method in greedy proxy; do
     f="$SMOKE/${model}_${method}.jsonl"; rm -f "$f"
     echo ">>> smoke ${model} ${method}"
     gen "$model" "$method" 0 "$SMOKE_N" "$f"
@@ -67,29 +61,34 @@ for model in "${MODELS[@]}"; do
   done
 done
 echo "########## SMOKE TEST PASSED ##########"
+echo "   (per-image time above x 500 = approx per-seed cost; confirm it fits your budget)"
 [ "${1:-}" = "--smoke" ] && { echo "smoke-only mode, stopping."; exit 0; }
 
-# ---------- full runs ----------
+# ---------- full runs: greedy (once) + proxy (N seeds) ----------
 echo "########## FULL RUNS (${FULL_N} images) ##########"
 for model in "${MODELS[@]}"; do
-  # greedy: deterministic, one run (seed 0)
-  out="$CAPS/${model}_greedy_seed0.jsonl"
-  if [ ! -f "${out%.jsonl}_chair.json" ]; then
-    echo ">>> ${model} greedy (seed 0)"; gen "$model" greedy 0 "$FULL_N" "$out"; score "$out"
+  if [ "$RUN_GREEDY" = "1" ]; then
+    out="$CAPS/${model}_greedy_seed0.jsonl"
+    if [ ! -f "${out%.jsonl}_chair.json" ]; then
+      echo ">>> ${model} greedy (baseline)"; gen "$model" greedy 0 "$FULL_N" "$out"; score "$out"
+    fi
   fi
   for seed in "${SEEDS[@]}"; do
-    for method in "${SEED_METHODS[@]}"; do
-      tag="${method}"; [ "$method" = "proxy" ] && tag="proxy_${PROXY_STATS}"
-      out="$CAPS/${model}_${tag}_seed${seed}.jsonl"
-      if [ -f "${out%.jsonl}_chair.json" ]; then echo "skip (done): $out"; continue; fi
-      echo ">>> ${model} ${method} seed ${seed}"
-      gen "$model" "$method" "$seed" "$FULL_N" "$out"
-      score "$out"
-    done
+    out="$CAPS/${model}_proxy_${PROXY_STATS}_seed${seed}.jsonl"
+    if [ -f "${out%.jsonl}_chair.json" ]; then echo "skip (done): $out"; continue; fi
+    echo ">>> ${model} proxy seed ${seed}"
+    gen "$model" proxy "$seed" "$FULL_N" "$out"
+    score "$out"
   done
 done
 
 # ---------- aggregate ----------
 echo "########## AGGREGATE ##########"
 "$PY" "$SCRIPTS/aggregate_seeds.py"
-echo "ALL DONE. See outputs/aggregate.json"
+echo "ALL DONE. Send back: outputs/aggregate.json  and  outputs/caps/*_chair.json"
+
+# ---------------------------------------------------------------------
+# To ALSO seed VCD/SID (expensive; not recommended under a 7h budget), add
+# them to a seed loop, e.g.:  for m in vcd sid; do gen "$model" "$m" "$seed" ...
+# gen_{llava,qwen}.py already implement vcd and sid.
+# ---------------------------------------------------------------------

@@ -1,33 +1,49 @@
 # Gaussian noise-proxy study — multi-seed CHAIR runs (handoff)
 
-This folder is a self-contained package to reproduce, **with multiple random
-seeds**, the Gaussian noise-proxy experiment for the "why contrastive decoding
-fails" paper. It runs on 500 MSCOCO images for two models (LLaVA-1.5-7B and
-Qwen2.5-VL-7B) and reports CHAIR-S / CHAIR-I as **mean ± std across seeds**.
+This folder is a self-contained package that runs the **full-vocabulary Gaussian
+noise-proxy** experiment across **3 random seeds** on 500 MSCOCO images for two
+models (LLaVA-1.5-7B and Qwen2.5-VL-7B), and reports CHAIR-S / CHAIR-I per seed.
+It is sized for a **~7 GPU-hour budget on one L4**.
+
+## What this run produces (and what it does NOT)
+
+**Runs here (the new result):** the `proxy` at 3 seeds per model, plus a cheap
+deterministic `greedy` baseline. Estimated cost: ~4.5-6.5 h total on one L4.
+
+**Deliberately NOT run here:** `vcd` and `sid`. On Qwen the amateur branch is
+computed cache-less (hours per seed), so seeding them would need ~1-2 days of
+GPU. Their single-run CHAIR numbers and image-level bootstrap CIs already exist
+in the paper and are the reference the proxy is compared against.
 
 ## Why this run is needed
 
 The key result is that the "amateur" branch of contrastive decoding (VCD/SID)
 can be **replaced by matched random Gaussian noise** added to the expert logits,
 with no loss of CHAIR performance — i.e. the amateur branch is not doing anything
-a generic perturbation could not. That result was previously a **single unseeded
-run**. VCD's noise draw, SID's kept-token subset, and the proxy's Gaussian noise
-are all stochastic, so a reviewer can dismiss a one-shot number. This package
-runs **N seeds** of `vcd`, `sid`, and `proxy` (plus deterministic `greedy`) so
-each number gets an error bar.
+a generic perturbation could not. That was previously a **single unseeded run**,
+and the proxy is inherently random, so a reviewer can dismiss a one-shot number.
+Running 3 seeds shows the result **reproduces across independent noise draws**.
 
 Two things to look for in the results:
-1. Does `proxy` stay within a seed or two of `vcd`/`sid`/`greedy` CHAIR? (Expected: yes.)
+1. Does `proxy` land at the greedy / paper-VCD / paper-SID CHAIR level, and stay
+   there across the 3 seeds? (Expected: yes, tight spread.)
 2. Qwen's proxy previously returned exactly greedy's CHAIR-S (30.8 vs 30.8);
-   seeds will show whether that is coincidence or a real "noise rarely flips a
+   the seeds show whether that is coincidence or a real "noise rarely flips a
    Qwen argmax" effect. (CHAIR-I already differed, so it is not a pure no-op.)
+
+## How to report it (avoid the n=3 std trap)
+
+With only 3 seeds, report the **individual per-seed values or their range**, not
+a standard deviation (a 3-point std is unreliable). Keep the paper's image-level
+bootstrap CIs as the primary, uniform uncertainty across all methods; present
+these seeds as a supplementary reproducibility check on the proxy.
 
 ## What is different from the original proxy
 
 - The proxy here adds Gaussian noise to **every vocabulary logit** (full
   vocabulary), not only to object-category tokens. This is the stronger,
   cleaner control.
-- Every method takes a `--seed`; `run_all.sh` sweeps several seeds.
+- Every method takes a `--seed`; `run_all.sh` sweeps 3 seeds for the proxy.
 
 ## Contents
 
@@ -94,18 +110,24 @@ val2017 annotations, and the 500 images from `image_ids_500.json`. Idempotent.
 
 ## Cost note (please read before launching)
 
-- **LLaVA** runs two cached forward passes per step; ~fast.
-- **Qwen `vcd`/`sid`** recompute the amateur branch **cache-less** every step and
-  are **slow** (potentially hours per seed for 500 images). This is required for
-  numerical correctness (a hand-rolled mRoPE second-branch cache diverged). If
-  GPU time is tight, start with `SEEDS=(0 1 2)` and consider fewer seeds for Qwen
-  `vcd`/`sid`, or run LLaVA first.
+- The `proxy` is a single expert forward per token (KV-cached) plus an
+  element-wise noise add -- i.e. **greedy speed**. This is why 3 seeds on both
+  models is affordable (~4.5-6.5 h on one L4).
+- Rough per-seed estimates (confirm with the smoke test): LLaVA proxy
+  ~0.5-0.75 h; Qwen proxy ~1-1.5 h. Greedy baseline ~0.5 h (LLaVA) / ~1 h (Qwen),
+  run once.
+- If time is tight, set `SEEDS=(0 1)` (2 seeds) or `RUN_GREEDY=0`.
+- `vcd`/`sid` are not run here by design (Qwen's cache-less amateur makes them
+  cost ~1-2 days across seeds); use the paper's existing single-run numbers +
+  bootstrap CIs for those.
 - Runs are **resumable**: finished images are skipped, and any run whose
   `_chair.json` already exists is skipped, so you can stop and restart.
+- **Run `bash run_all.sh --smoke` first**: it prints per-image time on 2 images;
+  multiply by 500 to confirm the true per-seed cost before spending GPU hours.
 
 ## Notes
 
-- `greedy` is deterministic; it is run once (seed 0) and its std should be ~0.
+- `greedy` is deterministic; it is run once (seed 0) as the baseline.
 - The proxy noise magnitude is taken from `proxy_stats_{model}.json`
   (`pooled_mean`, `pooled_std` of the measured contrastive adjustment
   `d = E - A`), matched to VCD by default (`PROXY_STATS=vcd` in `run_all.sh`;
