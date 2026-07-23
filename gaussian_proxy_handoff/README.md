@@ -74,16 +74,22 @@ qwen-vl-utils, and the vendored LLaVA), so **no installation is usually needed**
 just run from a terminal in the studio. Both 7B models fit in fp16 on one L4
 (LLaVA ~14 GB, Qwen ~16 GB, run one at a time).
 
-## If you cloned this from GitHub: get the large assets first
+## Assets (weights + images) are auto-downloaded
 
 The model weights and the 500 COCO images are **not** in git (too large for
-GitHub). Download them into the expected paths with:
+GitHub). You do not need to fetch them manually: **`run_all.sh` checks for them
+and runs `download_assets.sh` automatically if they are missing.** So a single
+`bash run_all.sh` handles everything, whether you cloned from GitHub or received
+the folder with weights already inside.
+
+If you prefer to download them ahead of time (e.g. overnight), run:
 ```
 bash download_assets.sh
 ```
-This fetches `liuhaotian/llava-v1.5-7b`, `Qwen/Qwen2.5-VL-7B-Instruct`, the COCO
-val2017 annotations, and the 500 images from `image_ids_500.json`. Idempotent.
-(If you received this folder directly with the weights already inside, skip this.)
+This fetches `liuhaotian/llava-v1.5-7b` (~13 GB), `Qwen/Qwen2.5-VL-7B-Instruct`
+(~16 GB), the COCO val2017 annotations, and the 500 images from
+`image_ids_500.json`. Idempotent. First-time download is ~29 GB, so expect
+some minutes before the smoke test starts on a fresh clone.
 
 ## How to run
 

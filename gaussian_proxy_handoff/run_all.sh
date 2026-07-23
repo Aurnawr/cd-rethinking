@@ -41,6 +41,18 @@ SMOKE_N=2
 PY=${PY:-python}              # override:  PY=/path/to/python bash run_all.sh
 # -----------------------
 
+# ---------- ensure assets are present (auto-download if missing) ----------
+# Weights and the 500 COCO images are NOT in git. If they are absent (e.g. a
+# fresh GitHub clone), fetch them once via download_assets.sh. If the folder was
+# received with weights already inside, this check passes and nothing downloads.
+if [ ! -f "$HERE/models/llava-v1.5-7b/config.json" ] \
+   || [ ! -f "$HERE/models/Qwen2.5-VL-7B-Instruct/config.json" ] \
+   || [ ! -f "$COCO/instances_val2017.json" ] \
+   || [ ! -e "$HERE/data/coco/val2017" ]; then
+  echo "########## ASSETS MISSING -> running download_assets.sh (weights + images) ##########"
+  bash "$HERE/download_assets.sh"
+fi
+
 gen () {  # gen <model> <method> <seed> <n> <out>
   local model=$1 method=$2 seed=$3 n=$4 out=$5
   local extra=""
