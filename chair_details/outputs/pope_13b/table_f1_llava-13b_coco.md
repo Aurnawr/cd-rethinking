@@ -1,0 +1,19 @@
+# Accuracy / F1 / Yes(%) - llava-13b, dataset = coco
+
+| Category | Method | Accuracy | F1-Score | Yes (%) |
+|---|---|---|---|---|
+| Random | sample | 85.0 | 82.9 | 37.4 |
+| Random | VCD | 86.8 | 85.2 | 39.1 |
+| Random | ICD | 85.6 | 83.6 | 37.7 |
+| Random | SID | 85.9 | 83.8 | 37.3 |
+| Random | sample† | 85.5 | 83.4 | 37.3 |
+| Popular | sample | 83.5 | 81.3 | 38.4 |
+| Popular | VCD | 86.1 | 84.6 | 40.0 |
+| Popular | ICD | 85.0 | 83.1 | 38.5 |
+| Popular | SID | 84.8 | 82.8 | 38.6 |
+| Popular | sample† | 84.4 | 82.3 | 38.1 |
+| Adversarial | sample | 81.3 | 79.4 | 40.6 |
+| Adversarial | VCD | 84.6 | 83.3 | 42.4 |
+| Adversarial | ICD | 83.7 | 81.8 | 39.7 |
+| Adversarial | SID | 83.1 | 81.2 | 39.8 |
+| Adversarial | sample† | 83.1 | 81.2 | 39.9 |

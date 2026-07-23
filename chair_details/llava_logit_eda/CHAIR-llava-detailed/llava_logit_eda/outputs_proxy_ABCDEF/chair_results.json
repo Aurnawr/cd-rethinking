@@ -1,0 +1,121 @@
+{
+  "greedy (real)": {
+    "num_captions": 70,
+    "CHAIR_s": 0.5714285714285714,
+    "CHAIR_i": 0.15789473684210525,
+    "avg_objects_per_caption": 8.142857142857142,
+    "avg_caption_length": 88.67142857142858
+  },
+  "VCD (real)": {
+    "num_captions": 70,
+    "CHAIR_s": 0.5142857142857142,
+    "CHAIR_i": 0.15602836879432624,
+    "avg_objects_per_caption": 8.057142857142857,
+    "avg_caption_length": 92.11428571428571
+  },
+  "SID (real)": {
+    "num_captions": 70,
+    "CHAIR_s": 0.5428571428571428,
+    "CHAIR_i": 0.1413427561837456,
+    "avg_objects_per_caption": 8.085714285714285,
+    "avg_caption_length": 88.17142857142858
+  },
+  "A_vcd": {
+    "num_captions": 70,
+    "CHAIR_s": 0.5142857142857142,
+    "CHAIR_i": 0.17114093959731544,
+    "avg_objects_per_caption": 8.514285714285714,
+    "avg_caption_length": 88.17142857142858
+  },
+  "A_sid": {
+    "num_captions": 70,
+    "CHAIR_s": 0.5571428571428572,
+    "CHAIR_i": 0.15577889447236182,
+    "avg_objects_per_caption": 8.528571428571428,
+    "avg_caption_length": 89.44285714285714
+  },
+  "B_vcd": {
+    "num_captions": 70,
+    "CHAIR_s": 0.5714285714285714,
+    "CHAIR_i": 0.16751269035532995,
+    "avg_objects_per_caption": 8.442857142857143,
+    "avg_caption_length": 89.72857142857143
+  },
+  "B_sid": {
+    "num_captions": 70,
+    "CHAIR_s": 0.5285714285714286,
+    "CHAIR_i": 0.15016501650165018,
+    "avg_objects_per_caption": 8.657142857142857,
+    "avg_caption_length": 92.01428571428572
+  },
+  "C_vcd": {
+    "num_captions": 70,
+    "CHAIR_s": 0.5857142857142857,
+    "CHAIR_i": 0.15191986644407346,
+    "avg_objects_per_caption": 8.557142857142857,
+    "avg_caption_length": 88.67142857142858
+  },
+  "C_sid": {
+    "num_captions": 70,
+    "CHAIR_s": 0.5142857142857142,
+    "CHAIR_i": 0.15630252100840336,
+    "avg_objects_per_caption": 8.5,
+    "avg_caption_length": 89.64285714285714
+  },
+  "D_vcd": {
+    "num_captions": 70,
+    "CHAIR_s": 0.5571428571428572,
+    "CHAIR_i": 0.15979381443298968,
+    "avg_objects_per_caption": 8.314285714285715,
+    "avg_caption_length": 89.21428571428571
+  },
+  "D_sid": {
+    "num_captions": 70,
+    "CHAIR_s": 0.5714285714285714,
+    "CHAIR_i": 0.163575042158516,
+    "avg_objects_per_caption": 8.471428571428572,
+    "avg_caption_length": 89.1
+  },
+  "E_vcd": {
+    "num_captions": 70,
+    "CHAIR_s": 0.4857142857142857,
+    "CHAIR_i": 0.15551537070524413,
+    "avg_objects_per_caption": 7.9,
+    "avg_caption_length": 92.3
+  },
+  "E_sid": {
+    "num_captions": 70,
+    "CHAIR_s": 0.5428571428571428,
+    "CHAIR_i": 0.15630885122410546,
+    "avg_objects_per_caption": 7.585714285714285,
+    "avg_caption_length": 89.01428571428572
+  },
+  "F_vcd_realonly": {
+    "num_captions": 70,
+    "CHAIR_s": 0.5142857142857142,
+    "CHAIR_i": 0.15057283142389524,
+    "avg_objects_per_caption": 8.728571428571428,
+    "avg_caption_length": 90.47142857142858
+  },
+  "F_sid_realonly": {
+    "num_captions": 70,
+    "CHAIR_s": 0.5428571428571428,
+    "CHAIR_i": 0.1490787269681742,
+    "avg_objects_per_caption": 8.528571428571428,
+    "avg_caption_length": 88.77142857142857
+  },
+  "F_vcd_hallonly": {
+    "num_captions": 70,
+    "CHAIR_s": 0.5714285714285714,
+    "CHAIR_i": 0.17301038062283736,
+    "avg_objects_per_caption": 8.257142857142858,
+    "avg_caption_length": 89.0
+  },
+  "F_sid_hallonly": {
+    "num_captions": 70,
+    "CHAIR_s": 0.5714285714285714,
+    "CHAIR_i": 0.17152658662092624,
+    "avg_objects_per_caption": 8.32857142857143,
+    "avg_caption_length": 88.77142857142857
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "LLaVA_greedy": {
+    "counts": {
+      "real_obj": 6.542,
+      "hall_obj": 1.058,
+      "denial": 0.486,
+      "filler": 44.246,
+      "other": 37.924
+    },
+    "total": 90.256,
+    "n": 500
+  },
+  "LLaVA_VCD": {
+    "counts": {
+      "real_obj": 6.544,
+      "hall_obj": 1.124,
+      "denial": 0.444,
+      "filler": 44.462,
+      "other": 39.198
+    },
+    "total": 91.772,
+    "n": 500
+  },
+  "LLaVA_SID": {
+    "counts": {
+      "real_obj": 6.582,
+      "hall_obj": 1.066,
+      "denial": 0.456,
+      "filler": 43.71,
+      "other": 38.284
+    },
+    "total": 90.098,
+    "n": 500
+  },
+  "Qwen_greedy": {
+    "counts": {
+      "real_obj": 5.644,
+      "hall_obj": 0.478,
+      "denial": 0.772,
+      "filler": 67.152,
+      "other": 79.634
+    },
+    "total": 153.68,
+    "n": 500
+  },
+  "Qwen_VCD": {
+    "counts": {
+      "real_obj": 5.036,
+      "hall_obj": 0.59,
+      "denial": 0.606,
+      "filler": 61.39,
+      "other": 89.37
+    },
+    "total": 156.99200000000002,
+    "n": 500
+  },
+  "Qwen_SID": {
+    "counts": {
+      "real_obj": 5.17,
+      "hall_obj": 0.616,
+      "denial": 0.63,
+      "filler": 61.692,
+      "other": 89.348
+    },
+    "total": 157.45600000000002,
+    "n": 500
+  }
+}

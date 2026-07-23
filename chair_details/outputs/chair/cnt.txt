@@ -1,0 +1,1 @@
+500 outputs/chair/llava-7b-greedy/captions.jsonl

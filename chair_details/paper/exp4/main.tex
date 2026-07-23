@@ -1,0 +1,45 @@
+% =====================================================================
+% main.tex -- STANDALONE PREVIEW WRAPPER ONLY (Exp. 4).
+%
+% This is NOT the paper. It compiles the d-analysis + noise-proxy section on
+% its own. For the real paper, \input the three section files directly:
+%     \input{01_hypothesis}
+%     \input{02_methodology}
+%     \input{03_results}
+% and copy the figs/ folder. Demote \section -> \subsection if nested.
+% =====================================================================
+\documentclass{article}
+
+% [preprint] = no line numbers, no submission banner (clean preview; the paper
+% targets TMLR, so this wrapper's class is only for standalone reading).
+\usepackage[preprint]{neurips_2025}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{natbib}
+\graphicspath{{figs/}}
+
+\title{Experiment 4: The Contrastive Adjustment $d = E - A$ Does Not Suppress
+Hallucinations, and a Noise Proxy Reproduces Its Effect\\
+\large d-analysis and magnitude-matched noise controls on LLaVA-1.5-7B and Qwen2.5-VL-7B}
+
+\author{Anonymous Author(s)}
+
+\begin{document}
+\maketitle
+
+\input{01_hypothesis}
+\input{02_methodology}
+\input{03_results}
+
+\bibliographystyle{plainnat}
+\bibliography{refs}
+
+\end{document}

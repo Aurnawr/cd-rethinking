@@ -1,0 +1,27 @@
+{
+  "within_step_paired_auc": {
+    "vcd": {
+      "E": 0.629,
+      "CD": 0.632,
+      "d": 0.541
+    },
+    "sid": {
+      "E": 0.654,
+      "CD": 0.662,
+      "d": 0.582
+    }
+  },
+  "emitted_object_auc_confounded": {
+    "vcd": {
+      "E": 0.621,
+      "CD": 0.566,
+      "d": 0.366
+    },
+    "sid": {
+      "E": 0.61,
+      "CD": 0.568,
+      "d": 0.411
+    }
+  },
+  "note": "within-step is confound-free (compares real vs hall at the SAME step); emitted-object ROC pools logits across steps and is confounded by cross-step logit scale + selection bias"
+}

@@ -1,0 +1,177 @@
+% =====================================================================
+% 02_setup.tex  --  Experiment description + implementation detail
+% =====================================================================
+
+\section{Experimental Setup}
+\label{sec:cdmech-setup}
+
+\subsection{What the experiments do}
+\label{subsec:cdmech-what}
+
+Both are \emph{observational} instrumentations of a normal CD run: the decoding
+algorithm is unaltered, we only record its internal state at every step.
+
+\textbf{Exp.~2 (Intervention rate; H1).} At each step $t$ we record the token CD
+emits, $y_t$, and the expert's own greedy choice, $\arg\max_w E_t(w)$, and
+report how often they coincide --- over all steps, and restricted to steps
+emitting a \textbf{real} or \textbf{hallucinated} object. Agreement means CD
+changed nothing.
+
+\emph{Scope.} Since this instruments a real CD decode, $E_t$ is teacher-forced
+on \emph{CD's own prefix} $y_{<t}$. The question is: \emph{holding history fixed
+at what CD actually generated, would plain greedy differ at this step?} It is
+not a sequence-level claim about matching an independent greedy rollout. The
+step-level framing isolates the contrastive step's contribution at the moment it
+acts; a sequence-level comparison would conflate it with compounding
+autoregressive divergence. It is also conservative: any argmax difference counts
+as an intervention, however inconsequential.
+
+\textbf{Exp.~3 (Candidate overlap; H2).} At each step we record the top-$10$
+under three rankings --- expert $E_t$, amateur $A_t$, contrastive
+$C_t=(1{+}\alpha)E_t-\alpha A_t$ (pre-APC) --- and measure (i) \textbf{set
+overlap} (same words, order-insensitive) and (ii) \textbf{exact-position match}.
+The pair separates \emph{``do the branches consider the same words?''} from
+\emph{``do they order them the same way?''}
+
+\subsection{Models, data, decoding}
+\label{subsec:cdmech-models}
+
+\textbf{Models} (both \texttt{float16}, \texttt{sdpa}): \textbf{LLaVA-1.5-7B}
+(CLIP ViT-L/14-336px $\to$ linear projector $\to$ Vicuna-7B-v1.5; fixed $576$
+image tokens; \texttt{vicuna\_v1} template; LLaMA/SentencePiece tokenizer, vocab
+$32$k, word-initial marker \texttt{\_}) and \textbf{Qwen2.5-VL-7B-Instruct}
+(dynamic-resolution ViT, $2\times2$ merging, 3D mRoPE; visual-token count is
+image-dependent, $\approx266$ at \texttt{min\_pixels}$=256\cdot28\cdot28$ /
+\texttt{max\_pixels}$=1280\cdot28\cdot28$; \texttt{IMAGE\_TOKEN\_ID}$=151655$;
+chat template; byte-level BPE, vocab $151{,}643$, word-initial sub-tokens carry
+a leading space).
+
+\textbf{Data.} $500$ MSCOCO \texttt{val2017} images --- the \emph{same ids, same
+order}, for every method and both models (verified), so all comparisons are
+paired. $500$ is the conventional CHAIR sample size~\citep{huang2024opera}. We
+deviate from the prevailing \texttt{val2014} convention; this shifts absolute
+CHAIR values but no within-study comparison, since every method sees identical
+images. Ground truth is standard CHAIR~\citep{rohrbach2018chair}: COCO
+instance-segmentation categories $\cup$ objects named in the five reference
+captions, mapped to MSCOCO-80 via the CHAIR synonym dictionary. Prompt:
+\emph{``Describe this image in detail.''}
+
+\textbf{Decoding.} Greedy (\texttt{do\_sample=False}), \texttt{max\_new\_tokens}
+$=256$; determinism isolates the contrastive mechanism from sampling noise.
+Following the reference implementation,
+\begin{equation}
+  C_t(w) = (1+\alpha)E_t(w) - \alpha A_t(w),
+  \qquad
+  \mathcal{V}_{\text{head}} = \big\{ w : E_t(w) \ge \log\beta + \max_{w'} E_t(w') \big\},
+\end{equation}
+with $\alpha=1.0$, $\beta=0.2$; tokens outside $\mathcal{V}_{\text{head}}$ are
+set to $-\infty$ before the $\arg\max$. \textbf{The APC cutoff depends on the
+expert logits only.} The greedy baseline is plain $\arg\max_w E_t(w)$.
+
+\textbf{VCD.} Amateur $=$ diffusion-noised image: $T=1000$,
+$\beta_{1:T}=\sigma(\mathrm{linspace}(-6,6,1000))\cdot(0.5\!\times\!10^{-2}-10^{-5})+10^{-5}$,
+$\bar\alpha_t=\prod_{s\le t}(1-\beta_s)$,
+$v'=\sqrt{\bar\alpha_T}v+\sqrt{1-\bar\alpha_T}\epsilon$, $\epsilon\sim\mathcal{N}(0,I)$,
+at \texttt{noise\_step}$=500$; drawn once per image, fixed across that caption's
+steps. All \S\ref{sec:cdmech-results} numbers use $500$; analyses elsewhere in this
+paper at other noise levels are separate experiments, labelled at point of use.
+
+\textbf{SID.} Reference recipe: \texttt{AGG\_LAYER}$=2$,
+\texttt{ATTENTION\_RANK}$=72$ of $576$ (a \emph{random} $12.5\%$ subset of image
+tokens is \emph{kept}, drawn once per image); layers $0$--$1$ see the full
+image, layer $\ge2$ masks all non-kept image tokens. On LLaVA this is the
+vendored \texttt{use\_sid} path. On Qwen2.5-VL we reproduce it by per-layer
+mask injection under \texttt{sdpa}, because \texttt{eager} attention is
+numerically broken for Qwen2.5-VL in \texttt{transformers}~5.x (it emits
+degenerate text), making the original eager-mask hook unusable: at layers
+$\ge$\texttt{AGG\_LAYER} we inject a causal 4D additive mask setting non-kept
+image key-columns to $-\infty$. Verified to change amateur logits vs.\ no
+masking ($\overline{|\Delta|}=0.77$ over the expert's top-$30$) \emph{and} to
+differ from all-layer masking ($\overline{|\Delta|}=2.01$), confirming layers
+$0$--$1$ stay unmasked. Qwen applies the same $72/576$ \emph{fraction} of that
+image's (dynamic) visual tokens.
+
+\subsection{Instrumentation and labelling}
+\label{subsec:cdmech-capture}
+
+At every step we log the top-$30$ ids and logits for expert, amateur,
+contrastive (pre-APC) and post-APC scores, plus the APC cutoff, emitted token id
+and per-candidate APC-survival flag: $60{,}094$/$59{,}271$ steps for LLaVA
+(VCD/SID), $93{,}652$/$94{,}081$ for Qwen. We store \textbf{ids and logits
+only} --- no token-level semantic labels --- so object attribution happens
+downstream at the caption level, which structurally prevents sub-word
+mislabelling.
+
+\textbf{Object attribution.} Labels come from standard CHAIR applied to the
+\emph{generated caption text}, never to individual sub-word tokens: words are
+singularized, multi-word categories collapsed (\emph{``teddy bear''},
+\emph{``dining table''}), and matched to MSCOCO-80 through the synonym
+dictionary (\emph{man/woman/guy} $\to$ \texttt{person}). A mention is
+\textbf{real} iff its category is in the image's ground truth, else
+\textbf{hallucinated}. Each mention maps back to the step producing its first
+token via incremental detokenization.
+
+This discipline is not cosmetic, and we flag it because it changed our own
+conclusions. Our first pass labelled each decoding step by string-matching the
+token emitted at it. That matcher scores the \emph{``ship''} inside
+\emph{``companionship''} as a boat, splits \emph{``bear''} from \emph{``teddy
+bear''} and counts it as the animal, and silently misses any object whose name
+the tokenizer splits. Under those labels, LLaVA's CD-vs-greedy agreement at
+hallucinated-object steps reads $87.0\%$ (VCD) and $81.3\%$ (SID); under
+caption-level CHAIR it is $75.1\%$ and $73.1\%$. The two are not the same
+quantity measured twice: the per-token pass ranges over $384$/$364$ individual
+\emph{tokens} tagged by string match, the corrected pass over $595$/$577$
+caption-level object \emph{mentions}. The earlier figures were computed on an
+incoherent unit and we report them only to document the correction; every number
+in this paper uses the caption-level procedure, for both models. Qwen2.5-VL was
+labelled at the caption level from the outset and is unaffected.
+
+\subsection{Uncertainty}
+\label{subsec:cdmech-uncertainty}
+
+All intervals are \textbf{image-level (cluster) bootstrap} $95\%$ CIs,
+$B=10{,}000$. Steps are not i.i.d.: they nest within captions within images, and
+images differ systematically (a cluttered image yields both more hallucinations
+and different agreement behaviour). A per-step Wilson/$z$ interval ignores this
+clustering and can understate uncertainty. We therefore resample the $500$
+\textbf{images} with replacement --- the item-level unit used elsewhere in this
+paper --- and recompute each statistic from resampled totals; since every
+quantity is a ratio of sums ($\sum_i \text{hall\_eq}_i / \sum_i
+\text{hall\_n}_i$), this correctly weights images by their number of relevant
+steps. The real-vs-hallucinated gap is tested by the same bootstrap (reported
+$p$ is the two-sided proportion of resamples where the gap changes sign).
+Clustering proves to matter little --- LLaVA-VCD's hallucinated-step interval is
+$[71.4, 78.8]$ against a naive Wilson $[71.5, 78.4]$ --- but we report the
+bootstrap regardless, since its validity does not depend on the effect being
+large enough to survive the wrong analysis.
+
+\subsection{Environment and limitations}
+\label{subsec:cdmech-limits}
+
+\textbf{Environment.} \texttt{PyTorch}~2.8.0+cu128,
+\texttt{transformers}~5.12.1, \texttt{qwen-vl-utils}; one NVIDIA L4 (24\,GB).
+LLaVA runs both branches in a manual KV-cached loop; Qwen caches the expert via
+\texttt{generate()} but recomputes the amateur \emph{cache-less} each step,
+because a hand-rolled mRoPE second-branch cache diverged from the exact
+computation by up to $5.6$ logits (mean $2.8$) --- far beyond \texttt{fp16}
+noise --- so we kept the correct-by-construction path. Caching is a speed
+optimization only and does not change computed logits. Checks confirm the
+amateur is bit-exactly deterministic under a fixed noise draw
+($\max|\Delta|=0$) and that interleaving it does not corrupt the expert (an
+independent teacher-forced pass reproduces captured expert logits to
+$\overline{|\Delta|}\approx0.5$ on logits of magnitude $15$--$25$, the known
+\texttt{fp16} cached-vs-uncached tolerance; cached values are the ecologically
+valid ones, since deployed CD runs cached). \textbf{No global seed was fixed}:
+VCD's noise draw and SID's kept subset are stochastic by construction, as in the
+reference implementations, so per-image realizations differ across runs. All
+quantities aggregate over $\ge59{,}000$ steps on the same fixed $500$ images, a
+regime where this variance is negligible against the reported effects.
+
+\textbf{Limitations.} (1) Logit statistics use the top-$30$, not the full
+vocabulary --- exact for APC-survivor counts (APC retains $1$--$2$ tokens,
+always within the top-$30$) but candidate-level statistics ignore the tail.
+(2) CHAIR's ground truth is incomplete: an object present but neither segmented
+nor mentioned in any reference caption scores as a hallucination. (3) Only
+MSCOCO-80 categories are scored, since ground truth exists only for them. All
+three apply \emph{identically} to every method and both models, so they cannot
+bias the paired comparisons carrying our claims.

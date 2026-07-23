@@ -1,0 +1,153 @@
+% =====================================================================
+% figures_snippet.tex  --  paste these 4 figure blocks into your paper.
+%
+% Assumes: images are uploaded to a folder "figures/" that sits in the SAME
+% directory as main.tex, with the exact filenames below, and that the preamble
+% of main.tex has:  \usepackage{graphicx}
+%
+% Figure numbers are AUTOMATIC: LaTeX numbers them in order of appearance, so
+% they slot in correctly alongside the other figures already in your paper.
+% Refer to them in text with \ref{fig:...} (labels are set below).
+% Each figure is followed by a short explanation paragraph you can keep or move.
+% =====================================================================
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/LLaVA_top10.png}
+  \caption{Per-token contrastive adjustment $d = E - A$ over the expert's
+  top-10 object candidates, for LLaVA-1.5-7B. Left column: real objects; right
+  column: hallucinated objects. Top row: VCD; bottom row: SID. Red bars are
+  amplified ($d > 0$), blue bars are suppressed ($d < 0$); the dashed line marks
+  the group mean. The adjustment is small and positive for both groups, so
+  neither is suppressed.}
+  \label{fig:d-llava-top10}
+\end{figure}
+
+\paragraph{Figure~\ref{fig:d-llava-top10} (LLaVA, top-10).}
+On LLaVA the contrastive adjustment $d = E - A$ is small and \emph{positive} for
+both groups (VCD: $+0.133$ real, $+0.164$ hallucinated; SID: $+0.218$ real,
+$+0.114$ hallucinated), so contrastive decoding on average \emph{amplifies}
+object logits rather than suppressing them. Hallucinated objects are not pushed
+down relative to real ones: under VCD they are amplified slightly more, and under
+SID both are amplified with no meaningful gap. We infer that on LLaVA the
+contrastive term gives no selective suppression of hallucinations; its effect on
+object tokens is a small, non-discriminative upward nudge.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/Qwen_top10.png}
+  \caption{Per-token contrastive adjustment $d = E - A$ over the expert's
+  top-10 object candidates, for Qwen2.5-VL-7B. Layout as in
+  Figure~\ref{fig:d-llava-top10}. Real objects are suppressed more than
+  hallucinations (the real-object panels are more negative), the opposite of the
+  intended behaviour.}
+  \label{fig:d-qwen-top10}
+\end{figure}
+
+\paragraph{Figure~\ref{fig:d-qwen-top10} (Qwen, top-10).}
+On Qwen the adjustment is \emph{negative} overall, so contrastive decoding lowers
+object logits, but it lowers \emph{real} objects far more than hallucinations
+(VCD: $-0.984$ real vs.\ $-0.429$ hallucinated; SID: $-0.674$ vs.\ $-0.172$), and
+a larger share of hallucinated tokens is amplified ($36\%$ vs.\ $25\%$ positive
+under VCD). We infer that the suppression is aimed the wrong way: the tokens it
+pushes down hardest are the correct ones, while hallucinations are comparatively
+spared, which is the opposite of the method's stated goal.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/LLaVA_emitted.png}
+  \caption{Contrastive adjustment $d = E - A$ on emitted object words (exact
+  caption-level labels; one thin spike per emitted word), for LLaVA-1.5-7B.
+  Layout as in Figure~\ref{fig:d-llava-top10}. Hallucinated words are amplified
+  more than real words.}
+  \label{fig:d-llava-emitted}
+\end{figure}
+
+\paragraph{Figure~\ref{fig:d-llava-emitted} (LLaVA, emitted words).}
+Restricting to the object words the model actually wrote, where the labels are
+exact, sharpens the picture: emitted hallucinated words receive a much larger
+positive adjustment than real words (VCD: $+0.789$ vs.\ $+0.264$; SID: $+0.684$
+vs.\ $+0.296$), roughly a threefold stronger amplification of hallucinations. We
+infer that, far from suppressing the hallucinations it emits, contrastive
+decoding boosts them more than it boosts the real objects.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/Qwen_emitted.png}
+  \caption{Contrastive adjustment $d = E - A$ on emitted object words (exact
+  caption-level labels; one thin spike per emitted word), for Qwen2.5-VL-7B.
+  Layout as in Figure~\ref{fig:d-llava-top10}. Real objects are strongly
+  suppressed while hallucinations sit near zero or are amplified.}
+  \label{fig:d-qwen-emitted}
+\end{figure}
+
+\paragraph{Figure~\ref{fig:d-qwen-emitted} (Qwen, emitted words).}
+On Qwen the emitted-word view is the starkest: real object words are strongly
+suppressed while hallucinated words sit near zero or are amplified (VCD:
+$-1.281$ real vs.\ $-0.097$ hallucinated; SID: $-0.747$ real vs.\ $+0.429$
+hallucinated, where hallucinations are pushed \emph{up} as real objects are
+pushed down). We infer that the contrastive term actively works against
+grounding here, penalising the correct objects the model emits while leaving or
+making hallucinations more likely, consistent with Qwen's degraded CHAIR scores.
+
+
+% =====================================================================
+% Proxy A methodology + Gaussian-noise parameter table.
+% Table number is automatic; refer to it with \ref{tab:proxyA-noise}.
+% =====================================================================
+
+\paragraph{Proxy A: matched Gaussian noise.} Proxy~A tests whether the effect of
+contrastive decoding can be reproduced by adding random noise of a matched size
+to the expert model alone. We discard the amateur branch entirely and run a
+single expert-only greedy decode. At each decoding step we take the plain expert
+logits $E$ and add, to the logits of the object-category tokens, independent
+Gaussian noise drawn from $\mathcal{N}(\mu,\sigma^{2})$. The mean $\mu$ and
+standard deviation $\sigma$ are set to the measured mean and standard deviation
+of the contrastive adjustment $d = E - A$ for the corresponding method
+(Table~\ref{tab:proxyA-noise}), so the injected noise has the same magnitude the
+real method adds. We then apply the same adaptive plausibility constraint
+(threshold $\log\beta + \max_{w} E_{t}(w)$, with $\beta = 0.2$, computed from the
+expert logits) and take the greedy token. The proxy therefore never sees a
+degraded image and performs no contrast; its only ingredients are the expert
+logits and matched Gaussian noise. We score the resulting captions on the
+standard CHAIR benchmark and compare them against the real VCD and SID runs.
+
+\begin{table}[t]
+  \centering
+  \small
+  \setlength{\tabcolsep}{6pt}
+  \caption{Proxy~A against the real methods on CHAIR. Greedy is the undefended
+  baseline; VCD and SID are the real contrastive methods. Proxy~A discards the
+  amateur branch and instead injects Gaussian noise $\mathcal{N}(\mu,\sigma^{2})$
+  into the expert's object-category logits, with $(\mu,\sigma)$ (shown in
+  brackets) matched to the measured adjustment $d = E - A$ of VCD. CHAIR-S and
+  CHAIR-I are percentages, lower is better ($\downarrow$). Proxy~A reproduces the
+  CHAIR level of the real methods without any contrast.}
+  \label{tab:proxyA-noise}
+  \begin{tabular}{ll cc}
+    \toprule
+    Model & Setting & CHAIR-S~$\downarrow$ & CHAIR-I~$\downarrow$ \\
+    \midrule
+    LLaVA-1.5-7B  & Greedy    & $50.0$ & $13.9$ \\
+                  & VCD (Real) & $55.0$ & $15.6$ \\
+                  & SID (Real) & $54.2$ & $15.1$ \\
+                  & Proxy A ($\mu{=}{+}0.199,\ \sigma{=}0.853$) & $52.4$ & $14.8$ \\
+    \midrule
+    Qwen2.5-VL-7B & Greedy    & $30.8$ & $7.7$ \\
+                  & VCD (Real) & $36.4$ & $10.5$ \\
+                  & SID (Real) & $38.4$ & $10.5$ \\
+                  & Proxy A ($\mu{=}{-}0.846,\ \sigma{=}1.531$) & $30.8$ & $8.2$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\paragraph{What Table~\ref{tab:proxyA-noise} shows.} Neither real method reduces
+hallucination below greedy: on LLaVA both VCD and SID sit at or above the greedy
+baseline, and on Qwen they raise CHAIR clearly above it. Proxy~A, which uses no
+amateur branch and no contrast but only matched Gaussian noise, lands in the same
+CHAIR band as the real methods on LLaVA ($52.4$ vs.\ $55.0$ and $54.2$) and stays
+near greedy on Qwen. We infer that on LLaVA the effect of contrastive decoding is
+indistinguishable from adding random noise of the same magnitude, so the amateur
+branch contributes no targeted hallucination reduction, while on Qwen the real
+methods are in fact worse than matched noise. In neither case does contrastive
+decoding provide a benefit that a simple noise injection cannot account for.

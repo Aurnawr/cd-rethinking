@@ -1,0 +1,146 @@
+[
+  {
+    "model": "LLaVA",
+    "method": "VCD",
+    "branch": "expert",
+    "buckets": {
+      "denial": 0.0033742162704947882,
+      "generic": 0.46425567811724844,
+      "present": 0.026479209709079306,
+      "absent": 0.006169404100892843,
+      "other": 0.49972149180228775
+    }
+  },
+  {
+    "model": "LLaVA",
+    "method": "VCD",
+    "branch": "amateur",
+    "buckets": {
+      "denial": 0.0034625410769219735,
+      "generic": 0.4644869214938476,
+      "present": 0.026453729865676512,
+      "absent": 0.006503262152858417,
+      "other": 0.4990935454106964
+    }
+  },
+  {
+    "model": "LLaVA",
+    "method": "VCD",
+    "branch": "cd",
+    "buckets": {
+      "denial": 0.003229655758363232,
+      "generic": 0.45939028778952984,
+      "present": 0.025789187515227706,
+      "absent": 0.005960284835271118,
+      "other": 0.5056305841016102
+    }
+  },
+  {
+    "model": "LLaVA",
+    "method": "SID",
+    "branch": "expert",
+    "buckets": {
+      "denial": 0.003386705756312874,
+      "generic": 0.46195787985864073,
+      "present": 0.026146484640021245,
+      "absent": 0.0061596068211153595,
+      "other": 0.5023493229239137
+    }
+  },
+  {
+    "model": "LLaVA",
+    "method": "SID",
+    "branch": "amateur",
+    "buckets": {
+      "denial": 0.003630279946001304,
+      "generic": 0.46081421978159387,
+      "present": 0.025937720386209746,
+      "absent": 0.0066418142482072146,
+      "other": 0.5029759656379925
+    }
+  },
+  {
+    "model": "LLaVA",
+    "method": "SID",
+    "branch": "cd",
+    "buckets": {
+      "denial": 0.003130531334724662,
+      "generic": 0.45619915636106667,
+      "present": 0.02548083765601627,
+      "absent": 0.0057661446503764705,
+      "other": 0.5094233299978163
+    }
+  },
+  {
+    "model": "Qwen",
+    "method": "VCD",
+    "branch": "expert",
+    "buckets": {
+      "denial": 0.0036875312505956085,
+      "generic": 0.48136291962542815,
+      "present": 0.020582018943884114,
+      "absent": 0.0024458886818178698,
+      "other": 0.49192164149827106
+    }
+  },
+  {
+    "model": "Qwen",
+    "method": "VCD",
+    "branch": "amateur",
+    "buckets": {
+      "denial": 0.004004012676277144,
+      "generic": 0.5384263524356172,
+      "present": 0.02244783982449361,
+      "absent": 0.00234115317271673,
+      "other": 0.43278064189089605
+    }
+  },
+  {
+    "model": "Qwen",
+    "method": "VCD",
+    "branch": "cd",
+    "buckets": {
+      "denial": 0.0035751130682333473,
+      "generic": 0.36065053240313094,
+      "present": 0.01639321556762872,
+      "absent": 0.0030716687325362344,
+      "other": 0.6163094702284672
+    }
+  },
+  {
+    "model": "Qwen",
+    "method": "SID",
+    "branch": "expert",
+    "buckets": {
+      "denial": 0.0037787708872122944,
+      "generic": 0.48007193216224725,
+      "present": 0.020915335978930912,
+      "absent": 0.0025431072724299538,
+      "other": 0.4926908536991855
+    }
+  },
+  {
+    "model": "Qwen",
+    "method": "SID",
+    "branch": "amateur",
+    "buckets": {
+      "denial": 0.004021323299814905,
+      "generic": 0.5357117298749994,
+      "present": 0.02283064996169784,
+      "absent": 0.002387983355208899,
+      "other": 0.43504831350828027
+    }
+  },
+  {
+    "model": "Qwen",
+    "method": "SID",
+    "branch": "cd",
+    "buckets": {
+      "denial": 0.0036696401533841314,
+      "generic": 0.3646586247556077,
+      "present": 0.01699612776896016,
+      "absent": 0.0031910160493913466,
+      "other": 0.6114845912726563
+    }
+  }
+]

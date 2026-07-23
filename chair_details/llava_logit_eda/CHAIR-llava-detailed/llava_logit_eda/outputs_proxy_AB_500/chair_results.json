@@ -1,0 +1,51 @@
+{
+  "greedy (real, 500img)": {
+    "num_captions": 500,
+    "CHAIR_s": 0.5,
+    "CHAIR_i": 0.13875724065297526,
+    "avg_objects_per_caption": 7.596,
+    "avg_caption_length": 90.256
+  },
+  "VCD (real, 500img)": {
+    "num_captions": 500,
+    "CHAIR_s": 0.53,
+    "CHAIR_i": 0.14613778705636743,
+    "avg_objects_per_caption": 7.664,
+    "avg_caption_length": 91.772
+  },
+  "SID (real, 500img)": {
+    "num_captions": 500,
+    "CHAIR_s": 0.54,
+    "CHAIR_i": 0.1389324960753532,
+    "avg_objects_per_caption": 7.644,
+    "avg_caption_length": 90.098
+  },
+  "A_vcd": {
+    "num_captions": 500,
+    "CHAIR_s": 0.524,
+    "CHAIR_i": 0.1475451539048588,
+    "avg_objects_per_caption": 7.862,
+    "avg_caption_length": 90.778
+  },
+  "A_sid": {
+    "num_captions": 500,
+    "CHAIR_s": 0.496,
+    "CHAIR_i": 0.1418493323255228,
+    "avg_objects_per_caption": 7.938,
+    "avg_caption_length": 90.01
+  },
+  "B_vcd": {
+    "num_captions": 500,
+    "CHAIR_s": 0.528,
+    "CHAIR_i": 0.14336553126588714,
+    "avg_objects_per_caption": 7.868,
+    "avg_caption_length": 90.032
+  },
+  "B_sid": {
+    "num_captions": 500,
+    "CHAIR_s": 0.5,
+    "CHAIR_i": 0.14460596786534047,
+    "avg_objects_per_caption": 7.842,
+    "avg_caption_length": 90.28
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "vcd": {
+    "auc": {
+      "Expert E": 0.6787273924280626,
+      "CD 2E-A": 0.6539778415642685,
+      "Contrastive term d": 0.41137234914492654
+    },
+    "n_contrastive_steps": 2198,
+    "n_points": 7721,
+    "n_real": 4403,
+    "n_hall": 3318
+  },
+  "sid": {
+    "auc": {
+      "Expert E": 0.6841160658356278,
+      "CD 2E-A": 0.6627511817453853,
+      "Contrastive term d": 0.43542183494599124
+    },
+    "n_contrastive_steps": 2156,
+    "n_points": 7369,
+    "n_real": 4157,
+    "n_hall": 3212
+  }
+}

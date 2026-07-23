@@ -1,0 +1,50 @@
+% =====================================================================
+% main.tex -- STANDALONE PREVIEW WRAPPER ONLY.
+%
+% This is NOT the paper. It exists so the Exp. 2 & 3 section can be compiled
+% and read on its own. For the real paper, \input the three section files
+% directly and delete this wrapper:
+%
+%     \input{01_hypothesis}
+%     \input{02_setup}
+%     \input{03_results}
+%
+% They assume the surrounding paper has ALREADY introduced VCD/SID and the
+% claims of Yin et al. (2025); none of that is re-explained here.
+% If they sit inside a larger section, demote \section -> \subsection.
+% =====================================================================
+\documentclass{article}
+
+% [preprint] = no line numbers, no submission banner (clean preview; the paper
+% itself targets TMLR, so this wrapper's class is only for standalone reading).
+\usepackage[preprint]{neurips_2025}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{nicefrac}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{natbib}
+
+\title{Contrastive Decoding Permutes, It Does Not Ground\\
+\large Section draft --- CHAIR analysis on LLaVA-1.5-7B and Qwen2.5-VL-7B}
+
+\author{Anonymous Author(s)}
+
+\begin{document}
+
+\maketitle
+
+\input{01_hypothesis}
+\input{02_setup}
+\input{03_results}
+
+\bibliographystyle{plainnat}
+\bibliography{refs}
+
+\end{document}
