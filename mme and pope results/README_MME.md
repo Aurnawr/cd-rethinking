@@ -1,4 +1,37 @@
-# MME Evaluation Table
+# MME & POPE Results — Contrastive Decoding Reproducibility Study
+
+This folder contains the code, experiment scripts, and results for reproducing and
+analyzing **Contrastive Decoding (CD)** and related decoding strategies for
+hallucination mitigation in vision-language models (LLaVA), evaluated on the
+**MME** and **POPE** benchmarks.
+
+> This folder is self-contained: all paths in the commands below are relative to
+> this directory. The raw benchmark data (`data/`) and the bundled `llava/` model
+> source are **not** included here — install the LLaVA stack into your environment
+> and download the MME/POPE releases separately (see Prerequisites and Prepare the data).
+
+## Directory overview
+
+| Path | Description |
+| --- | --- |
+| `inference/` | Inference scripts, one per decoding method, for MME and POPE (baseline, VCD, ICD, SID, PBA, OLM, APC). |
+| `eval/` | Evaluators that consume answer files and render the per-subtask results table. |
+| `scripts/` | Shell wrappers to prepare data, run inference, and build the tables end to end. |
+| `outputs/` | Generated answer files (`.jsonl`) and result tables (`.csv`) per method. |
+| `plots/` | Figures produced from the results. |
+| `R_score.py`, `R_score_eda.py` | Compute and analyze the semantic flip ratio (R) between decoding methods. |
+| `transitions.py` | EDA on answer transitions across MME results. |
+| `pyproject.toml` | Project configuration and dependencies. |
+
+## Contents
+
+- MME evaluation table (below): what gets produced, repo layout, prerequisites,
+  preparing data, running inference, and building the table.
+- POPE evaluation: see the [POPE](#pope-evaluation) section at the end.
+
+---
+
+## MME Evaluation Table
 
 This guide explains how to use this codebase to run LLaVA inference on the
 **MME benchmark** and produce the per-subtask results table (Yes% | Accuracy |
@@ -282,3 +315,41 @@ bash scripts/mme_infer_spurious.sh
 # 3. Table
 bash scripts/mme_eval.sh
 ```
+
+---
+
+## POPE Evaluation
+
+The POPE (Polling-based Object Probing Evaluation) workflow mirrors the MME setup:
+one `inference/pope_infer_*.py` script per decoding method writes answer files, and
+a POPE evaluator scores them for hallucination (accuracy, precision, recall, F1, and
+yes-ratio) over the `random`, `popular`, and `adversarial` splits.
+
+### Run POPE inference
+
+```bash
+# Baseline greedy generation
+bash scripts/pope_infer_base.sh
+
+# Contrastive decoding (VCD / ICD / SID)
+bash scripts/pope_infer_cd.sh
+
+# Spurious-mitigation variants (PBA / OLM / APC)
+bash scripts/pope_infer_spurious.sh
+```
+
+The POPE inference scripts accept the same shared arguments as the MME scripts
+(`--model-path`, `--question-file`, `--image-folder`, `--answers-file`, `--conv-mode`,
+and the method-specific flags such as `--use-vcd` / `--use-icd` / `--use-sid` /
+`--use-apc` / `--use-olm`). Override the model or data via environment variables
+exactly as documented for MME above.
+
+### Score POPE
+
+```bash
+bash scripts/pope_eval_base.sh        # score a single method
+bash scripts/pope_eval_transfer.sh    # cross-method / transfer analysis
+```
+
+Answer files are written under `outputs/pope/{method}/` following the same JSON
+schema as MME, and the evaluator prints a per-split table of hallucination metrics.
