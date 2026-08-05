@@ -1,0 +1,184 @@
+% =====================================================================
+% 02_methodology.tex  --  Detailed methodology (Exp. 4)
+% =====================================================================
+
+\section{Methodology}
+\label{sec:dproxy-method}
+
+The analysis has two parts that use the same 500 images but not the same decode.
+Part~one (Section~\ref{subsec:dproxy-danalysis}) reads the contrastive adjustment
+$d = E - A$ from logits stored along the real VCD or SID decoding trajectory (the
+path chosen by $C = 2E - A$). Part~two (Section~\ref{subsec:dproxy-proxy})
+performs an independent expert-only decode with random noise added to the logits,
+and asks whether that noise stand-in reproduces the real methods' effect on
+hallucination. Only the image set is shared; the two parts are separate decoding
+runs. We first fix the common setup.
+
+\subsection{Shared setup}
+\label{subsec:dproxy-setup}
+
+\textbf{Models and data.} We use LLaVA-1.5-7B and Qwen2.5-VL-7B-Instruct, both in
+\texttt{float16} with \texttt{sdpa} attention, on a fixed set of 500 MSCOCO~\citep{lin2014coco}
+\texttt{val2017} images (the same images and order for every run, so all
+comparisons are paired). The prompt is ``Describe this image in detail'' and
+decoding is greedy with \texttt{max\_new\_tokens} $=256$.
+
+\textbf{Contrastive branches.} The expert branch $E$ scores the next token from
+the clean image. The amateur branch $A$ scores it from a degraded image. For VCD
+the degradation is forward diffusion noise at step 500; for SID it is attention
+pruning that keeps a random $12.5\%$ of image tokens from layer two onward. The
+contrastive score is $C = 2E - A$ (that is $\alpha = 1$), followed by the
+adaptive plausibility constraint (APC), which removes any token whose expert
+logit is below $\log\beta + \max_w E_t(w)$ with $\beta = 0.2$. These settings
+match the reference implementations and the other experiments in this paper.
+
+\textbf{What is recorded.} At every decoding step we store the top-30 token ids
+and logits of both the expert and the amateur branch, together with the token
+the method finally emits. All object labelling is done afterward from the
+generated caption text, never from raw sub-word tokens, which avoids the sub-word
+mislabelling problem (for example the ``ship'' inside ``companionship'' or a
+``bear'' split off from ``teddy bear'').
+
+\textbf{Object labelling.} We use the standard CHAIR
+protocol~\citep{rohrbach2018chair}. Each image has a
+ground-truth object set built from its COCO instance-segmentation labels plus the
+objects named in its five human reference captions, mapped to the 80 MSCOCO
+categories through the CHAIR synonym list. An object the model mentions is
+\emph{real} if its category is in that set and \emph{hallucinated} if it is not.
+
+\subsection{Part one: the contrastive adjustment \texorpdfstring{$d = E - A$}{d = E - A}}
+\label{subsec:dproxy-danalysis}
+
+For a given token we read its expert logit $E$ and amateur logit $A$ from the
+stored top-30 lists and form $d = E - A$. Because $C = E + d$, a positive $d$
+means the token is amplified by contrastive decoding and a negative $d$ means it
+is suppressed. We compute $d$ over three populations of object tokens, from the
+cleanest to the broadest, so that the conclusion does not rest on one arbitrary
+cut-off.
+
+\begin{enumerate}
+  \item \textbf{Emitted object words (primary).} These are the object words the
+  model actually wrote, labelled at the caption level, so every real or
+  hallucinated tag is exact. For each such word we take the step that produced
+  its first token and read $E$ and $A$ for that token.
+  \item \textbf{Top-10 expert candidates (robustness).} At every step we take the
+  ten highest tokens by expert logit, keep those that are word-initial COCO
+  object words, and label each by ground-truth membership. This is not
+  conditioned on a word winning, so it removes any selection effect of the
+  emitted set.
+  \item \textbf{Top-30 expert candidates (robustness).} The same as above with a
+  wider window, to check that the picture is stable as the candidate set grows.
+\end{enumerate}
+
+For each population we report, separately for real and hallucinated objects, the
+mean of $d$ and the fraction of tokens with $d > 0$ (the share that contrastive
+decoding amplifies rather than suppresses). We visualise the full spread with
+per-token bar plots, one bar per token, coloured red where $d > 0$ and blue where
+$d < 0$, with the group mean drawn as a dashed line.
+
+\textbf{Two honest notes.} First, if a token is not present in both the expert and
+the amateur stored top-30 lists, its $d$ cannot be formed and the token is
+skipped; this is a small fraction and is applied identically to both branches, so
+it cannot bias the real-versus-hallucinated comparison. Second, the candidate
+populations use single-token labels, so a word-initial ``bear'' that begins
+``teddy bear'' would be read as the animal; this affects well under one percent
+of candidates and hits both branches equally. The emitted population has no such
+caveat, which is why we treat it as primary.
+
+\subsection{Part two: the noise proxy}
+\label{subsec:dproxy-proxy}
+
+The measurements in Section~\ref{subsec:dproxy-danalysis} suggest a specific
+reading of the contrastive term. The adjustment $d = E - A$ that contrastive
+decoding adds to the expert logits does not behave like a targeted,
+content-aware signal: it does not single out hallucinated objects for
+suppression, and across tokens it resembles a small, roughly zero-centred
+perturbation layered on top of the expert scores. This motivates a direct test.
+If the amateur branch contributes, in effect, only a perturbation of a certain
+size, then adding a matched amount of \emph{random} noise to the same expert
+logits should produce a similar outcome, and the amateur branch would not be
+doing anything a generic perturbation could not.
+
+We therefore build a deliberately minimal control, the noise proxy. We discard
+the amateur branch entirely. Starting from the plain expert logits $E$, we add
+independent random noise to the object-category logits, with magnitude matched to
+the measured distribution of $d$ for the real method, and then apply the same
+adaptive plausibility constraint and greedy decoding. The proxy has no access to
+the degraded image and performs no contrast; its only ingredients are the expert
+logits and random noise of the same size that contrastive decoding actually adds.
+We evaluate it on the standard CHAIR benchmark under identical conditions and
+compare against the real VCD and SID runs. The logic is straightforward: if
+contrastive decoding worked through a genuine image-grounded mechanism, matched
+random noise should not reproduce its effect on hallucination; if the proxy lands
+at the same CHAIR scores as the real methods, the measured effect of contrastive
+decoding is statistically indistinguishable from adding random noise of the same
+size, and the amateur branch is not contributing targeted, hallucination-reducing
+information.
+
+\textbf{Object-token vocabulary.} We first collect the set of vocabulary token
+ids that are word-initial and spell an MSCOCO object word (348 tokens for
+Qwen; a comparable set for LLaVA). These are the only tokens the proxy perturbs,
+because these are the tokens whose logits determine CHAIR. Restricting the noise
+to object tokens is deliberate and conservative: it gives the proxy the best
+possible chance to mimic a hallucination-relevant intervention.
+
+\textbf{Which $d$ distribution the noise is matched to.} The noise parameters in
+Table~\ref{tab:dproxy-noise}, and the empirical values that Proxy~B resamples, are
+computed over a single broad pool: every object-category token that appears
+anywhere in the stored top-30 expert candidate list, at every step, with real and
+hallucinated tokens combined (about $114{,}000$ tokens per model). This pool is
+deliberately broader than the top-10, top-30, or emitted populations used in the
+$d$-analysis of Section~\ref{subsec:dproxy-danalysis}, which is why its mean does
+not equal any single value in those tables. Using one pooled distribution keeps
+the proxy agnostic to whether a token is real or hallucinated, which is the point
+of the control.
+
+\textbf{Proxy A (Gaussian, magnitude-matched).} We run expert-only greedy
+decoding. At each step we add to every object-token logit an independent draw
+from a Gaussian whose mean and standard deviation equal the measured pooled mean
+and standard deviation of $d$ for the corresponding real method
+(Table~\ref{tab:dproxy-noise}). We then apply the same APC and take the argmax.
+There is no amateur branch and no second image pass.
+
+\textbf{Proxy B (empirical bootstrap).} Identical to Proxy A, except the bonus
+for each object token is drawn by resampling with replacement from the empirical
+set of measured $d$ values for that method. This reproduces the real
+distribution of $d$, including its skew, not just its first two moments.
+
+\textbf{Matching the magnitude.} Table~\ref{tab:dproxy-noise} lists the noise
+parameters. The sign of $d$ differs by model: on LLaVA the mean of $d$ is
+positive, so the proxy on average raises object logits; on Qwen it is negative,
+so the proxy on average lowers them. In both cases the proxy matches the real
+method's own measured magnitude, so it is a like-for-like stand-in.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Noise parameters for the proxies, taken from the measured distribution
+of $d = E - A$ over object tokens. Proxy~A draws from a Gaussian with these mean
+and standard deviation; Proxy~B resamples the empirical $d$ values (same mean and
+standard deviation by construction).}
+\label{tab:dproxy-noise}
+\begin{tabular}{llcc}
+\toprule
+Model & Method & mean of $d$ & std of $d$ \\
+\midrule
+LLaVA-1.5-7B & VCD & $+0.199$ & $0.853$ \\
+ & SID & $+0.300$ & $0.903$ \\
+Qwen2.5-VL-7B & VCD & $-0.846$ & $1.531$ \\
+ & SID & $-0.663$ & $1.558$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Scoring.} Every proxy run produces 500 captions on the same images, which
+we score with the standard CHAIR metric using the identical scorer applied to the
+real greedy, VCD, and SID runs. We report CHAIR-S (the percentage of captions
+containing at least one hallucinated object) and CHAIR-I (the percentage of
+mentioned object instances that are hallucinated). Lower is better for both.
+
+\textbf{Reproducibility note.} No global random seed was fixed. The noise draws
+in the proxies and the stochastic degradations in the real methods therefore
+differ across runs, but every quantity is aggregated over 500 images and tens of
+thousands of tokens, a regime where this variation is negligible relative to the
+reported effects.

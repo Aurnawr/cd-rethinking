@@ -1,0 +1,29 @@
+\begin{table}[h]
+  \centering
+  \small
+  \setlength{\tabcolsep}{6pt}
+  \vspace{\baselineskip}
+  \caption{Proxy~A against the real methods on CHAIR benchmark. Greedy is the
+  baseline; VCD and SID are the real contrastive methods. Proxy~A discards the
+  amateur branch and instead injects Gaussian noise $\mathcal{N}(\mu,\sigma^{2})$
+  into the expert's object-category logits, with $(\mu,\sigma)$ (shown in
+  brackets) matched to the measured adjustment $d = E - A$ of VCD. Lower is better ($\downarrow$).
+  Values in square brackets are 95\% image-level bootstrap confidence intervals over the 500 images ($B=10{,}000$ resamples).}
+  \vspace{\baselineskip}
+  \label{tab:proxyA-noise}
+  \begin{tabular}{ll cc}
+    \toprule
+    Model & Setting & CHAIR-S~$\downarrow$ & CHAIR-I~$\downarrow$ \\
+    \midrule
+    LLaVA-1.5-7B  & Greedy    & $50.0$\,{\scriptsize$[45.6,54.4]$} & $13.9$\,{\scriptsize$[12.5,15.3]$} \\
+                  & VCD (Real) & $55.0$\,{\scriptsize$[50.6,59.4]$} & $15.6$\,{\scriptsize$[14.1,17.0]$} \\
+                  & SID (Real) & $54.2$\,{\scriptsize$[49.8,58.6]$} & $15.1$\,{\scriptsize$[13.7,16.6]$} \\
+                  & Proxy A ($\mu{=}{+}0.199,\ \sigma{=}0.853$) & $52.4$\,{\scriptsize$[48.0,56.6]$} & $14.8$\,{\scriptsize$[13.3,16.3]$} \\
+    \midrule
+    Qwen2.5-VL-7B & Greedy    & $30.8$\,{\scriptsize$[26.8,34.8]$} & $7.7$\,{\scriptsize$[6.5,8.9]$} \\
+                  & VCD (Real) & $36.4$\,{\scriptsize$[32.4,40.6]$} & $10.5$\,{\scriptsize$[8.9,12.1]$} \\
+                  & SID (Real) & $38.4$\,{\scriptsize$[34.2,42.6]$} & $10.5$\,{\scriptsize$[9.1,12.0]$} \\
+                  & Proxy A ($\mu{=}{-}0.846,\ \sigma{=}1.531$) & $30.8$\,{\scriptsize$[26.8,34.8]$} & $8.2$\,{\scriptsize$[6.9,9.5]$} \\
+    \bottomrule
+  \end{tabular}
+\end{table}

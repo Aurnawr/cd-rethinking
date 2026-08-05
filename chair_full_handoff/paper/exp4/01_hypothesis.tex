@@ -1,0 +1,41 @@
+% =====================================================================
+% 01_hypothesis.tex  --  Hypothesis (Exp. 4: d-analysis + noise proxy)
+% =====================================================================
+
+\section{Hypothesis}
+\label{sec:dproxy-hypothesis}
+
+Contrastive decoding, in the visual forms VCD~\citep{leng2024vcd} and
+SID~\citep{huo2024sid}, builds its output score as
+$C = (1+\alpha)E - \alpha A$, which at $\alpha = 1$ equals $2E - A = E + d$,
+where $d = E - A$ is the gap between the clean-image expert logit $E$ and the
+degraded-image amateur logit $A$. The quantity $d$ is therefore exactly the
+adjustment that contrastive decoding adds to the plain expert score at every
+candidate token. The stated purpose of the method is to push down tokens that
+the language prior favours without visual support, so for a hallucinated object
+$d$ should be negative.
+
+We test this premise in two complementary ways.
+
+\begin{description}
+  \item[\textbf{H1 (Selective suppression).}] If contrastive decoding suppresses
+  hallucinations, the adjustment $d$ should be more negative for hallucinated
+  objects than for real objects. We measure the sign and size of $d$ separately
+  for the two groups. A working suppressor predicts clearly negative $d$ on
+  hallucinations, and more negative on hallucinations than on real objects.
+  \item[\textbf{H2 (Mechanism versus perturbation).}] If the change contrastive
+  decoding produces in the hallucination rate is a targeted effect of the
+  amateur branch, then replacing that branch with random noise of the same
+  magnitude should not reproduce it. We construct noise proxies whose only input
+  is expert logits plus a random bonus matched to the measured size of $d$, and
+  compare their CHAIR scores against the real methods.
+\end{description}
+
+\noindent The first test asks whether the contrastive adjustment points in the
+direction the method claims. The second asks whether the measured effect on
+hallucination requires the amateur branch at all, or whether generic noise of
+the same magnitude is enough to explain it. We run both on two model families
+(LLaVA-1.5-7B~\citep{liu2024llava} and
+Qwen2.5-VL-7B~\citep{bai2025qwen25vl}) and both contrastive methods (VCD and
+SID). This complements the benchmark-level critique of
+\citet{yin2025mirage} by examining the logit adjustment itself.

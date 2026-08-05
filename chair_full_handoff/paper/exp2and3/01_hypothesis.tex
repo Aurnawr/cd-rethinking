@@ -1,0 +1,33 @@
+% =====================================================================
+% 01_hypothesis.tex  --  Hypothesis (Exp. 2 & 3)
+% =====================================================================
+
+\section{Hypothesis}
+\label{sec:cdmech-hypothesis}
+
+Contrastive decoding rests on a specific mechanistic story: a degraded amateur
+branch amplifies prior-driven hallucinations, and subtracting its logits from
+the expert steers generation toward better-grounded tokens. This story implies
+two properties that should be directly observable at decoding time. We state
+them as hypotheses and design Experiments~2 and~3 to measure each one on two
+model families (LLaVA-1.5-7B and Qwen2.5-VL-7B).
+
+\begin{description}
+  \item[\textbf{H1 (Intervention).}] Contrastive decoding should change the
+  emitted token at the steps where hallucinations arise. Experiment~2 measures
+  how often the contrastive output coincides with the expert's own greedy
+  choice, and compares this rate at real- versus hallucinated-object steps, to
+  quantify where and how often the intervention takes effect.
+  \item[\textbf{H2 (New grounding).}] When contrastive decoding does intervene,
+  it should introduce a better-grounded alternative --- changing which
+  candidates are available, rather than re-ordering a shortlist the expert has
+  already fixed. Experiment~3 measures the overlap between the expert, amateur,
+  and contrastive candidate sets, to determine whether the contrast supplies new
+  candidates or re-weights existing ones.
+\end{description}
+
+\noindent Together these experiments characterize the contrastive step
+mechanistically: Experiment~2 establishes \emph{when} it acts, and Experiment~3
+establishes \emph{what} it has available to act on. This complements the
+external, benchmark-level analysis of \citet{yin2025mirage} by examining the
+decoding process itself, on the generative captioning setting measured by CHAIR.

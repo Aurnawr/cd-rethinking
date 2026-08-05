@@ -1,0 +1,212 @@
+% =====================================================================
+% 03_results.tex  --  Results for Experiments 2 & 3
+% =====================================================================
+
+\section{Results}
+\label{sec:cdmech-results}
+
+All intervals are image-level bootstrap $95\%$ CIs (\S\ref{subsec:cdmech-uncertainty}).
+
+\subsection{Experiment 2: CD reproduces the undefended choice at most
+hallucination steps}
+\label{subsec:cdmech-res-intervention}
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\caption{\textbf{Intervention rate.} \% of steps where CD's output equals the
+expert's own greedy top-$1$ (i.e.\ CD changed \emph{nothing}). Object columns
+restrict to steps emitting a CHAIR-labelled mention; ``Gap'' is
+real~$-$~hallucinated (pp). Image-level bootstrap $95\%$ CIs ($B=10{,}000$,
+$500$ images); every gap excludes zero ($p<10^{-4}$).}
+\label{tab:cdmech-intervention}
+\begin{tabular}{llcccc}
+\toprule
+Model & Method & All steps & Real-object & Hallucinated-object & Gap (pp) \\
+\midrule
+LLaVA-1.5-7B
+ & VCD & $94.0$ \tiny{[93.8, 94.2]} & $92.7$ \tiny{[91.8, 93.6]} & \textbf{75.1} \tiny{[71.4, 78.8]} & $17.6$ \tiny{[13.8, 21.4]} \\
+ & SID & $91.8$ \tiny{[91.6, 92.1]} & $90.7$ \tiny{[89.7, 91.7]} & \textbf{73.1} \tiny{[69.5, 76.7]} & $17.6$ \tiny{[14.0, 21.3]} \\
+\midrule
+Qwen2.5-VL-7B
+ & VCD & $75.3$ \tiny{[74.9, 75.7]} & $83.7$ \tiny{[82.1, 85.3]} & \textbf{62.2} \tiny{[56.3, 68.0]} & $21.5$ \tiny{[15.6, 27.6]} \\
+ & SID & $75.7$ \tiny{[75.3, 76.1]} & $84.6$ \tiny{[83.1, 86.1]} & \textbf{62.5} \tiny{[56.5, 68.1]} & $22.1$ \tiny{[16.3, 28.1]} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:cdmech-intervention} reports how often CD's emitted token is
+the expert's own greedy choice, holding the prefix fixed.
+
+\emph{(i) The contrastive step is a no-op at most steps.} On LLaVA $94.0\%$
+(VCD) and $91.8\%$ (SID) of emitted tokens are identical to the undefended
+model's: the mechanism is inactive for roughly nineteen of every twenty tokens.
+
+\emph{(ii) Most hallucinations are emitted unchanged.} At steps emitting a
+hallucinated object CD still reproduces the expert's greedy choice $75.1\%$ /
+$73.1\%$ of the time on LLaVA and $62.2\%$ / $62.5\%$ on Qwen. A hallucination
+emitted with the very token the undefended model would have emitted was not
+prevented by CD. This is a hard ceiling: CD can be causally responsible for at
+most ${\approx}25\%$ (LLaVA) or ${\approx}38\%$ (Qwen) of hallucination-step
+outcomes, and only if every intervention corrects rather than introduces an
+error. Even at the pessimistic bootstrap ends ($78.8\%$, $68.0\%$) the majority
+are emitted unchanged. H1 fails: a method advertised as suppressing
+hallucinated tokens mostly agrees with them.
+
+\emph{(iii) Yet CD is selectively active --- which strengthens the finding.} The
+obvious objection is that CD ``just never fires,'' rendering this trivial. It
+does not hold: agreement is $17.6$--$22.1$\,pp \emph{lower} at hallucinated-
+than real-object steps in all four settings, every CI excluding zero. The
+signal \emph{is} concentrating where intended. The mechanism fires and does not
+deliver, which forecloses the first repair a reader reaches for (``tune
+$\alpha$ so it fires more''). Firing more is not the missing ingredient
+(\S\ref{subsec:cdmech-res-overlap}).
+
+\emph{(iv) The models fail differently.} Qwen's overall agreement ($75\%$) is
+far below LLaVA's ($94\%$) --- CD is ${\approx}4\times$ as interventionist ---
+yet its CHAIR scores degrade rather than improve. An architecture where CD
+rewrites one token in four and still worsens hallucination refutes the ``more
+contrast $=$ less hallucination'' intuition, and shows the effect is not a
+LLaVA-specific artifact.
+
+\subsection{Experiment 3: all three branches deliberate over the same words}
+\label{subsec:cdmech-res-overlap}
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{1.5pt}
+\caption{\textbf{Top-10 set overlap} (order-insensitive) of the expert top-$10$
+with the amateur ($E\!\cap\!A$) and contrastive ($E\!\cap\!C$) top-$10$, out of
+$10$, reported over all steps and restricted to steps emitting a real- or
+hallucinated-object mention. $E$: expert, $A$: amateur, $C$: $2E-A$ (pre-APC).
+Image-level bootstrap $95\%$ CIs ($B=10{,}000$); step counts (all/real/hall):
+LLaVA $\sim$60k/3.2k/0.6k, Qwen $\sim$94k/2.6k/0.3k.}
+\label{tab:cdmech-overlap}
+\begin{tabular}{llcccccc}
+\toprule
+& & \multicolumn{2}{c}{All steps} & \multicolumn{2}{c}{Real-object} & \multicolumn{2}{c}{Hallucinated} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}
+Model & Method & $E\!\cap\!A$ & $E\!\cap\!C$ & $E\!\cap\!A$ & $E\!\cap\!C$ & $E\!\cap\!A$ & $E\!\cap\!C$ \\
+\midrule
+LLaVA-1.5-7B
+ & VCD & $9.34$ \tiny{[9.32, 9.36]} & $9.33$ \tiny{[9.31, 9.35]} & $8.89$ \tiny{[8.84, 8.94]} & $8.92$ \tiny{[8.88, 8.97]} & $8.42$ \tiny{[8.30, 8.54]} & $8.34$ \tiny{[8.21, 8.47]} \\
+ & SID & $9.14$ \tiny{[9.12, 9.15]} & $9.10$ \tiny{[9.09, 9.12]} & $8.71$ \tiny{[8.67, 8.75]} & $8.68$ \tiny{[8.64, 8.72]} & $8.35$ \tiny{[8.25, 8.45]} & $8.06$ \tiny{[7.94, 8.17]} \\
+\midrule
+Qwen2.5-VL-7B
+ & VCD & $8.36$ \tiny{[8.34, 8.38]} & $8.01$ \tiny{[7.98, 8.04]} & $8.03$ \tiny{[7.97, 8.10]} & $7.93$ \tiny{[7.87, 7.99]} & $7.72$ \tiny{[7.50, 7.93]} & $7.78$ \tiny{[7.60, 7.94]} \\
+ & SID & $8.20$ \tiny{[8.18, 8.23]} & $7.95$ \tiny{[7.92, 7.98]} & $7.83$ \tiny{[7.77, 7.89]} & $7.86$ \tiny{[7.80, 7.92]} & $7.37$ \tiny{[7.17, 7.58]} & $7.56$ \tiny{[7.38, 7.72]} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:cdmech-overlap} inspects the candidate sets themselves.
+
+\textbf{The amateur proposes the same words.} Across all steps, $9.34$ (VCD) /
+$9.14$ (SID) of the expert's top-$10$ also appear in the amateur's on LLaVA, and
+$8.2$--$8.4$ on Qwen. The overlap stays high even where it should not: at
+hallucinated-object steps it is still $8.3$--$8.4$ of $10$ on LLaVA and
+$7.4$--$7.7$ on Qwen. The amateur --- viewing an image destroyed by diffusion
+noise, or $12.5\%$ of its tokens --- proposes almost the same candidates as the
+expert, including at the steps that emit a hallucination. The difference
+$d = E - A$ therefore cannot isolate an ungrounded candidate, because scarcely
+any candidate is considered by only one branch; what $d$ carries is a
+re-weighting of a shortlist the expert has already fixed.
+
+\textbf{The contrast supplies no new candidates.} The contrastive top-$10$
+overlaps the expert's by essentially the same amount as the amateur does:
+$E\!\cap\!C$ tracks $E\!\cap\!A$ in every cell of Table~\ref{tab:cdmech-overlap}
+(e.g.\ $9.33$ vs.\ $9.34$ on LLaVA-VCD, $8.01$ vs.\ $8.36$ on Qwen-VCD). A
+better-grounded word the expert never shortlisted is thus not brought in by the
+contrast; it stays outside the candidate set. The adaptive plausibility
+constraint reinforces this, gating on the \emph{expert} logit alone: any token
+below $\log\beta + \max_w E_t(w)$ is set to $-\infty$ regardless of its
+contrastive score. The expert's own ranking selects the pool the method may
+choose from. This is H2 failing: no new grounding.
+
+\textbf{Why the models differ.} The one place the candidate set does move is
+Qwen. LLaVA's contrast leaves the expert's set almost untouched
+($E\!\cap\!C = 9.33$ of $10$, barely below $E\!\cap\!A$), so at the set level it
+is close to a null operation. Qwen's contrast removes about two of the expert's
+ten candidates ($E\!\cap\!C = 8.01$, itself below $E\!\cap\!A = 8.36$): it
+disrupts the candidate set more, yet the substitutions are no better grounded,
+since overlap with the amateur stays high. This resolves Exp.~2's puzzle --- why
+Qwen's CD intervenes ${\approx}4\times$ as often while making CHAIR worse:
+changing the candidate set more, without adding grounding, is disruption without
+benefit --- small enough on LLaVA to be invisible, large enough on Qwen to
+hurt.
+
+\subsection{Composition of the object shortlist at hallucination steps}
+\label{subsec:cdmech-res-shortlist}
+
+The overlap results show the branches share a candidate set; this measurement
+asks what that set is \emph{made of} at the moment a hallucination is produced.
+
+\paragraph{Method.} We restrict to steps that emit a hallucinated object (labelled
+at the caption level, \S\ref{subsec:cdmech-capture}). At each such step we take a
+branch's top-$10$ candidate tokens and classify each as a real-object, a
+hallucinated-object, or a non-object token. The emitted token uses its known
+CHAIR label; every other candidate is decoded to a word, kept only if it is
+word-initial, singularised, and matched to an MSCOCO-80 category through the
+CHAIR synonym dictionary --- real if that category is in the image's ground
+truth, hallucinated otherwise, and non-object if it matches nothing. We then
+discard the non-object tokens and, \emph{among the object candidates only},
+report the share that are real versus hallucinated, averaging over all
+hallucination-emitting steps (each object candidate weighted equally). Because a
+single token cannot resolve multi-word categories (e.g.\ ``stop'' from ``stop
+sign''), such candidates are conservatively counted as non-objects; this applies
+equally to every branch and model.
+
+Table~\ref{tab:cdmech-shortlist} reports the result. When the model emits a
+hallucination, the object candidates it is choosing among are overwhelmingly
+\emph{other} hallucinations: $82$--$86\%$ across both models, leaving only about
+one object candidate in six that is real. This composition is set by the expert
+before the contrast is applied, and contrastive decoding does not repair it ---
+on Qwen it makes the real share \emph{smaller} (VCD $16.0\%\!\to\!13.7\%$; SID
+$14.5\%\!\to\!14.2\%$). The correct object is scarce in the shortlist precisely
+when it is needed, and the contrast cannot introduce what the shortlist lacks.
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{5pt}
+\caption{\textbf{Object-shortlist composition at hallucination steps.} At steps
+that emit a hallucinated object, the top-$10$ candidates are classified into
+real-object, hallucinated-object, and non-object tokens; among the object
+candidates only, we report the \% that are real (R) and the \% that are
+hallucinated (H), which sum to $100$, averaged over all such steps.}
+\label{tab:cdmech-shortlist}
+\begin{tabular}{ll cc cc cc}
+\toprule
+& & \multicolumn{2}{c}{Expert} & \multicolumn{2}{c}{Amateur} & \multicolumn{2}{c}{Contrastive} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}
+Model & Method & \%R & \%H & \%R & \%H & \%R & \%H \\
+\midrule
+LLaVA-1.5-7B & VCD & $16.8$ & $83.2$ & $16.9$ & $83.1$ & $17.6$ & $82.4$ \\
+ & SID & $17.7$ & $82.3$ & $17.7$ & $82.3$ & $17.5$ & $82.5$ \\
+Qwen2.5-VL-7B & VCD & $16.0$ & $84.0$ & $18.7$ & $81.3$ & $13.7$ & $86.3$ \\
+ & SID & $14.5$ & $85.5$ & $20.1$ & $79.9$ & $14.2$ & $85.8$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Synthesis}
+\label{subsec:cdmech-res-synthesis}
+
+Exp.~2 shows CD does not intervene on most hallucinations though it aims at
+them; Exp.~3 shows why better aim would not help --- the contrast operates
+inside a pool the expert fixed and the APC narrows using the expert's logits
+alone. Together they support more than ``CD's gains are small'': they give the
+structural reason the gains \emph{must} be small. A method that can only permute
+the undefended model's shortlist cannot add grounding that shortlist lacks.
+Reported CHAIR improvements from such a mechanism are better explained as
+re-ranking variance than hallucination suppression --- corroborated by our proxy
+experiments, where magnitude-matched random noise reproduces LLaVA's CD
+behaviour.
+
+Two qualifications. Object attribution is bounded by CHAIR's MSCOCO-80 ground
+truth (\S\ref{subsec:cdmech-limits}); hallucination-step counts ($294$--$595$ per
+setting) are the smallest samples here, hence the bootstrap intervals. And these
+experiments characterize the decoding-time \emph{mechanism}; end-task quality is
+addressed by our CHAIR scores separately.
