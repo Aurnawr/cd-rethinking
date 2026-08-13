@@ -673,6 +673,7 @@ class LlamaModel(LlamaPreTrainedModel):
                 all_hidden_states += (hidden_states,)
 
             past_key_value = past_key_values[idx] if past_key_values is not None else None
+            layer_output_attentions = output_attentions  # may be overridden below for SID's aggregation layer
 
             if self.gradient_checkpointing and self.training:
 
@@ -692,58 +693,81 @@ class LlamaModel(LlamaPreTrainedModel):
                 )
             else:
 
-                # FastV Token Rerank, Attention Mask Implementation
+                # SID (arXiv:2408.02032), Context and Text-aware Token
+                # Selection. Vision tokens are ranked by how LITTLE attention
+                # the current/last token pays them at AGG_LAYER; the
+                # least-attended ATTENTION_RANK tokens are what survive into
+                # later layers -- this deliberately builds a "myopic" amateur
+                # view from content the model was already ignoring, not a
+                # random subset. Recomputed every decoding step, since which
+                # tokens are least-attended shifts as generation proceeds.
 
                 if use_sid:
 
-                    SYS_LENGTH= 35
+                    SYS_LENGTH = 35
                     IMAGE_TOKEN_LENGTH = 576
-                    ATTENTION_RANK = 72
+                    ATTENTION_RANK = 58  # 10% of 576, matching the paper exactly
                     AGG_LAYER = 2
-                        
-                    if idx<AGG_LAYER:
+
+                    if idx <= AGG_LAYER:
+                        # Layers up to and including AGG_LAYER see the full,
+                        # unpruned image -- AGG_LAYER's own uncontaminated
+                        # attention pattern is what decides pruning for the
+                        # layers after it (paper: "preserves unimportant
+                        # tokens after early layers").
                         new_attention_mask = torch.ones(
                             (batch_size, seq_length_with_past), dtype=torch.bool, device=inputs_embeds.device
                         )
                         new_attention_mask = self._prepare_decoder_attention_mask(
                             new_attention_mask, (batch_size, seq_length), inputs_embeds, past_key_values_length
                         )
-                        
-                    elif idx==AGG_LAYER:
-
-                        # randomly select ATTENTION_RANK tokens
-                        random_indices = torch.randperm(IMAGE_TOKEN_LENGTH, device=inputs_embeds.device)[:ATTENTION_RANK]
-                        top_attention_rank_index = random_indices + SYS_LENGTH
-
-                        # generate new attention mask
-                        gen_attention_mask = torch.ones((batch_size, seq_length_with_past), dtype=torch.bool, device=inputs_embeds.device)
-                        gen_attention_mask[:,SYS_LENGTH:SYS_LENGTH+IMAGE_TOKEN_LENGTH] = False
-                        gen_attention_mask[:,top_attention_rank_index] = True
-
-                        gen_attention_mask = self._prepare_decoder_attention_mask(
-                            gen_attention_mask, (batch_size, seq_length), inputs_embeds, past_key_values_length
-                        )
-                        new_attention_mask = gen_attention_mask
 
                     else:
                         new_attention_mask = gen_attention_mask
-                    
-                else: 
+
+                else:
                     new_attention_mask = attention_mask
+
+                # SID needs real attention weights out of AGG_LAYER to rank
+                # vision tokens, even when the caller didn't request
+                # output_attentions globally -- force it just for this layer.
+                need_sid_attn = use_sid and idx == AGG_LAYER
+                layer_output_attentions = output_attentions or need_sid_attn
 
                 layer_outputs = decoder_layer(
                     hidden_states,
                     attention_mask=new_attention_mask,
                     position_ids=position_ids,
                     past_key_value=past_key_value,
-                    output_attentions=output_attentions,
+                    output_attentions=layer_output_attentions,
                     use_cache=use_cache,
                 )
+
+                if need_sid_attn:
+                    # layer_outputs[1]: (bsz, heads, q_len, kv_len). Average
+                    # over heads, take the row for the current/last token,
+                    # restrict to the image-token span, keep the
+                    # LEAST-attended ATTENTION_RANK (Eq. 5: topk largest=False).
+                    last_layer_attention = layer_outputs[1]
+                    attn_avg_heads = last_layer_attention.mean(dim=1)[0]
+                    attn_last_tok = attn_avg_heads[-1]
+                    attn_last_tok_image = attn_last_tok[SYS_LENGTH:SYS_LENGTH + IMAGE_TOKEN_LENGTH]
+                    least_attended = attn_last_tok_image.topk(ATTENTION_RANK, largest=False).indices
+                    top_attention_rank_index = least_attended + SYS_LENGTH
+
+                    gen_attention_mask = torch.ones(
+                        (batch_size, seq_length_with_past), dtype=torch.bool, device=inputs_embeds.device
+                    )
+                    gen_attention_mask[:, SYS_LENGTH:SYS_LENGTH + IMAGE_TOKEN_LENGTH] = False
+                    gen_attention_mask[:, top_attention_rank_index] = True
+                    gen_attention_mask = self._prepare_decoder_attention_mask(
+                        gen_attention_mask, (batch_size, seq_length), inputs_embeds, past_key_values_length
+                    )
 
             hidden_states = layer_outputs[0]
 
             if use_cache:
-                next_decoder_cache += (layer_outputs[2 if output_attentions else 1],)
+                next_decoder_cache += (layer_outputs[2 if layer_output_attentions else 1],)
 
             # if output_attentions:
             #     all_self_attns += (layer_outputs[1],)

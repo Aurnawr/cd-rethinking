@@ -2,17 +2,20 @@
 generate_llava.py -- generation for LLaVA-1.5-7B, three modes.
 
   --mode capture --method {vcd,sid}
-        Real contrastive decoding. At every step it records the top-30 tokens
+        Real contrastive decoding. At every step it records the top-10 tokens
         and logits of the expert branch, the amateur branch, and the contrastive
         score C = 2E - A (pre-APC), plus the emitted token. This per-step record
         is the input for BOTH analyses (agreement/overlap and the contrastive
         adjustment d = E - A). One line per image.
 
   --mode proxy --stats-source {vcd,sid} --seed N
-        No amateur branch. Adds independent Gaussian noise N(mu, sigma^2) to
-        EVERY vocabulary logit of the expert, matched to the measured mean/std
-        of d = E - A for the chosen method, then the same plausibility
-        constraint. Caption only.
+        No real amateur branch. Adds independent Gaussian noise N(mu, sigma^2)
+        to EVERY vocabulary logit of the expert, matched to the measured
+        mean/std of d = E - A for the chosen method, defining a synthetic
+        amateur A = E - noise so the same plausibility constraint and the
+        same per-step top-10 capture schema apply as in --mode capture --
+        this lets the existing agreement/overlap and d-analysis scripts run
+        on proxy data unmodified.
 
   --mode greedy
         Plain expert argmax baseline. Caption only.
@@ -53,7 +56,7 @@ CD_ALPHA = 1.0
 CD_BETA = 0.2
 LOG_BETA = math.log(CD_BETA)
 NOISE_STEP = 500
-TOPK = 30
+TOPK = 10
 PROMPT = "Describe this image in detail."
 
 
@@ -155,17 +158,26 @@ def main():
 
             cutoff = LOG_BETA + E.max().item()
             mask = E < cutoff
+
             if args.mode == "greedy":
                 scored = E.clone()
-            elif two_branch:
+            else:
+                if args.mode == "proxy":
+                    # Synthetic amateur branch: independent per-vocab-entry
+                    # Gaussian noise, i.i.d. across the FULL vocabulary (not
+                    # a global shift -- argmax/topk are shift-invariant, so
+                    # per-entry noise is required for this to do anything).
+                    # A = E - noise makes (1+a)E - aA = E + a*noise, matching
+                    # the real contrastive formula with A replaced by this
+                    # synthetic amateur, so capture below is schema-identical
+                    # to a real two-branch capture.
+                    noise = torch.randn(E.shape[-1], generator=noise_gen, device=device) * sigma + mu
+                    A = E - noise.float()
                 scored = (1 + CD_ALPHA) * E - CD_ALPHA * A
                 scored = scored.clone(); scored[mask] = float("-inf")
-            else:  # proxy
-                noise = torch.randn(E.shape[-1], generator=noise_gen, device=device) * sigma + mu
-                scored = E + noise.float(); scored[mask] = float("-inf")
             chosen_id = int(scored.argmax().item())
 
-            if two_branch:
+            if args.mode != "greedy":
                 ev, ei = torch.topk(E, TOPK); av, ai = torch.topk(A, TOPK)
                 cd_pre = (1 + CD_ALPHA) * E - CD_ALPHA * A
                 cv, ci = torch.topk(cd_pre, TOPK)
@@ -195,7 +207,7 @@ def main():
 
         rec = {"image_id": image_id,
                "caption": tokenizer.decode(chosen_ids, skip_special_tokens=True).strip()}
-        if two_branch:
+        if args.mode != "greedy":
             rec["steps"] = steps_out
         out_f.write(json.dumps(rec) + "\n"); out_f.flush()
         n += 1
