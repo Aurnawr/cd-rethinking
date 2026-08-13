@@ -176,6 +176,58 @@ def generate(mode: str, seed: int, out_name: str, method: str = "",
     print(f"[generate] DONE -> {out_path}", flush=True)
 
 
+@app.function(image=image, gpu="L4", volumes={VOL_MOUNT: volume}, timeout=3600)
+def generate_icd_llava_bench(prompt_key: str, seed: int, out_name: str, limit: int = None):
+    """Runs generate_llava_bench_icd.py -- ICD on the 60-question
+    LLaVA-Bench-in-the-Wild set, one disturbance prompt per call (the
+    official ICD repo's own methodology: 5 separate full passes, not one
+    randomly-mixed run). Same volume-symlink and periodic-commit pattern as
+    generate()."""
+    import os, threading
+
+    for name in ("models", "llava_bench"):
+        link = f"{REMOTE_ROOT}/{name}"
+        target = f"{VOL_MOUNT}/models" if name == "models" else f"{VOL_MOUNT}/CHAIR_analysis_llava_bench"
+        if not os.path.exists(link):
+            os.symlink(target, link)
+
+    out_path = f"{VOL_MOUNT}/outputs/{out_name}"
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+
+    cmd = [
+        "python", f"{REMOTE_ROOT}/common/generate_llava_bench_icd.py",
+        "--prompt-key", prompt_key,
+        "--seed", str(seed),
+        "--out", out_path,
+    ]
+    if limit:
+        cmd += ["--limit", str(limit)]
+    print(f"[generate_icd] {' '.join(cmd)}", flush=True)
+    proc = subprocess.Popen(cmd, cwd=REMOTE_ROOT, stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT, text=True, bufsize=1)
+
+    stop_committing = threading.Event()
+
+    def commit_loop():
+        while not stop_committing.wait(60):
+            volume.commit()
+
+    committer = threading.Thread(target=commit_loop, daemon=True)
+    committer.start()
+    try:
+        for line in proc.stdout:
+            print(line, end="", flush=True)
+        proc.wait()
+    finally:
+        stop_committing.set()
+        committer.join()
+
+    volume.commit()
+    if proc.returncode != 0:
+        raise RuntimeError(f"generate_llava_bench_icd.py exited with code {proc.returncode}")
+    print(f"[generate_icd] DONE -> {out_path}", flush=True)
+
+
 @app.local_entrypoint()
 def main(action: str = "generate", mode: str = "capture", method: str = "",
          stats_source: str = "vcd", seed: int = 0, n_images: int = 500,
