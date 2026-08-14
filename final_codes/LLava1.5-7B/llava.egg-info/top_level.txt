@@ -1,6 +1,0 @@
-asserts
-data
-eval
-inference
-llava
-outputs
