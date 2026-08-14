@@ -105,7 +105,7 @@ def check_file(path, canonical_ids, n_images_expected):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--n-images", type=int, default=None, help="expected image count per file (omit to skip this check)")
-    ap.add_argument("--glob", default="llava_*.jsonl")
+    ap.add_argument("--glob", default="*_*.jsonl", help="filename glob under outputs/captures/, e.g. 'qwen_*.jsonl'")
     args = ap.parse_args()
 
     canonical_ids = set(json.load(open(REPO / "image_ids_500.json")))

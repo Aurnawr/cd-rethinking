@@ -30,6 +30,7 @@ REPO = HERE.parent
 sys.path.insert(0, str(HERE))
 COCO = REPO / "data" / "coco" / "annotations"
 CAPTURES = REPO / "outputs" / "captures"
+MODEL_DIR = {"llava": "llava-v1.5-7b", "qwen": "Qwen2.5-VL-7B-Instruct"}
 
 TWO_BRANCH_METHODS = {"vcd", "sid"}  # icd_* are matched by prefix below
 
@@ -164,6 +165,7 @@ def chair_score_file(path):
 
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("--model", choices=["llava", "qwen"], required=True)
     ap.add_argument("--methods", nargs="+",
                      default=["baseline", "vcd", "sid", "icd_p1", "icd_p2", "icd_n1", "icd_n2", "icd_p3"])
     ap.add_argument("--seeds", nargs="+", type=int, default=[0])
@@ -173,13 +175,14 @@ def main():
     from transformers import AutoTokenizer
     import object_mentions as chair_mod
     from eval.chair import singularize
-    tok = AutoTokenizer.from_pretrained(str(REPO / "models" / "llava-v1.5-7b"), use_fast=False)
+    slow = args.model == "llava"
+    tok = AutoTokenizer.from_pretrained(str(REPO / "models" / MODEL_DIR[args.model]), use_fast=not slow)
 
-    print("\n===== contrastive adjustment (direct-sampling) : llava =====")
+    print(f"\n===== contrastive adjustment (direct-sampling) : {args.model} =====")
     print("\n--- CHAIR-S / CHAIR-I, per method x seed (lower is better) ---")
     for method in args.methods:
         for seed in args.seeds:
-            f = CAPTURES / f"llava_{method}_seed{seed}.jsonl"
+            f = CAPTURES / f"{args.model}_{method}_seed{seed}.jsonl"
             if not f.exists():
                 continue
             res = chair_score_file(f)
@@ -190,7 +193,7 @@ def main():
         if not is_two_branch(method):
             continue
         for seed in args.seeds:
-            f = CAPTURES / f"llava_{method}_seed{seed}.jsonl"
+            f = CAPTURES / f"{args.model}_{method}_seed{seed}.jsonl"
             if not f.exists():
                 print(f"\n[skip] {f} not found")
                 continue

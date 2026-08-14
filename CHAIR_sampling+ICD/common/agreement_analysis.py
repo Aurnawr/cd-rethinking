@@ -1,11 +1,13 @@
 """
 agreement_analysis.py -- agreement & overlap, direct-sampling edition.
 
-Reads the per-step capture files produced by generate_llava.py / generate_llava_icd.py
---decode sample (outputs/captures/llava_{method}_seed{N}.jsonl) and reports, with
-95% image-level bootstrap confidence intervals (B configurable), PER SEED (not
-pooled across seeds -- steps within a seed's 500 images share that seed's noise
-draw / sampling draws, so pooling seeds would be pseudoreplication):
+Reads the per-step capture files produced by generate_llava.py/generate_llava_icd.py
+(LLaVA) or qwen/generate_qwen.py/generate_qwen_icd.py (Qwen), both with
+--decode sample (outputs/captures/{model}_{method}_seed{N}.jsonl), and
+reports, with 95% image-level bootstrap confidence intervals (B configurable),
+PER SEED (not pooled across seeds -- steps within a seed's 500 images share
+that seed's noise draw / sampling draws, so pooling seeds would be
+pseudoreplication):
 
   (1) Intervention rate: how often the contrastive output equals the expert's
       own top-1 candidate by raw logit (i.e. contrastive decoding + sampling
@@ -19,7 +21,8 @@ Only applies to two-branch methods (vcd, sid, icd_*) -- baseline has no
 amateur/contrastive branch to compare against.
 
 Usage:
-  python agreement_analysis.py --methods vcd sid icd_p1 icd_p2 icd_n1 icd_n2 icd_p3 --seeds 0 1
+  python agreement_analysis.py --model llava --methods vcd sid icd_p1 icd_p2 icd_n1 icd_n2 icd_p3 --seeds 0
+  python agreement_analysis.py --model qwen  --methods vcd sid icd_p1 icd_p2 icd_n1 icd_n2 icd_p3 --seeds 0
 """
 import argparse, json, sys
 from pathlib import Path
@@ -31,6 +34,7 @@ sys.path.insert(0, str(HERE))
 COCO = REPO / "data" / "coco" / "annotations"
 CAPTURES = REPO / "outputs" / "captures"
 TOPN = 10
+MODEL_DIR = {"llava": "llava-v1.5-7b", "qwen": "Qwen2.5-VL-7B-Instruct"}
 
 
 def setov(a, b):
@@ -87,6 +91,7 @@ def boot_ratio(rows, num_key, den_key, B, rng):
 
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("--model", choices=["llava", "qwen"], required=True)
     ap.add_argument("--methods", nargs="+", default=["vcd", "sid", "icd_p1", "icd_p2", "icd_n1", "icd_n2", "icd_p3"])
     ap.add_argument("--seeds", nargs="+", type=int, default=[0])
     ap.add_argument("--B", type=int, default=10000)
@@ -94,12 +99,13 @@ def main():
 
     from transformers import AutoTokenizer
     import object_mentions as chair_mod
-    tok = AutoTokenizer.from_pretrained(str(REPO / "models" / "llava-v1.5-7b"), use_fast=False)
+    slow = args.model == "llava"
+    tok = AutoTokenizer.from_pretrained(str(REPO / "models" / MODEL_DIR[args.model]), use_fast=not slow)
 
-    print("\n===== agreement & overlap (direct-sampling) : llava =====")
+    print(f"\n===== agreement & overlap (direct-sampling) : {args.model} =====")
     for method in args.methods:
         for seed in args.seeds:
-            f = CAPTURES / f"llava_{method}_seed{seed}.jsonl"
+            f = CAPTURES / f"{args.model}_{method}_seed{seed}.jsonl"
             if not f.exists():
                 print(f"[skip] {f} not found")
                 continue

@@ -52,7 +52,7 @@ REMOTE_ROOT = "/root/CHAIR_sampling_ICD"
 image = (
     modal.Image.debian_slim(python_version="3.11")
     .apt_install("git", "wget")
-    .pip_install("torch==2.8.0", index_url="https://download.pytorch.org/whl/cu128")
+    .pip_install("torch==2.8.0", "torchvision==0.23.0", index_url="https://download.pytorch.org/whl/cu128")
     .pip_install(
         "transformers==5.12.1",
         "tokenizers==0.22.2",
@@ -62,28 +62,41 @@ image = (
         "numpy==1.26.4",
         "pillow==12.2.0",
         "matplotlib",
+        "qwen-vl-utils",
         "huggingface_hub[hf_transfer]",
     )
     .env({"HF_HUB_ENABLE_HF_TRANSFER": "1"})
     .add_local_dir(str(HERE / "common"), remote_path=f"{REMOTE_ROOT}/common")
+    .add_local_dir(str(HERE / "qwen"), remote_path=f"{REMOTE_ROOT}/qwen")
     .add_local_file(str(HERE / "image_ids_500.json"), remote_path=f"{REMOTE_ROOT}/image_ids_500.json")
 )
 
 
 @app.function(image=image, volumes={VOL_MOUNT: volume}, timeout=7200)
 def setup_assets():
-    """One-time, idempotent: LLaVA-1.5-7B weights + the 500 COCO val2017
-    images + annotations, into the persistent volume."""
+    """One-time, idempotent: LLaVA-1.5-7B + Qwen2.5-VL-7B-Instruct weights,
+    plus the 500 COCO val2017 images + annotations, into the persistent
+    volume. Safe to re-run -- skips anything already present, so running
+    this again after the LLaVA leg is done only fetches the new Qwen
+    weights."""
     import json, os, shutil, tempfile, urllib.request, zipfile
     from huggingface_hub import snapshot_download
 
-    models_dir = f"{VOL_MOUNT}/models/llava-v1.5-7b"
-    if not os.path.exists(f"{models_dir}/config.json"):
+    llava_dir = f"{VOL_MOUNT}/models/llava-v1.5-7b"
+    if not os.path.exists(f"{llava_dir}/config.json"):
         print("[setup] downloading LLaVA-1.5-7B weights...", flush=True)
-        snapshot_download("liuhaotian/llava-v1.5-7b", local_dir=models_dir)
+        snapshot_download("liuhaotian/llava-v1.5-7b", local_dir=llava_dir)
         volume.commit()
     else:
-        print("[setup] weights already present, skipping", flush=True)
+        print("[setup] LLaVA weights already present, skipping", flush=True)
+
+    qwen_dir = f"{VOL_MOUNT}/models/Qwen2.5-VL-7B-Instruct"
+    if not os.path.exists(f"{qwen_dir}/config.json"):
+        print("[setup] downloading Qwen2.5-VL-7B-Instruct weights...", flush=True)
+        snapshot_download("Qwen/Qwen2.5-VL-7B-Instruct", local_dir=qwen_dir)
+        volume.commit()
+    else:
+        print("[setup] Qwen weights already present, skipping", flush=True)
 
     ann_dir = f"{VOL_MOUNT}/data/coco/annotations"
     os.makedirs(ann_dir, exist_ok=True)
@@ -203,6 +216,115 @@ def generate_icd(prompt_key: str, decode: str, seed: int, out_name: str, n_image
     print(f"[generate_icd] {' '.join(cmd)}", flush=True)
     _run_with_periodic_commit(cmd)
     print(f"[generate_icd] DONE -> {out_path}", flush=True)
+
+
+@app.function(image=image, gpu="L4", volumes={VOL_MOUNT: volume}, timeout=6 * 3600)
+def generate_qwen(mode: str, decode: str, seed: int, out_name: str,
+                   method: str = "", n_images: int = 500):
+    """Runs generate_qwen.py: --mode {baseline,capture} --decode {greedy,sample}.
+    Do NOT run this for real until verify_qwen_cache() has reported PASS --
+    see generate_qwen.py's module docstring for why."""
+    _symlink_models_and_data()
+    out_path = f"{VOL_MOUNT}/outputs/{out_name}"
+    import os
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+
+    cmd = [
+        "python", f"{REMOTE_ROOT}/qwen/generate_qwen.py",
+        "--mode", mode,
+        "--decode", decode,
+        "--seed", str(seed),
+        "--n-images", str(n_images),
+        "--out", out_path,
+    ]
+    if method:
+        cmd += ["--method", method]
+    print(f"[generate_qwen] {' '.join(cmd)}", flush=True)
+    _run_with_periodic_commit(cmd)
+    print(f"[generate_qwen] DONE -> {out_path}", flush=True)
+
+
+@app.function(image=image, gpu="L4", volumes={VOL_MOUNT: volume}, timeout=6 * 3600)
+def generate_qwen_icd(prompt_key: str, decode: str, seed: int, out_name: str, n_images: int = 500):
+    """Runs generate_qwen_icd.py: one disturbance prompt per call."""
+    _symlink_models_and_data()
+    out_path = f"{VOL_MOUNT}/outputs/{out_name}"
+    import os
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+
+    cmd = [
+        "python", f"{REMOTE_ROOT}/qwen/generate_qwen_icd.py",
+        "--prompt-key", prompt_key,
+        "--decode", decode,
+        "--seed", str(seed),
+        "--n-images", str(n_images),
+        "--out", out_path,
+    ]
+    print(f"[generate_qwen_icd] {' '.join(cmd)}", flush=True)
+    _run_with_periodic_commit(cmd)
+    print(f"[generate_qwen_icd] DONE -> {out_path}", flush=True)
+
+
+@app.function(image=image, gpu="L4", volumes={VOL_MOUNT: volume}, timeout=3600)
+def verify_qwen_cache(n_images: int = 2, n_steps: int = 20, methods: str = "vcd,sid", dtype: str = "bfloat16"):
+    """Runs verify_qwen_cache.py: compares generate_qwen.py's KV-cached
+    two-branch loop against a brute-force cache-less reference. MUST report
+    PASS before spending any real GPU budget on a Qwen run -- see
+    generate_qwen.py's module docstring."""
+    _symlink_models_and_data()
+    out_path = f"{VOL_MOUNT}/outputs/qwen_cache_verification.json"
+    import os
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+
+    cmd = [
+        "python", f"{REMOTE_ROOT}/qwen/verify_qwen_cache.py",
+        "--n-images", str(n_images),
+        "--n-steps", str(n_steps),
+        "--methods", *methods.split(","),
+        "--dtype", dtype,
+        "--out", out_path,
+    ]
+    print(f"[verify_qwen_cache] {' '.join(cmd)}", flush=True)
+    proc = subprocess.Popen(cmd, cwd=REMOTE_ROOT, stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT, text=True, bufsize=1)
+    for line in proc.stdout:
+        print(line, end="", flush=True)
+    proc.wait()
+    volume.commit()
+    if proc.returncode != 0:
+        raise RuntimeError(f"verify_qwen_cache.py exited with code {proc.returncode} -- DO NOT run a real Qwen job")
+    print("[verify_qwen_cache] PASS", flush=True)
+
+
+@app.function(image=image, gpu="A100-40GB", volumes={VOL_MOUNT: volume}, timeout=3600)
+def verify_qwen_cache_bigmem(n_images: int = 1, n_steps: int = 10, methods: str = "vcd", dtype: str = "float32"):
+    """Diagnostic-only twin of verify_qwen_cache on a bigger GPU -- fp32
+    doubles memory (7B params -> ~28GB, doesn't fit the L4's 24GB). Not part
+    of the real pipeline; delete once the bf16-vs-fp32 precision question is
+    settled."""
+    _symlink_models_and_data()
+    out_path = f"{VOL_MOUNT}/outputs/qwen_cache_verification_fp32.json"
+    import os
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+
+    cmd = [
+        "python", f"{REMOTE_ROOT}/qwen/verify_qwen_cache.py",
+        "--n-images", str(n_images),
+        "--n-steps", str(n_steps),
+        "--methods", *methods.split(","),
+        "--dtype", dtype,
+        "--out", out_path,
+    ]
+    print(f"[verify_qwen_cache_bigmem] {' '.join(cmd)}", flush=True)
+    proc = subprocess.Popen(cmd, cwd=REMOTE_ROOT, stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT, text=True, bufsize=1)
+    for line in proc.stdout:
+        print(line, end="", flush=True)
+    proc.wait()
+    volume.commit()
+    if proc.returncode != 0:
+        raise RuntimeError(f"verify_qwen_cache.py exited with code {proc.returncode}")
+    print("[verify_qwen_cache_bigmem] DONE", flush=True)
 
 
 @app.local_entrypoint()

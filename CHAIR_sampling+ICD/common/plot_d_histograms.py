@@ -22,10 +22,12 @@ REPO = HERE.parent
 sys.path.insert(0, str(HERE))
 CAPTURES = REPO / "outputs" / "captures"
 FIGURES = REPO / "figures"
+MODEL_DIR = {"llava": "llava-v1.5-7b", "qwen": "Qwen2.5-VL-7B-Instruct"}
 
 
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("--model", choices=["llava", "qwen"], required=True)
     ap.add_argument("--methods", nargs="+",
                      default=["vcd", "sid", "icd_p1", "icd_p2", "icd_n1", "icd_n2", "icd_p3"])
     ap.add_argument("--seeds", nargs="+", type=int, default=[0])
@@ -40,12 +42,13 @@ def main():
     from eval.chair import singularize
     from contrastive_analysis import d_stats
 
-    tok = AutoTokenizer.from_pretrained(str(REPO / "models" / "llava-v1.5-7b"), use_fast=False)
+    slow = args.model == "llava"
+    tok = AutoTokenizer.from_pretrained(str(REPO / "models" / MODEL_DIR[args.model]), use_fast=not slow)
     FIGURES.mkdir(exist_ok=True)
 
     for method in args.methods:
         for seed in args.seeds:
-            f = CAPTURES / f"llava_{method}_seed{seed}.jsonl"
+            f = CAPTURES / f"{args.model}_{method}_seed{seed}.jsonl"
             if not f.exists():
                 print(f"[skip] {f} not found")
                 continue
@@ -64,7 +67,7 @@ def main():
             ax.legend()
             fig.tight_layout()
 
-            out_path = FIGURES / f"d_hist_{method}_seed{seed}.png"
+            out_path = FIGURES / f"d_hist_{args.model}_{method}_seed{seed}.png"
             fig.savefig(out_path, dpi=150)
             plt.close(fig)
             print(f"[plot] {out_path}  (real n={len(real)}, hall n={len(hall)})")
