@@ -44,6 +44,23 @@ def softmax(logits):
     return [x / z for x in e]
 
 
+WORD_INITIAL_MARKERS = ("▁", "Ġ")  # SentencePiece "▁" (LLaVA), GPT2-BPE "Ġ" (Qwen)
+
+
+def word_initial_text(tok, tid):
+    """Returns the clean decoded text for token id `tid` if it's a
+    word-initial piece, else None. Uses convert_ids_to_tokens (the RAW
+    subword, which still carries the word-boundary marker) rather than
+    decode() -- this transformers version's single-token decode() silently
+    strips the leading-space marker even for word-initial tokens, which
+    would otherwise make every top-10/top-30 candidate look like a
+    mid-word fragment and silently empty out these populations."""
+    piece = tok.convert_ids_to_tokens([tid])[0]
+    if not piece.startswith(WORD_INITIAL_MARKERS):
+        return None
+    return tok.convert_tokens_to_string([piece])
+
+
 # ---------- (1) d = E - A ----------
 def d_stats(path, tok, chair_mod, singularize):
     recs = [json.loads(l) for l in open(path)]
@@ -69,8 +86,8 @@ def d_stats(path, tok, chair_mod, singularize):
             am = amap[s["step"]]
             for K, key in ((10, "top10"), (30, "top30")):
                 for tid, E in zip(s["expert_top_ids"][:K], s["expert_top_logits"][:K]):
-                    txt = tok.decode([tid])
-                    if not (txt.startswith(" ") or txt.startswith("▁")):
+                    txt = word_initial_text(tok, tid)
+                    if txt is None:
                         continue
                     w = "".join(c for c in txt.lower() if c.isalpha())
                     if not w:
@@ -126,8 +143,8 @@ def bucket(path, tok, chair_mod, singularize, B):
                     if tid == s["chosen_id"]:
                         c = ml
                     else:
-                        txt = tok.decode([tid])
-                        if not (txt.startswith(" ") or txt.startswith("▁")):
+                        txt = word_initial_text(tok, tid)
+                        if txt is None:
                             continue
                         w = "".join(ch for ch in txt.lower() if ch.isalpha())
                         if not w:
