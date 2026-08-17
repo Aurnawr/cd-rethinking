@@ -3,8 +3,12 @@
 # (recent) transformers; do not downgrade transformers or LLaVA imports break.
 #
 # Install into a fresh env with a CUDA-capable PyTorch, e.g.:
-#   pip install torch==2.8.0   # (matching your CUDA; here cu128)
+#   pip install torch==2.8.0 torchvision==0.23.0 --index-url https://download.pytorch.org/whl/cu128
 #   pip install -r requirements.txt
+#
+# torchvision is required by qwen_vl_utils (Qwen leg only) -- omitting it
+# throws ModuleNotFoundError at import time, not something you'd catch
+# until you actually run the Qwen scripts.
 
 torch==2.8.0
 transformers==5.12.1
