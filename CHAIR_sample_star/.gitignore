@@ -1,0 +1,8 @@
+*.pyc
+__pycache__/
+models/
+data/
+outputs/
+figures/
+smoke_call_ids.json
+full_call_ids.json
