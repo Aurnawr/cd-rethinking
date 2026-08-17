@@ -19,13 +19,21 @@ WHAT="${1:-both}"
 
 echo "== model weights =="
 mkdir -p models
+# Uses huggingface_hub's Python API (snapshot_download) directly rather than
+# shelling out to a CLI -- huggingface_hub renamed its CLI from
+# `huggingface-cli` to `hf` in newer releases and the old name now just
+# prints a deprecation notice and does nothing (silently downloads
+# nothing), so pinning to either CLI name is fragile across versions. The
+# Python API has been stable and is what modal_app.py already uses.
 if [ "$WHAT" = "both" ] || [ "$WHAT" = "llava" ]; then
-  [ -f models/llava-v1.5-7b/config.json ] || \
-    huggingface-cli download liuhaotian/llava-v1.5-7b --local-dir models/llava-v1.5-7b
+  if [ ! -f models/llava-v1.5-7b/config.json ]; then
+    python -c "from huggingface_hub import snapshot_download; snapshot_download('liuhaotian/llava-v1.5-7b', local_dir='models/llava-v1.5-7b')"
+  fi
 fi
 if [ "$WHAT" = "both" ] || [ "$WHAT" = "qwen" ]; then
-  [ -f models/Qwen2.5-VL-7B-Instruct/config.json ] || \
-    huggingface-cli download Qwen/Qwen2.5-VL-7B-Instruct --local-dir models/Qwen2.5-VL-7B-Instruct
+  if [ ! -f models/Qwen2.5-VL-7B-Instruct/config.json ]; then
+    python -c "from huggingface_hub import snapshot_download; snapshot_download('Qwen/Qwen2.5-VL-7B-Instruct', local_dir='models/Qwen2.5-VL-7B-Instruct')"
+  fi
 fi
 
 echo "== COCO val2017 annotations =="
