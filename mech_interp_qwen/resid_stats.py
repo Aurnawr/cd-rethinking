@@ -60,7 +60,7 @@ def main():
     os.makedirs(args.results_dir, exist_ok=True)
     out = os.path.join(args.results_dir, f"per_layer_resid_{args.method}.csv")
     with open(out, "w", newline="") as f:
-        w = csv.writer(f)
+        w = csv.writer(f, lineterminator="\n")
         w.writerow(["layer", "cd_raw_mean", "clean_state_norm_mean", "cd_relative_mean"])
         for l in range(cd_raw.shape[0]):
             w.writerow([l, float(cd_raw[l]), float(clean_state[l]), float(cd_rel[l])])

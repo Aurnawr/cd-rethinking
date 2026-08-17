@@ -1,0 +1,21 @@
+l*_truth=20, l*_CD=31 (gap 11 layers). DIFFERENT DEPTH -> VCD's largest residual effect is NOT at the layer encoding object presence -- direct evidence its correction does not operate on the presence representation.
+l*_halluc=26, l*_CD=31 (gap 5 layers). DIFFERENT DEPTH.
+
+{
+  "n_samples": 9000,
+  "n_layers": 33,
+  "gt_present": 4500,
+  "gt_absent": 4500,
+  "probe_b_n_no_samples": 4500,
+  "probe_b_hallucinated": 259,
+  "probe_b_hallucination_rate": 0.057555555555555554,
+  "probe_b_evaluated": true,
+  "l_star_truth": 20,
+  "l_star_truth_auc": 0.9864099753086419,
+  "l_star_halluc": 26,
+  "l_star_halluc_auc": 0.99988984167244,
+  "l_star_CD": 31,
+  "cd_at_peak": 36.7445182800293,
+  "cd_at_truth_peak": 22.571014404296875,
+  "verdict": "l*_truth=20, l*_CD=31 (gap 11 layers). DIFFERENT DEPTH -> VCD's largest residual effect is NOT at the layer encoding object presence -- direct evidence its correction does not operate on the presence representation.\nl*_halluc=26, l*_CD=31 (gap 5 layers). DIFFERENT DEPTH."
+}

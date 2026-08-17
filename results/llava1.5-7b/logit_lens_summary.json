@@ -1,0 +1,8 @@
+{
+  "N": 9000,
+  "n_hall": 257,
+  "sanity_mae": 0.0017065972222222222,
+  "l_star_delta_halluc": 19,
+  "delta_readout": 3.316208600997925,
+  "frac_suppress_readout": 0.03501945525291829
+}

@@ -1,0 +1,11 @@
+=== De-confounded VCD residual-change (offline, relative-norm) ===
+N samples: 9000   layers: 33
+l*_CD  RAW  (confounded)     = 31
+l*_CD  RELATIVE (de-conf.)   = 15   <-- use this
+l*_truth (peak AUC)          = 20   (AUC=0.986)
+l_truth  first AUC>= 0.95     = 8
+l*_halluc (peak AUC)         = 26   (AUC=1.000)
+l_halluc first AUC>= 0.95    = 12
+
+gap(l*_CD_relative, l*_truth) = 5 layers -> DIFFERENT DEPTH
+NOTE: truth is decodable from layer ~8 onward (saturated), while VCD's relative perturbation peaks at layer 15.

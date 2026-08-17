@@ -1,0 +1,11 @@
+{
+  "n_samples": 9000,
+  "n_layers": 33,
+  "l_star_CD_raw": 31,
+  "l_star_CD_relative": 15,
+  "l_star_truth": 20,
+  "l_truth_first_cross": 8,
+  "l_star_halluc": 26,
+  "l_halluc_first_cross": 12,
+  "auc_threshold": 0.95
+}

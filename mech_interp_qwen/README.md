@@ -1,8 +1,8 @@
 # CD mechanistic battery on Qwen2.5-VL-7B-Instruct (POPE-COCO)
 
 A self-contained port of the `mech_interp/` logit-lens experiment from **LLaVA-1.5-7B** to
-**Qwen2.5-VL-7B-Instruct**, covering the same three contrastive-decoding methods — **VCD, ICD,
-SID** — with the corrected (paper-faithful) SID, and one master script that runs the whole thing
+**Qwen2.5-VL-7B-Instruct**, covering the same three contrastive-decoding methods - **VCD, ICD,
+SID** - with the corrected (paper-faithful) SID, and one master script that runs the whole thing
 on a Lightning.ai Studio from a bare environment.
 
 Thesis under test, unchanged: *contrastive decoding does not correct hallucinations at the point
@@ -23,7 +23,7 @@ bash mech_interp_qwen/run_all_lightning.sh
 
 ## What it produces
 
-The 12 figures in `$ROOT/results/regen/` — the same set as
+The 12 figures in `$ROOT/results/regen/` - the same set as
 `cd_pope_mech_interp_results/regen/` from the LLaVA run, same filenames:
 
 | figure | question it answers |
@@ -57,8 +57,8 @@ cross_method_battery.png                  all three methods on the same four pan
   layer `l`. Since every method forms `z_CD = (1+a) z_expert - a z_amateur` and the margin is
   linear in logits, Delta is recovered offline from the two saved margin arrays.
 
-If Delta cannot separate hallucinated Yes-answers (H) from correct ones (T) at *any* depth — while
-Probe A shows the model plainly represents the difference — CD is not correcting; it is shifting.
+If Delta cannot separate hallucinated Yes-answers (H) from correct ones (T) at *any* depth - while
+Probe A shows the model plainly represents the difference - CD is not correcting; it is shifting.
 
 ---
 
@@ -76,7 +76,7 @@ nvidia-smi                        # attach a GPU first
 
 An **L4 (24 GB)** is enough. A10G / L40S / A100 are proportionally faster. bf16 7B weights are
 ~16 GB, and POPE sequences are short (~430 tokens: ~390 vision + ~40 text), so memory is not the
-constraint — wall-clock is.
+constraint - wall-clock is.
 
 Do **not** `pip install -e .` on this branch. That installs the repo's LLaVA stack, which pins
 `transformers==4.31.0` and cannot coexist with the version Qwen2.5-VL needs. The master script
@@ -90,7 +90,7 @@ bash mech_interp_qwen/run_all_lightning.sh                   # full, see timings
 ```
 
 Everything lands under `$ROOT` (default
-`/teamspace/studios/this_studio/cd_pope_mech_interp_qwen`), which is persistent storage — weights,
+`/teamspace/studios/this_studio/cd_pope_mech_interp_qwen`), which is persistent storage - weights,
 images and completed splits all survive a Studio restart and are skipped on re-run.
 
 ### 2. What the master script does
@@ -117,10 +117,10 @@ STAGES="figures package" bash mech_interp_qwen/run_all_lightning.sh
 
 | stage | full run (~9000 questions) |
 |---|---|
-| model download | 10–25 min, once |
-| image download | 5–15 min, once (POPE reuses a small image pool; a few hundred to ~2k images) |
-| extract | ~2–4 h — 4 forward passes per question |
-| probes | 20–60 min — 29 layers x 2 probes x 5-fold CV on 3584-dim features |
+| model download | 10-25 min, once |
+| image download | 5-15 min, once (POPE reuses a small image pool; a few hundred to ~2k images) |
+| extract | ~2-4 h - 4 forward passes per question |
+| probes | 20-60 min - 29 layers x 2 probes x 5-fold CV on 3584-dim features |
 | resid + figures | < 2 min |
 
 Extraction checkpoints after every split and `--resume` (on by default) skips completed splits, so
@@ -134,12 +134,12 @@ Every knob is an environment variable:
 |---|---|---|
 | `ROOT` | `/teamspace/studios/this_studio/cd_pope_mech_interp_qwen` | persistent working root |
 | `MODEL_ID` | `Qwen/Qwen2.5-VL-7B-Instruct` | hub id, or a local checkpoint directory |
-| `MAX_SAMPLES` | `0` (all) | cap questions per split — set `40` for a smoke test |
+| `MAX_SAMPLES` | `0` (all) | cap questions per split - set `40` for a smoke test |
 | `SPLITS` | `random popular adversarial` | POPE-COCO splits |
 | `METHODS` | `vcd icd sid` | which amateurs to extract |
 | `PRIMARY_METHOD` | `vcd` | whose CD curve goes in `per_layer.csv` / `layerwise_curves.png` |
 | `DTYPE` | `bfloat16` | `float16` risks overflow on Qwen; `float32` doubles memory |
-| `ATTN_IMPL` | `eager` | **keep this** — SID needs real attention weights |
+| `ATTN_IMPL` | `eager` | **keep this** - SID needs real attention weights |
 | `NOISE_STEP` | `900` | VCD diffusion step, this repo's value |
 | `SID_RANK_LAYER` | `2` | 0-indexed ranking layer (SID paper's 1-indexed "Layer i=3") |
 | `SID_KEEP_RATIO` | `0.10` | fraction of least-attended vision tokens kept (SID paper) |
@@ -155,20 +155,20 @@ Every knob is an environment variable:
 ## SID: what "corrected" means here
 
 The repo's shipped `use_sid` path (`llava/.../custom_modeling_llama.py`) selects the retained
-vision tokens with `torch.randperm` — **random visual dropout, not SID**. `mech_interp/sid_correct.py`
+vision tokens with `torch.randperm` - **random visual dropout, not SID**. `mech_interp/sid_correct.py`
 fixed that for LLaVA. This branch reimplements the fix for Qwen from the paper.
 
 **Config comes from the SID paper, not the released code.** The official repo
-([huofushuo/SID](https://github.com/huofushuo/SID)) has no Qwen implementation at all — it covers
+([huofushuo/SID](https://github.com/huofushuo/SID)) has no Qwen implementation at all - it covers
 LLaVA-1.5, InstructBLIP, MiniGPT-4 and Shikra, and cites Qwen-VL only in the bibliography. But the
 paper states the recipe as a **ratio**, which is exactly what makes it portable:
 
 > *"we set Layer i=3 and preserve top 10% least important vision tokens for Shikra, LLaVA-1.5, and
-> LLaVA-NeXT"* — arXiv 2408.02032, Sec. 5.1
+> LLaVA-NeXT"* - arXiv 2408.02032, Sec. 5.1
 
 The same 10% across models encoding 256 / 576 / 2304 vision tokens. So for Qwen2.5-VL's dynamic
 resolution the faithful choice is the ratio, applied to whatever the image yields (~390 tokens for
-COCO val2014 at native resolution — no capping needed, and `MAX_PIXELS` is there if you want it).
+COCO val2014 at native resolution - no capping needed, and `MAX_PIXELS` is there if you want it).
 
 Two discrepancies in the upstream material, resolved explicitly rather than inherited:
 
@@ -176,7 +176,7 @@ Two discrepancies in the upstream material, resolved explicitly rather than inhe
   paper's 10%. It is a `fast-v` default. `mech_interp/sid_correct.py` used it; this port defaults
   to the paper's 0.10 and exposes `SID_KEEP_TOKENS=100` for parity.
 - **layer**: the paper says "Layer i=3" (1-indexed); the released code says `fast_v_agg_layer=2`,
-  which ranks with the layer at 0-index 1. The port names the parameter unambiguously —
+  which ranks with the layer at 0-index 1. The port names the parameter unambiguously -
   `SID_RANK_LAYER` is the **0-indexed** decoder layer whose attention does the ranking, and the
   mask applies from `SID_RANK_LAYER + 1` onward. Paper → `2` (the default); released code → `1`.
 
@@ -186,12 +186,12 @@ Two discrepancies in the upstream material, resolved explicitly rather than inhe
 
 1. a forward hook on `layers[rank_layer].self_attn` captures the attention weights (plus a
    pre-hook forcing `output_attentions=True`, because transformers 4.51's `Qwen2_5_VLAttention`
-   nulls them out otherwise — eager alone is not sufficient);
+   nulls them out otherwise - eager alone is not sufficient);
 2. SID Eq. 5: mean over heads of the **last query row**, restricted to the vision columns, which
    are located from `input_ids == config.image_token_id` (no hardcoded system-prompt length or
-   fixed 576 offset — the LLaVA version had to guess `SYS_LENGTH=35`);
+   fixed 576 offset - the LLaVA version had to guess `SYS_LENGTH=35`);
 3. the lowest-scoring `round(keep_ratio * n_vision)` tokens are kept;
-4. a pre-hook on every later layer swaps in a `[1,1,q,k]` **float additive** mask — the causal
+4. a pre-hook on every later layer swaps in a `[1,1,q,k]` **float additive** mask - the causal
    structure plus the dropped vision columns at `-inf`, applied to all query rows, exactly as SID's
    own mask does.
 
@@ -204,7 +204,7 @@ intended masking.
 
 | method | amateur |
 |---|---|
-| VCD | `add_diffusion_noise(pixel_values, 900)`. Qwen's `pixel_values` is a linear rearrange of the normalized image into flattened 14x14 patches, so elementwise Gaussian noise there is identical to noising the normalized image — the same operation VCD applies for LLaVA. |
+| VCD | `add_diffusion_noise(pixel_values, 900)`. Qwen's `pixel_values` is a linear rearrange of the normalized image into flattened 14x14 patches, so elementwise Gaussian noise there is identical to noising the normalized image - the same operation VCD applies for LLaVA. |
 | ICD | clean image, system message replaced with the canonical adversarial negative *"You are a confused objects detector to provide a fuzzy overview or impression of the image."* Fixed rather than sampled from the repo's five-prompt list, so Delta carries no per-sample sampling noise. |
 
 ---
@@ -222,19 +222,19 @@ intended masking.
   accurate *and* ~5 GB smaller. Nothing else consumed those dumps once the causal battery was out
   of scope.
 - **No causal battery.** Activation patching, probe-direction steering and subspace alignment are
-  deliberately not ported — they produce none of the target figures and would multiply GPU time.
+  deliberately not ported - they produce none of the target figures and would multiply GPU time.
   `mech_interp/{patch_causal,steer_probe,subspace_align,fit_probe_dirs}.py` remain on the LLaVA
   branch if they are ever wanted here.
 - **Fewer CV fits.** `mech_interp/train_probes.py` ran three separate cross-validation passes per
   probe per layer (`cross_val_score` + `cross_val_predict(proba)` + `cross_val_predict`). This one
   runs a single `predict_proba` pass and derives accuracy and balanced accuracy from the same
-  out-of-fold probabilities — identical numbers for logistic regression, a third of the fits.
+  out-of-fold probabilities - identical numbers for logistic regression, a third of the fits.
 - **Layer count from the data.** Qwen2.5-VL-7B is 28 blocks → 29 hidden states, d=3584 (LLaVA-1.5
   is 32 → 33, d=4096). Nothing is hardcoded; the same figure code renders both.
 - **The logit lens is unchanged in spirit.** HuggingFace's Qwen2 decoder appends the final hidden
   state *after* `self.norm`, the same contract the LLaVA port relies on: layers `0..L-1` go through
   the frozen final RMSNorm, layer `L` is used as-is. `lens_final_layer_MAE` in each
-  `extract_summary_*.json` must be ~0 — it is the guard that the contract still holds.
+  `extract_summary_*.json` must be ~0 - it is the guard that the contract still holds.
 - **No existing repo file is modified.** `mech_interp/download_pope_data.py` is reused as-is (it is
   pure requests/json with no model dependency); `add_diffusion_noise` is copied into
   `vcd_noise.py` with attribution only because its home module imports transformers-4.31-only
@@ -246,7 +246,7 @@ intended masking.
 (module layout moved to `model.model.language_model` in 4.52; the attention classes were replaced
 by the `ALL_ATTENTION_FUNCTIONS` interface; mask construction moved to `masking_utils`). The code
 resolves submodules by *shape* rather than by path and probes the attention signature at runtime,
-so a bump is survivable — but **run the tests below after any bump** rather than trusting it.
+so a bump is survivable - but **run the tests below after any bump** rather than trusting it.
 
 torch is deliberately *not* pinned: Studio images ship a CUDA-matched build, and reinstalling torch
 from PyPI is the most common way to end up CPU-only. The venv is created with
@@ -274,27 +274,39 @@ python mech_interp_qwen/test_pipeline_tiny.py        # ~2-3 min, CPU
 `selfcheck.py` is the fourth layer and runs on the real checkpoint as part of the master script.
 It repeats the structural checks and adds the ones that need real weights:
 
-1. **layer count** — `L+1` hidden states.
-2. **lens fidelity** — `|lens_margin[L] - true_margin| < 1e-2`. The single most important check: a
+1. **layer count** - `L+1` hidden states.
+2. **lens fidelity** - `|lens_margin[L] - true_margin| < 1e-2`. The single most important check: a
    broken norm/head contract corrupts every figure without erroring.
-3. **generate vs logit-argmax** — `generate(max_new_tokens=5)`'s first token matches the forward
+3. **generate vs logit-argmax** - `generate(max_new_tokens=5)`'s first token matches the forward
    argmax used as `pred` (the same check the LLaVA pipeline runs).
-4. **Yes/No coverage** — the greedy first token really is Yes-ish or No-ish; if Qwen answers with
+4. **Yes/No coverage** - the greedy first token really is Yes-ish or No-ish; if Qwen answers with
    prose, the prompt is wrong and the whole margin is meaningless.
-5. **attention capture** — the CT2S hook receives real attention weights.
-6. **SID token budget** — exactly `n_vision - round(ratio*n_vision)` vision columns are masked.
-7. **amateurs differ** — all three amateur margins differ from the expert.
+5. **attention capture** - the CT2S hook receives real attention weights.
+6. **SID token budget** - exactly `n_vision - round(ratio*n_vision)` vision columns are masked.
+7. **amateurs differ** - all three amateur margins differ from the expert.
 
 ### The scientific sanity gate
 
 `selfcheck` and the extractor both print **baseline greedy accuracy per split**. Qwen2.5-VL-7B
 should land well above chance on `coco-random`, lower on `adversarial`. If it is near 50%, the
-prompt or preprocessing is wrong — stop and fix it before trusting any probe, because every
+prompt or preprocessing is wrong - stop and fix it before trusting any probe, because every
 downstream number is conditioned on `pred`.
 
 Also watch, in `train_probes`' output:
 
 - **class balance and hallucination rate.** If the gt-No hallucination rate is under ~10%, `n_H` is
-  small and the selectivity AUC has wide error bars. Prefer `bal_acc` / `auc` over raw accuracy —
+  small and the selectivity AUC has wide error bars. Prefer `bal_acc` / `auc` over raw accuracy -
   the peak selection already uses AUC for exactly this reason.
 - **`lens_final_layer_MAE`** in each `extract_summary_*.json`: must be ~0.
+
+## Where the results live, and what was run on top of them
+
+The completed Lightning run is committed at `results/qwen2.5-vl-7b/`: 9,000 POPE-COCO questions
+across all three splits, three methods, `lens_final_layer_MAE = 0.0`, plus the 12 `regen/`
+figures. The matching LLaVA-1.5-7B run is at `results/llava1.5-7b/`. See `results/README.md` for
+the npz contract and the model-vs-model caveats (33 vs 29 hidden states, 257 vs 141
+hallucinations).
+
+Two further experiments from the write-up run on those stored margins, for both models, with no
+GPU: oracle calibration of the selectivity metric and the scalar-bias sweep. See
+`mech_interp_calib/README.md`.

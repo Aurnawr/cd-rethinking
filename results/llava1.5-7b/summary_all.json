@@ -1,0 +1,35 @@
+[
+  {
+    "method": "vcd",
+    "n_H": 1,
+    "n_T": 9,
+    "selectivity_readout": 0.0,
+    "selectivity_min": 0.0,
+    "selectivity_max": 1.0,
+    "frac_pos_readout": 1.0,
+    "r2_max": 0.25909301480705765,
+    "mean_delta_H_readout": 8.90625
+  },
+  {
+    "method": "icd",
+    "n_H": 261,
+    "n_T": 3453,
+    "selectivity_readout": 0.6388281387832003,
+    "selectivity_min": 0.42901058882664084,
+    "selectivity_max": 0.6819723645272643,
+    "frac_pos_readout": 0.2567049808429119,
+    "r2_max": 0.027586766599477616,
+    "mean_delta_H_readout": -0.16780411877394635
+  },
+  {
+    "method": "sid",
+    "n_H": 261,
+    "n_T": 3453,
+    "selectivity_readout": 0.6911497914523769,
+    "selectivity_min": 0.4437370802001258,
+    "selectivity_max": 0.6911497914523769,
+    "frac_pos_readout": 0.7969348659003831,
+    "r2_max": 0.028330649088117704,
+    "mean_delta_H_readout": 1.6071599616858236
+  }
+]

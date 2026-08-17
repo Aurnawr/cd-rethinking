@@ -1,0 +1,19 @@
+{
+  "method": "sid",
+  "n": 9000,
+  "n_H": 261,
+  "n_T": 3453,
+  "lens_final_layer_MAE": 0.0003784722222222222,
+  "splits_requested": [
+    "random",
+    "popular",
+    "adversarial"
+  ],
+  "splits_done": [
+    "random",
+    "popular",
+    "adversarial"
+  ],
+  "per_sample": "/vol/results/logit_lens_per_sample_sid.npz",
+  "hiddens_ht": "/vol/results/hiddens_ht_sid.npz"
+}

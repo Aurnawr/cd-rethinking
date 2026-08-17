@@ -1,0 +1,21 @@
+{
+  "model_family": "qwen2.5-vl",
+  "primary_method": "vcd",
+  "n_samples": 9000,
+  "n_layers": 29,
+  "hidden_dim": 3584,
+  "gt_present": 4500,
+  "gt_absent": 4500,
+  "probe_b_n_no_samples": 4500,
+  "probe_b_hallucinated": 141,
+  "probe_b_hallucination_rate": 0.03133333333333333,
+  "probe_b_evaluated": true,
+  "l_star_truth": 23,
+  "l_star_truth_auc": 0.993287901234568,
+  "l_star_halluc": 27,
+  "l_star_halluc_auc": 0.9999430541522472,
+  "l_star_CD": 27,
+  "cd_at_peak": 179.87594604492188,
+  "cd_at_truth_peak": 117.59934997558594,
+  "verdict": "l*_truth=23, l*_CD=27 (gap 4 layers). DIFFERENT DEPTH -> VCD's largest residual effect is NOT at the layer encoding object presence -- direct evidence its correction does not operate on the presence representation.\nl*_halluc=27, l*_CD=27 (gap 0 layers). COINCIDE."
+}

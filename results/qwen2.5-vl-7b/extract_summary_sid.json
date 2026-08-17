@@ -1,0 +1,24 @@
+{
+  "method": "sid",
+  "model": "/teamspace/studios/this_studio/cd_pope_mech_interp_qwen/models/Qwen2.5-VL-7B-Instruct",
+  "n": 9000,
+  "n_H": 141,
+  "n_T": 3552,
+  "lens_final_layer_MAE": 0.0,
+  "splits_requested": [
+    "random",
+    "popular",
+    "adversarial"
+  ],
+  "splits_done": [
+    "random",
+    "popular",
+    "adversarial"
+  ],
+  "sid_rank_layer": 2,
+  "sid_keep_ratio": 0.1,
+  "sid_keep_tokens": null,
+  "noise_step": 900,
+  "n_hidden_layers": 28,
+  "act_dir": "/teamspace/studios/this_studio/cd_pope_mech_interp_qwen/activations"
+}

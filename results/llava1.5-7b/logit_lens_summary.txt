@@ -1,0 +1,10 @@
+=== Directional logit-lens Delta (VCD contrastive shift, per layer) ===
+N=9000  hallucinated GT-No samples=257
+[sanity] mean|layer32 logit-lens - real final margin| = 1.7066e-03
+l*_delta_halluc (max |delta|) = 19
+delta_halluc at readout (layer 32) = +3.3162 log-odds  (negative => pushes hallucinated Yes toward No)
+fraction of hallucinated samples with delta<0 at readout = 0.035
+
+READ: if |delta| peaks mid-network and delta at the readout (layer 32) is ~0 or the wrong
+sign, VCD is NOT correcting the hallucination where the decision is made. If delta is
+clearly negative and grows toward layer 32, VCD IS actively suppressing at the readout.
