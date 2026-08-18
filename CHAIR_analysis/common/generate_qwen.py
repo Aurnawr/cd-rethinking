@@ -110,6 +110,11 @@ class CaptureProcessor(LogitsProcessor):
         return cd_post.unsqueeze(0).to(scores.dtype)
 
 
+PROXY_TOPK = 10  # top-10 record width for the proxy leg (matches generate_llava.py's
+                  # TOPK=10 and the rest of this project's capture schema, independent
+                  # of this file's own TOPK=30 used elsewhere for real capture mode)
+
+
 class ProxyProcessor(LogitsProcessor):
     """Gaussian noise N(mu, sigma^2), i.i.d. per vocab entry, clamped to the
     empirical [min, max] of the real d = E - A samples used to calibrate mu/sigma
@@ -117,17 +122,37 @@ class ProxyProcessor(LogitsProcessor):
     anything the real method ever produced (sigma~1.5 with no cap can sample
     d=+8 or -10 on a rare draw), which would let the proxy pick a token no real
     capture would ever have scored that high/low. Real d never exceeded
-    [cap_lo, cap_hi] empirically, so neither should the noise standing in for it."""
-    def __init__(self, mu, sigma, gen, device, cap_lo, cap_hi):
+    [cap_lo, cap_hi] empirically, so neither should the noise standing in for it.
+
+    Also records the same top-10 expert/amateur/contrastive schema as every other
+    capture in this project: the synthetic amateur is A = E - noise (so d = E - A
+    is exactly the noise draw), matching generate_llava.py's proxy convention."""
+    def __init__(self, mu, sigma, gen, device, cap_lo, cap_hi, sink):
         self.mu, self.sigma, self.gen, self.device = mu, sigma, gen, device
         self.cap_lo, self.cap_hi = cap_lo, cap_hi
+        self.sink = sink
 
     def __call__(self, input_ids, scores):
         E = scores[0].float()
         noise = torch.randn(E.shape[-1], generator=self.gen, device=self.device) * self.sigma + self.mu
         noise = noise.clamp(self.cap_lo, self.cap_hi)
-        scored = E + noise
-        scored[E < (LOG_BETA + E.max().item())] = NEG_INF
+        A = E - noise
+        cutoff = LOG_BETA + E.max().item()
+        mask = E < cutoff
+        cd_pre = (1 + CD_ALPHA) * E - CD_ALPHA * A
+        scored = cd_pre.clone(); scored[mask] = NEG_INF
+        chosen_id = int(scored.argmax().item())
+
+        ev, ei = torch.topk(E, PROXY_TOPK)
+        av, ai = torch.topk(A, PROXY_TOPK)
+        cv, ci = torch.topk(cd_pre, PROXY_TOPK)
+        self.sink.append({
+            "step": len(self.sink), "chosen_id": chosen_id, "apc_cutoff": round(cutoff, 4),
+            "expert_top_ids": ei.tolist(), "expert_top_logits": [round(v, 4) for v in ev.tolist()],
+            "amateur_top_ids": ai.tolist(), "amateur_top_logits": [round(v, 4) for v in av.tolist()],
+            "cd_top_ids": ci.tolist(), "cd_top_pre_apc_logits": [round(v, 4) for v in cv.tolist()],
+            "cd_top_survives_apc": (~mask[ci]).tolist(),
+        })
         return scored.unsqueeze(0).to(scores.dtype)
 
 
@@ -199,12 +224,12 @@ def main():
                 sink = []
                 proc = CaptureProcessor(model, args.method, pv_cd, inp["image_grid_thw"], sid_state, sink)
             else:  # proxy
-                proc = ProxyProcessor(mu, sigma, noise_gen, device, cap_lo, cap_hi)
+                sink = []
+                proc = ProxyProcessor(mu, sigma, noise_gen, device, cap_lo, cap_hi, sink)
             with torch.inference_mode():
                 out = model.generate(**inp, max_new_tokens=MAX_NEW_TOKENS, do_sample=False, use_cache=True,
                                      logits_processor=LogitsProcessorList([proc]))
-            if args.mode == "capture":
-                rec["steps"] = sink
+            rec["steps"] = sink
 
         rec["caption"] = processor.tokenizer.decode(out[0, inp.input_ids.shape[1]:],
                                                     skip_special_tokens=True).strip()
