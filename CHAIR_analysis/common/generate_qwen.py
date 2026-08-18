@@ -111,12 +111,21 @@ class CaptureProcessor(LogitsProcessor):
 
 
 class ProxyProcessor(LogitsProcessor):
-    def __init__(self, mu, sigma, gen, device):
+    """Gaussian noise N(mu, sigma^2), i.i.d. per vocab entry, clamped to the
+    empirical [min, max] of the real d = E - A samples used to calibrate mu/sigma
+    -- without this, an unbounded Gaussian draw can occasionally land far outside
+    anything the real method ever produced (sigma~1.5 with no cap can sample
+    d=+8 or -10 on a rare draw), which would let the proxy pick a token no real
+    capture would ever have scored that high/low. Real d never exceeded
+    [cap_lo, cap_hi] empirically, so neither should the noise standing in for it."""
+    def __init__(self, mu, sigma, gen, device, cap_lo, cap_hi):
         self.mu, self.sigma, self.gen, self.device = mu, sigma, gen, device
+        self.cap_lo, self.cap_hi = cap_lo, cap_hi
 
     def __call__(self, input_ids, scores):
         E = scores[0].float()
         noise = torch.randn(E.shape[-1], generator=self.gen, device=self.device) * self.sigma + self.mu
+        noise = noise.clamp(self.cap_lo, self.cap_hi)
         scored = E + noise
         scored[E < (LOG_BETA + E.max().item())] = NEG_INF
         return scored.unsqueeze(0).to(scores.dtype)
@@ -155,7 +164,10 @@ def main():
     if args.mode == "proxy":
         stats = json.load(open(STATS_PATH))[args.stats_source]
         mu, sigma = float(stats["pooled_mean"]), float(stats["pooled_std"])
-        print(f"[qwen] proxy noise N(mu={mu:.4f}, sigma={sigma:.4f}) over full vocab", flush=True)
+        emp = stats["empirical_samples"]
+        cap_lo, cap_hi = float(min(emp)), float(max(emp))
+        print(f"[qwen] proxy noise N(mu={mu:.4f}, sigma={sigma:.4f}) over full vocab, "
+              f"clamped to empirical [{cap_lo:.4f}, {cap_hi:.4f}] (n={len(emp)} real d samples)", flush=True)
 
     os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
     done = {json.loads(l)["image_id"] for l in open(args.out)} if os.path.exists(args.out) else set()
@@ -187,7 +199,7 @@ def main():
                 sink = []
                 proc = CaptureProcessor(model, args.method, pv_cd, inp["image_grid_thw"], sid_state, sink)
             else:  # proxy
-                proc = ProxyProcessor(mu, sigma, noise_gen, device)
+                proc = ProxyProcessor(mu, sigma, noise_gen, device, cap_lo, cap_hi)
             with torch.inference_mode():
                 out = model.generate(**inp, max_new_tokens=MAX_NEW_TOKENS, do_sample=False, use_cache=True,
                                      logits_processor=LogitsProcessorList([proc]))

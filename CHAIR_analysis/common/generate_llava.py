@@ -99,7 +99,10 @@ def main():
     if args.mode == "proxy":
         stats = json.load(open(STATS_PATH))[args.stats_source]
         mu, sigma = float(stats["pooled_mean"]), float(stats["pooled_std"])
-        print(f"[llava] proxy noise N(mu={mu:.4f}, sigma={sigma:.4f}) over full vocab", flush=True)
+        emp = stats["empirical_samples"]
+        cap_lo, cap_hi = float(min(emp)), float(max(emp))
+        print(f"[llava] proxy noise N(mu={mu:.4f}, sigma={sigma:.4f}) over full vocab, "
+              f"clamped to empirical [{cap_lo:.4f}, {cap_hi:.4f}] (n={len(emp)} real d samples)", flush=True)
 
     qs = DEFAULT_IMAGE_TOKEN + "\n" + PROMPT
     conv = conv_templates["vicuna_v1"].copy()
@@ -172,6 +175,7 @@ def main():
                     # synthetic amateur, so capture below is schema-identical
                     # to a real two-branch capture.
                     noise = torch.randn(E.shape[-1], generator=noise_gen, device=device) * sigma + mu
+                    noise = noise.clamp(cap_lo, cap_hi)
                     A = E - noise.float()
                 scored = (1 + CD_ALPHA) * E - CD_ALPHA * A
                 scored = scored.clone(); scored[mask] = float("-inf")
