@@ -22,9 +22,11 @@ CHAIR_greedy/
       llava_sid_greedy_seed1.jsonl       > top-10 logits/step, see note below
       llava_sid_greedy_seed2.jsonl      /
     qwen/
-      qwen_baseline_greedy.jsonl        500 captions, no CD, no logits
-      qwen_vcd_greedy_seed0.jsonl        top-10 logits/step, single seed
-      qwen_sid_greedy_seed0.jsonl        top-10 logits/step, single seed -- see CAVEAT below
+      qwen_baseline_greedy.jsonl                 500 captions, no CD, no logits
+      qwen_vcd_greedy_seed0.jsonl                 top-10 logits/step, single seed
+      qwen_sid_greedy_seed0.jsonl                 top-10 logits/step, single seed -- see CAVEAT below
+      qwen_gaussian_proxy_vcd_greedy_seed0.jsonl   top-10 logits/step, VCD-calibrated noise, single seed
+      qwen_gaussian_proxy_sid_greedy_seed0.jsonl   top-10 logits/step, SID-calibrated noise, single seed
 ```
 
 Every file is 500 lines (one JSON record per image, 500 MSCOCO val2017
@@ -40,6 +42,8 @@ images, same fixed image set used everywhere in this repo).
 | `qwen_baseline_greedy.jsonl` | `chair_full_handoff/data/qwen/captions_greedy.jsonl` |
 | `qwen_vcd_greedy_seed0.jsonl` | `chair_full_handoff/data/captures/qwen_vcd.jsonl.gz` (decompressed) |
 | `qwen_sid_greedy_seed0.jsonl` | `chair_full_handoff/data/captures/qwen_sid.jsonl.gz` (decompressed) |
+| `qwen_gaussian_proxy_vcd_greedy_seed0.jsonl` | `CHAIR_analysis/outputs/qwen_proxy_vcdstats/seed0.jsonl` |
+| `qwen_gaussian_proxy_sid_greedy_seed0.jsonl` | `CHAIR_analysis/outputs/qwen_proxy_sidstats/seed0.jsonl` |
 
 ## Schema
 
@@ -62,6 +66,22 @@ size sane for a plain git push (untruncated, these two files were
 ~199MB/~198MB -- comfortably over GitHub's 100MB hard limit; truncated
 they're ~83MB each). The full top-30 version still exists at the original
 path if anyone needs the wider window.
+
+## Gaussian-proxy files
+
+`qwen_gaussian_proxy_{vcd,sid}_greedy_seed0.jsonl` replace the real amateur
+branch with calibrated i.i.d. Gaussian noise on the expert logits -- no
+second forward pass, no real image corruption or attention manipulation.
+The noise is `N(mu, sigma^2)` per vocabulary entry, with `mu`/`sigma` fit to
+the *real* VCD's (or SID's) own observed `d = E - A` distribution (see
+`CHAIR_analysis/proxy_stats_qwen.json`, ~28k real samples each), and then
+**clamped to the empirical `[min, max]` of those same real samples** so a
+noise draw can never land somewhere no real `d` ever actually did. Decode
+is greedy (`do_sample=False`), same as the real VCD/SID greedy files above
+-- this tests whether an *unstructured* perturbation of matched magnitude
+reproduces what the real, structured amateur branch does. Same top-10
+schema as the real VCD/SID files; `amateur_top_ids/logits` here comes from
+the synthetic `A = E - noise`, not a real forward pass.
 
 ## Two things worth knowing before using this data
 
